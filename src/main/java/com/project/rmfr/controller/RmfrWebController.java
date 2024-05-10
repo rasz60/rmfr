@@ -9,6 +9,6 @@ public class RmfrWebController {
     @RequestMapping("/")
     public String rmfr() {
         System.out.println("controller");
-        return "index";
+        return "index.html";
     }
 }
