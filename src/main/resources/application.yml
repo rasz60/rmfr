@@ -33,3 +33,6 @@ spring:
             enable: true
           auth: true
           timeout: 5000
+  mvc:
+    view:
+      suffix: .html
