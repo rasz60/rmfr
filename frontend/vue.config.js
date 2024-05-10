@@ -1,7 +1,8 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   // outputDir: npm run build 로 빌드시 파일이 생성되는 위치입니다.
-  outputDir:"../../src/main/resources/static",
+  outputDir: "../src/main/resources/static",
+  indexPath: "index.html",
 
   // devServer : SpringBoot 의 내장 WAS 주소
   // devServer:{

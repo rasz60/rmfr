@@ -8,6 +8,6 @@ public class RmfrWebController {
 
     @RequestMapping("/")
     public String rmfr() {
-        return "index.html";
+        return "index";
     }
 }
