@@ -1,0 +1,1 @@
+JPA Setting Doc. : https://github.com/rasz60/rmfr/wiki/JPA

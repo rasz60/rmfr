@@ -2,6 +2,7 @@ package com.project.rmfr.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Clob;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "allNoticeContents")
 @Getter
+@Setter
 public class AllNoticeContents {
     // Contents 테이블
     @Id
