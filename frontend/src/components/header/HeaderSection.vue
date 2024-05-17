@@ -32,7 +32,7 @@
     </div>
     <div id="buttonBox">
       <div class="guest" v-show="this.username == ''">
-        <a class="headerBtn" href="/signup" title="signup">
+        <a class="headerBtn" href="/member/signup" title="signup">
           <font-awesome-icon :icon="['fas', 'user-plus']" />
         </a>
         <a class="headerBtn" href="#" title="login">
@@ -102,16 +102,15 @@ section#header {
   a {
     text-decoration: none;
     cursor: pointer;
-    color: black;
   }
 
   div#menuToggle {
+    width: 3%;
     height: 100%;
-
     display: flex;
     justify-content: center;
     align-items: center;
-
+    font-size: 22px;
     span.toggleBtn {
       cursor: pointer;
     }
@@ -153,7 +152,6 @@ section#header {
       input#searchIpt {
         width: 85%;
         height: 100%;
-        outline: none;
         border: none;
         font-size: 1.3em;
       }
@@ -198,6 +196,7 @@ section#header {
     a.headerBtn {
       padding: 15px;
       cursor: pointer;
+      color: black;
     }
   }
 }

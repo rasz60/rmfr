@@ -1,5 +1,6 @@
 package com.project.rmfr.entity;
 
+import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

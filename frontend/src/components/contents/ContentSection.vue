@@ -44,7 +44,7 @@ export default {
       menus: [
         {
           name: "notice",
-          href: "notice",
+          href: "/board/notice",
           icon: "bullhorn",
         },
       ],

@@ -1,15 +1,16 @@
-package com.project.rmfr.controller;
+package com.project.rmfr.member.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/")
-public class RmfrWebController {
+@RequestMapping("/member")
+public class MemberController {
 
-    @GetMapping("/")
-    public String rmfr() {
+    @GetMapping("signup")
+    public String signup() {
+        System.out.println("signup");
         return "/index";
     }
 }

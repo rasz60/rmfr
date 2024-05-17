@@ -1,4 +1,4 @@
-package com.project.rmfr.entity;
+package com.project.rmfr.member.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
