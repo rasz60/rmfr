@@ -10,7 +10,11 @@ public class RmfrWebController {
 
     @GetMapping("/")
     public String rmfr() {
-        System.out.println("안녕!!!");
+        return "index";
+    }
+
+    @GetMapping("/signup")
+    public String signup() {
         return "index";
     }
 
