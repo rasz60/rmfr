@@ -14,6 +14,10 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 
+// bootstrap
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 // application 객체 생성
 const app = createApp(App);
 

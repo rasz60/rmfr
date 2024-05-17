@@ -12,6 +12,6 @@ module.exports = defineConfig({
   // devServer : SpringBoot 의 내장 WAS 주소
   devServer: {
     proxy: "http://localhost:8082",
-    disableHostCheck: true,
+    //disableHostCheck: true,
   },
 });
