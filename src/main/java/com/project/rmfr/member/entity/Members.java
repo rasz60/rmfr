@@ -1,17 +1,23 @@
 package com.project.rmfr.member.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "members")
-@Getter
-@Setter
-public class Members {
+@Data
+public class Members implements UserDetails {
     // MEMBERS Entity 테이블
     @Id
     @GeneratedValue(generator="uuid2")
@@ -48,4 +54,62 @@ public class Members {
 
     @Column(columnDefinition = "VARCHAR(1000)")
     private String thum;
+
+
+    public Members() {}
+
+    @Builder
+    public Members(String email, String userName, String password, String phone, String mAddr1, String mAddr2, String mAddr3) {
+        this.mEmail = email;
+        this.mId = userName;
+        this.mPw = password;
+        this.mPhone = phone;
+        this.mAddr1 = mAddr1;
+        this.mAddr2 = mAddr2;
+        this.mAddr3 = mAddr3;
+    }
+
+
+
+    /* security methods */
+    // 권한 조회
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("user"));
+    }
+
+    @Override
+    public String getPassword() {
+        return mPw;
+    }
+
+
+    @Override
+    public String getUsername() {
+        return mId;
+    }
+
+    // 계정 만료 여부 조회
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // true : 만료되지 않음, false : 만료
+    }
+
+    // 계정 잠금 여부 조회
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // true : 잠금되지 않음, false : 잠금
+    }
+
+    // 패스워드 만료 여부 조회
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // true : 만료되지 않음, false : 만료
+    }
+
+    // 계정 사용 가능 여부 조회
+    @Override
+    public boolean isEnabled() {
+        return false; // true : 사용 불가, false : 사용 가능
+    }
 }
