@@ -3,6 +3,7 @@ package com.project.rmfr.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -13,12 +14,13 @@ import java.util.List;
 @Table(name = "allNoticeBoard")
 @Getter
 @Setter
+@DynamicInsert
 public class AllNoticeBoard {
     // auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "VARCHAR(100)")
     private String anbUuid;
 
     @Column(columnDefinition = "VARCHAR(300)", nullable = false)

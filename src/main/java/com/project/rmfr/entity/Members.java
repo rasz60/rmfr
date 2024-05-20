@@ -3,6 +3,8 @@ package com.project.rmfr.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -11,12 +13,13 @@ import java.time.LocalDateTime;
 @Table(name = "members")
 @Getter
 @Setter
+@DynamicInsert
 public class Members {
     // MEMBERS Entity 테이블
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
+    @Column(columnDefinition = "VARCHAR(100)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     private String mEntrId;
 
     @Column(columnDefinition = "VARCHAR(40)", unique = true, nullable=false)
