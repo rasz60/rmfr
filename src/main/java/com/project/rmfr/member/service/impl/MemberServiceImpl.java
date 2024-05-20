@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 public class MemberServiceImpl implements UserDetailsService, MemberService {
 
-    private final MemberRepository userRepository;
+    private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final HttpSession httpSession;
 
@@ -34,10 +35,29 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     }
 
     public boolean usernameDuplicateChk(String username) {
-        Optional<Members> userOptional= userRepository.findBymId(username);
-
+        Optional<Members> userOptional= memberRepository.findBymId(username);
         boolean chk = userOptional.isPresent();
-        log.info("usernameDuplicateChk("+username+") : " + chk);
         return chk;
+    }
+
+    public String signupMember(Map<String, Object> param) {
+        String mEntrId = "";
+
+        try {
+            mEntrId = memberRepository.save(Members.builder()
+                    .email((String) param.get("mEmail"))
+                    // 패스워드 암호화
+                    .password(bCryptPasswordEncoder.encode((String) param.get("password")))
+                    .userName((String) param.get("username"))
+                    .phone((String) param.get("mPhone"))
+                    .mAddr1((String) param.get("mAddr1"))
+                    .mAddr2((String) param.get("mAddr2"))
+                    .mAddr3((String) param.get("mAddr3"))
+                    .build()).getMEntrId();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mEntrId;
     }
 }

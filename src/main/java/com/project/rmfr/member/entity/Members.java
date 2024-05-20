@@ -3,8 +3,7 @@ package com.project.rmfr.member.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,12 +16,13 @@ import java.util.List;
 @Entity
 @Table(name = "members")
 @Data
+@DynamicInsert
 public class Members implements UserDetails {
     // MEMBERS Entity 테이블
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
+    @Column(columnDefinition = "VARCHAR(100)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     private String mEntrId;
 
     @Column(columnDefinition = "VARCHAR(40)", unique = true, nullable=false)
@@ -34,10 +34,10 @@ public class Members implements UserDetails {
     @Column(columnDefinition = "VARCHAR(200)", nullable=false)
     private String mEmail;
 
-    @Column(columnDefinition = "INT DEFAULT 1", nullable=false)
-    private int mLevel;
+    @Column(columnDefinition = "INT DEFAULT 1")
+    private Integer mLevel;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable=false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime mPwUpdateDate;
 
     @Column(columnDefinition = "VARCHAR(11)")
