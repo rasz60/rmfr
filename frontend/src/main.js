@@ -30,10 +30,10 @@ axios.defaults.headers.delete["Content-Type"] = "application/json";
 // fontawesome library : solid, brands, regular 타입 사용
 library.add(fas, fab, far);
 
+app.config.globalProperties.axios = axios;
+
 // application에 사용 가능하도록 설정
 app
   .use(router) //router 별 view 파일 연결
   .component("font-awesome-icon", FontAwesomeIcon) // font-awesome
   .mount(`#app`); // id app인 엘리먼트에 mount
-
-app.config.globalProperties.axios = axios;

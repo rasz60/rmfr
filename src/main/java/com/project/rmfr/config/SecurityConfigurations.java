@@ -72,14 +72,14 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 //.requestMatchers(PathRequest.toH2Console()).permitAll()
-                                .requestMatchers("/", "/member/login/**", "/member/signup/**", "/api/**").permitAll()
+                                .requestMatchers("/", "/member/login/**", "/member/loginProc/**", "/member/signup/**", "/api/**").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .formLogin((formLogin) ->
                         formLogin
                                 .loginPage("/member/login")
-                                .usernameParameter("username")
-                                .passwordParameter("password")
+                                .usernameParameter("mId")
+                                .passwordParameter("mPw")
                                 .loginProcessingUrl("/member/loginProc")
                                 .defaultSuccessUrl("/", true)
                 )

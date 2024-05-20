@@ -110,6 +110,6 @@ public class Members implements UserDetails {
     // 계정 사용 가능 여부 조회
     @Override
     public boolean isEnabled() {
-        return false; // true : 사용 불가, false : 사용 가능
+        return true; // true : 사용 가능, false : 사용 불가
     }
 }

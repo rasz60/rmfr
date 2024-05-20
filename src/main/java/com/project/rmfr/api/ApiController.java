@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -30,6 +31,11 @@ public class ApiController {
         Map<String, Object> mailResult = mailUtils.sendEmail(emailAddress);
 
         return mailResult;
+    }
+
+    @GetMapping("/api/v1/loginchk")
+    public String loginChk(Principal principal) {
+        return principal.getName();
     }
 
 

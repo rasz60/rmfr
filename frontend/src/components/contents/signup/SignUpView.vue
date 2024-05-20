@@ -434,8 +434,10 @@ export default {
     },
 
     // 아이디 중복 체크
-    fnUsernameDupChk() {
-      var username = document.querySelector("input#username").value;
+    async fnUsernameDupChk() {
+      var username = document.querySelector(
+        "form#signupFrm input#username"
+      ).value;
       var idChkd = this.signupInfo.username.chkd;
       var dupchkBtn = document.querySelector("a#username");
 
@@ -445,25 +447,27 @@ export default {
         return false;
       } else {
         // 정규식 검증이 끝난 경우, 중복 체크 api 호출
-        this.axios.get("/api/v1/usernameDupChk/" + username).then((res) => {
-          const jsonData = res.data;
-          // 중복인 경우 true, 아닌 경우 false
-          this.signupInfo.username.dupchk = !jsonData;
-          if (!jsonData) {
-            // 사용 가능한 경우에만 value 세팅
-            alert("사용 가능한 아이디입니다.");
-            this.signupInfo.username.value = username;
-            dupchkBtn.className = "btn btn-sm btn-dark";
-            dupchkBtn.innerText = "확인완료";
-          } else {
-            // 중복인 경우 value 초기화
-            alert("이미 사용 중인 아이디입니다.");
-            dupchkBtn.className = "btn btn-sm btn-outline-secondary";
-            dupchkBtn.innerText = "중복확인";
-            this.signupInfo.username.value = "";
-            return false;
-          }
-        });
+        await this.axios
+          .get("/api/v1/usernameDupChk/" + username)
+          .then((res) => {
+            const jsonData = res.data;
+            // 중복인 경우 true, 아닌 경우 false
+            this.signupInfo.username.dupchk = !jsonData;
+            if (!jsonData) {
+              // 사용 가능한 경우에만 value 세팅
+              alert("사용 가능한 아이디입니다.");
+              this.signupInfo.username.value = username;
+              dupchkBtn.className = "btn btn-sm btn-dark";
+              dupchkBtn.innerText = "확인완료";
+            } else {
+              // 중복인 경우 value 초기화
+              alert("이미 사용 중인 아이디입니다.");
+              dupchkBtn.className = "btn btn-sm btn-outline-secondary";
+              dupchkBtn.innerText = "중복확인";
+              this.signupInfo.username.value = "";
+              return false;
+            }
+          });
       }
       // 가입하기 버튼 활성화 체크
       this.signupValid();

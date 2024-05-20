@@ -31,7 +31,19 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        Members member = null;
+
+        try {
+            Optional<Members> memberOptional = memberRepository.findBymId(username);
+
+            if (memberOptional.isPresent()) {
+                member = memberOptional.get();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return member;
     }
 
     public boolean usernameDuplicateChk(String username) {

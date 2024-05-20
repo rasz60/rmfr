@@ -35,7 +35,7 @@
         <a class="headerBtn" href="/member/signup" title="signup">
           <font-awesome-icon :icon="['fas', 'user-plus']" />
         </a>
-        <a class="headerBtn" href="#" title="login">
+        <a class="headerBtn" href="#" title="login" @click="fn_toggleInfo">
           <font-awesome-icon :icon="['fas', 'right-to-bracket']" />
         </a>
       </div>
@@ -50,6 +50,28 @@
           <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
         </a>
       </div>
+      <div id="loginInfo">
+        <form
+          id="login"
+          action="/member/loginProc"
+          method="post"
+          v-show="this.username == ''"
+        >
+          <div>
+            <label for="username" class="col-3">아이디</label>
+            <input type="text" name="mId" id="mId" class="col-8" />
+          </div>
+
+          <div>
+            <label for="username" class="col-3">비밀번호</label>
+            <input type="password" name="mPw" id="mPw" class="col-8" />
+          </div>
+
+          <div>
+            <a class="btn btn-sm btn-primary" @click="fn_submitFrm"> 로그인 </a>
+          </div>
+        </form>
+      </div>
     </div>
   </section>
 </template>
@@ -61,7 +83,18 @@ export default {
       username: "",
     };
   },
+  mounted() {
+    this.fn_loginChk();
+  },
   methods: {
+    async fn_loginChk() {
+      await this.axios.get("/api/v1/loginchk").then((res) => {
+        if (res.data != "" || res.data != null) {
+          this.username = res.data;
+        }
+      });
+    },
+
     fn_focusSearch() {
       document.querySelector("div#preIcon").style.visibility = "visible";
     },
@@ -70,11 +103,9 @@ export default {
     },
 
     fn_toggleMenu() {
-      console.log("toggleMenu");
       var slim = document.querySelector("div#menuSlim");
       var full = document.querySelector("div#menuFull");
       var contents = document.querySelector("div#content");
-      console.log(slim, full);
 
       if (slim.style.display == "none" || slim.style.display == "") {
         full.style.display = "none";
@@ -86,6 +117,32 @@ export default {
         full.style.display = "block";
         contents.style.width = "85%";
         console.log("full none or null");
+      }
+    },
+
+    fn_toggleInfo() {
+      var info = document.querySelector("div#loginInfo");
+      var curr = info.style.display;
+      var chk = curr == "" || curr == "none";
+
+      if (chk) {
+        info.style.display = "flex";
+      } else {
+        info.style.display = "none";
+        document.querySelector("input#mId").value = "";
+        document.querySelector("input#mPw").value = "";
+      }
+    },
+
+    fn_submitFrm() {
+      var username = document.querySelector("input#mId").value;
+      var password = document.querySelector("input#mPw").value;
+
+      if (username != "" && password != "") {
+        document.querySelector("form#login").submit();
+      } else {
+        alert("아이디와 비밀번호를 모두 입력해주세요.");
+        return false;
       }
     },
   },
@@ -197,6 +254,32 @@ section#header {
       padding: 15px;
       cursor: pointer;
       color: black;
+    }
+
+    div#loginInfo {
+      display: none;
+      position: absolute;
+      top: 75px;
+      right: 10px;
+      width: 350px;
+      padding: 10px;
+      background-color: white;
+      font-size: 14px;
+      border-radius: 8px;
+
+      form {
+        width: 100%;
+      }
+
+      box-shadow: 2px 2px 2px 2px lightgray;
+      div {
+        padding: 8px;
+      }
+
+      input {
+        border: none;
+        border-bottom: 1px solid darkgray;
+      }
     }
   }
 }
