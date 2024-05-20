@@ -4,11 +4,13 @@ import com.project.rmfr.entity.ck.ContentLikesCK;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Table(name="contentLikes")
 @Getter
 @Setter
+@DynamicInsert
 public class ContentLikes {
 
     @EmbeddedId

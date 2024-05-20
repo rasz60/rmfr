@@ -4,6 +4,7 @@ import com.project.rmfr.entity.ck.ContentHitsCK;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name="ContentHits")
 @Getter
 @Setter
+@DynamicInsert
 public class ContentHits {
 
     @EmbeddedId
