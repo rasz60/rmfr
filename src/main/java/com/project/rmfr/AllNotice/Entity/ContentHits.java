@@ -1,6 +1,6 @@
-package com.project.rmfr.entity;
+package com.project.rmfr.AllNotice.Entity;
 
-import com.project.rmfr.entity.ck.ContentHitsCK;
+import com.project.rmfr.AllNotice.Entity.ck.ContentHitsCK;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

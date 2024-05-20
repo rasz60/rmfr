@@ -1,0 +1,1 @@
+# header나 footer처럼 고정되어야하는 view 파일 모음
