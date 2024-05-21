@@ -1,18 +1,23 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
+    <b-navbar toggleable="lg" type="" variant="info">
+      <b-navbar-brand href="#">
+        <div id="menuToggle">
+          <span class="toggleBtn" @click="fn_toggleMenu">
+            <font-awesome-icon :icon="['fas', 'bars']" />
+          </span>
+        </div>
+      </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">Link</b-nav-item>
-          <b-nav-item href="#" disabled>Disabled</b-nav-item>
+          <b-nav-item href="/">rmfr</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ms-auto" right>
           <b-nav-form>
             <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
             <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
@@ -37,15 +42,18 @@
       </b-collapse>
     </b-navbar>
   </div>
+
 </template>
 
 <script>
 export default {
   // 홈페이지 url 이름 설정.
   name: "headerComponent",
+
+  compatConfig: { MODE: 3 }
 };
 </script>
 
-<style scoped>
+<style>
 
 </style>
