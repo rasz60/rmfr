@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import MainView from "../../components/contents/main/MainView.vue";
-import SignUpView from "../../components/contents/signup/SignUpView.vue";
-//import LoginView from "../components/contents/LoginView";
+import MainView from "@/components/contents/main/MainView.vue";
+import SignUpView from "@/components/contents/signup/SignUpView.vue";
+import SettingView from "@/components/contents/setting/SettingView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,6 +13,10 @@ const router = createRouter({
     {
       path: "/member/signup",
       component: SignUpView,
+    },
+    {
+      path: "/member/settings",
+      component: SettingView,
     },
   ],
 });

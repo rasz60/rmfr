@@ -31,7 +31,7 @@
       </div>
     </div>
     <div id="buttonBox">
-      <div class="guest" v-show="this.username == ''">
+      <div class="guest" v-show="!this.login">
         <a class="headerBtn" href="/member/signup" title="signup">
           <font-awesome-icon :icon="['fas', 'user-plus']" />
         </a>
@@ -39,15 +39,12 @@
           <font-awesome-icon :icon="['fas', 'right-to-bracket']" />
         </a>
       </div>
-      <div class="user" v-show="this.username != ''">
+      <div class="user" v-show="this.login">
         <a class="headerBtn" href="#" title="push">
           <font-awesome-icon :icon="['fas', 'bell']" />
         </a>
-        <a class="headerBtn" href="#" title="mypage">
-          <font-awesome-icon :icon="['fas', 'user-gear']" />
-        </a>
-        <a class="headerBtn" href="#" title="logout">
-          <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
+        <a class="headerBtn" href="#" title="mypage" @click="fn_toggleInfo">
+          <font-awesome-icon :icon="['fas', 'user']" />
         </a>
       </div>
       <div id="loginInfo">
@@ -55,7 +52,7 @@
           id="login"
           action="/member/loginProc"
           method="post"
-          v-show="this.username == ''"
+          v-show="!this.login"
         >
           <div>
             <label for="username" class="col-3">아이디</label>
@@ -63,7 +60,7 @@
           </div>
 
           <div>
-            <label for="username" class="col-3">비밀번호</label>
+            <label for="mPw" class="col-3">비밀번호</label>
             <input type="password" name="mPw" id="mPw" class="col-8" />
           </div>
 
@@ -71,6 +68,48 @@
             <a class="btn btn-sm btn-primary" @click="fn_submitFrm"> 로그인 </a>
           </div>
         </form>
+
+        <div id="info" v-show="this.login">
+          <div id="basicInfo" class="row">
+            <div id="thumImg" class="col-3">
+              <a
+                id="tmpImg"
+                class="display-6"
+                v-show="this.tmpImg != ''"
+                href="/member/settings"
+              >
+                {{ info.tmpImg }}
+              </a>
+            </div>
+            <div id="basic" class="col-9">
+              <a id="mId" class="display-6" href="/member/settings">
+                @{{ info.mId }}
+              </a>
+
+              <a id="mUd" class="display-6" href="/member/settings">
+                패스워드 변경까지 D-{{ info.mUd }}
+              </a>
+            </div>
+          </div>
+
+          <div
+            id="setting"
+            class="row infoMenu"
+            @click="fn_infoMenu('/member/settings')"
+          >
+            <div id="" class="infoTxt col-9">계정설정</div>
+            <div id="" class="infoIcon col-3">
+              <font-awesome-icon :icon="['fas', 'gear']" />
+            </div>
+          </div>
+
+          <div id="logout" class="row infoMenu" @click="fn_infoMenu('/logout')">
+            <div id="" class="infoTxt col-9">로그아웃</div>
+            <div id="" class="infoIcon col-3">
+              <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -80,7 +119,15 @@
 export default {
   data() {
     return {
-      username: "",
+      login: false,
+      info: {
+        mId: "",
+        mUd: "",
+        mThum: "",
+        tmpImg: "",
+        mPwUpdateDate: "",
+        mLevel: "",
+      },
     };
   },
   mounted() {
@@ -88,13 +135,57 @@ export default {
   },
   methods: {
     async fn_loginChk() {
-      await this.axios.get("/api/v1/loginchk").then((res) => {
-        if (res.data != "" || res.data != null) {
-          this.username = res.data;
-        }
-      });
-    },
+      // 로그인 실패 시, loginError=true로 return
+      var url = location.href;
+      var query = url.substring(url.indexOf("?"));
+      var param = new URLSearchParams(query);
 
+      if (param.size > 0 && param.has("error")) {
+        alert("로그인 정보를 다시 확인해주세요.");
+        this.fn_toggleInfo();
+        document.querySelector("input#mPw").focus();
+      } else {
+        await this.axios.get("/rest/v1/loginchk").then((res) => {
+          var jsonData = res.data.info;
+          if (jsonData != "" && jsonData != null) {
+            // 결과
+            var mId = jsonData.mid;
+            var thum = jsonData.thum;
+            var mPwUpdateDate = jsonData.mpwUpdateDate;
+            var mLevel = jsonData.mlevel;
+
+            // data setting
+            this.info.mId = mId;
+            this.info.mLevel = mLevel;
+            this.info.mPwUpdateDate = mPwUpdateDate;
+
+            if (thum == "" || thum == null) {
+              this.info.tmpImg = this.info.mId.substring(0, 1);
+
+              const rColor = Math.floor(Math.random() * 128 + 64);
+              const gColor = Math.floor(Math.random() * 128 + 64);
+              const bColor = Math.floor(Math.random() * 128 + 64);
+
+              document.querySelector("a#tmpImg").style.backgroundColor =
+                "rgb(" + rColor + "," + gColor + "," + bColor + ")";
+            } else {
+              this.info.mThum = thum;
+            }
+            var updateDate = new Date(mPwUpdateDate);
+            updateDate.setDate(updateDate.getDate() + 89);
+            var diff = Math.abs(updateDate - new Date());
+            var diffDate = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+            this.info.mUd = diffDate;
+
+            this.login = true;
+          }
+        });
+      }
+    },
+    fn_infoMenu(url) {
+      location.href = url;
+    },
     fn_focusSearch() {
       document.querySelector("div#preIcon").style.visibility = "visible";
     },
@@ -279,6 +370,74 @@ section#header {
       input {
         border: none;
         border-bottom: 1px solid darkgray;
+      }
+
+      div#info {
+        width: 100%;
+
+        div#basicInfo {
+          border-bottom: 1px solid #ececec;
+
+          div#thumImg {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #ececec;
+            padding: 2px;
+            border-radius: 50px;
+
+            a {
+              display: block;
+              width: 100%;
+              height: 100%;
+              border: none;
+              border-radius: 50px;
+              color: white;
+            }
+          }
+
+          div#thumImg:hover {
+            border: 2px solid #656f9e;
+          }
+
+          div#basic {
+            padding-left: 15px;
+            text-align: left;
+
+            a {
+              display: block;
+              text-decoration: none;
+              padding: 3px;
+            }
+
+            a#mId {
+              color: black;
+              font-size: 1.3em;
+              font-weight: 400;
+            }
+
+            a#mId:hover {
+              color: darkblue;
+              text-decoration: underline;
+            }
+
+            a#mUd {
+              font-size: 1em;
+              font-style: italic;
+              color: gray;
+            }
+          }
+        }
+
+        div.infoMenu {
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid #ececec;
+          cursor: pointer;
+        }
+
+        div.infoMenu:hover {
+          background-color: #ececec;
+        }
       }
     }
   }

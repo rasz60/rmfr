@@ -24,4 +24,9 @@ public class MemberController {
     public String signupSubmit(@RequestBody Map<String, Object> param) {
         return memberService.signupMember(param);
     }
+
+    @GetMapping("settings")
+    public String settings() {
+        return "/index";
+    }
 }

@@ -1,8 +1,8 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "@/App.vue";
 
 //router
-import router from "./router/contents/contents.js";
+import router from "@/router/contents/contents.js";
 
 // axios
 import axios from "axios";
@@ -27,10 +27,10 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 axios.defaults.headers.put["Content-Type"] = "application/json";
 axios.defaults.headers.delete["Content-Type"] = "application/json";
 
+app.config.globalProperties.axios = axios;
+
 // fontawesome library : solid, brands, regular 타입 사용
 library.add(fas, fab, far);
-
-app.config.globalProperties.axios = axios;
 
 // application에 사용 가능하도록 설정
 app

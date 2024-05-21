@@ -19,24 +19,5 @@ public class ApiController {
     private final MemberService memberService;
     private final MailUtils mailUtils;
 
-    @GetMapping("/api/v1/usernameDupChk/{username}")
-    public boolean usernameDupChk(@PathVariable("username") String username) {
-        boolean chk = memberService.usernameDuplicateChk(username);
-        return chk;
-    }
-
-    @GetMapping("/api/v1/emailValid/{emailAddress}")
-    public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress) {
-
-        Map<String, Object> mailResult = mailUtils.sendEmail(emailAddress);
-
-        return mailResult;
-    }
-
-    @GetMapping("/api/v1/loginchk")
-    public String loginChk(Principal principal) {
-        return principal.getName();
-    }
-
 
 }

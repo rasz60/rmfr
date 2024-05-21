@@ -72,4 +72,27 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
         return mEntrId;
     }
+
+
+    @Override
+    public Members getMemberByUsername(String username) {
+        Members member = new Members();
+
+        try {
+            Optional<Members> memberOptional = memberRepository.findBymId(username);
+
+            if (memberOptional.isPresent()) {
+                Members tmpMember = memberOptional.get();
+
+                member.setMId(tmpMember.getMId());
+                member.setThum(tmpMember.getThum());
+                member.setMLevel(tmpMember.getMLevel());
+                member.setMPwUpdateDate(tmpMember.getMPwUpdateDate());
+            }
+        } catch (Exception e) {
+            log.info("getMemberByUsername Throw Exception.");
+        }
+
+        return member;
+    }
 }

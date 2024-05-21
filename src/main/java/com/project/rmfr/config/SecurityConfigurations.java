@@ -75,13 +75,15 @@ public class SecurityConfigurations {
                                 .requestMatchers("/", "/member/login/**", "/member/loginProc/**", "/member/signup/**", "/api/**").permitAll()
                                 .anyRequest().permitAll()
                 )
+
                 .formLogin((formLogin) ->
                         formLogin
-                                .loginPage("/member/login")
+                                .loginPage("/")
                                 .usernameParameter("mId")
                                 .passwordParameter("mPw")
                                 .loginProcessingUrl("/member/loginProc")
                                 .defaultSuccessUrl("/", true)
+                                .failureUrl("/?loginError=true")
                 )
 
                 .logout((logoutConfig) ->
