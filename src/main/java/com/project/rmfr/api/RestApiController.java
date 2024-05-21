@@ -39,7 +39,21 @@ public class RestApiController {
         Map<String, Members> loginInfo = new HashMap<>();
         try {
             String mId = principal.getName();
-            loginInfo.put("info", memberService.getMemberByUsername(mId));
+            loginInfo.put("info", memberService.getSimpleMemberInfo(mId));
+        } catch (Exception e) {
+            log.info("principal is null.");
+            loginInfo.put("info", null);
+        }
+
+        return loginInfo;
+    }
+
+    @GetMapping("/rest/v1/loginUserDetails")
+    public Map<String, Members> loginUserDetails(Principal principal) {
+        Map<String, Members> loginInfo = new HashMap<>();
+        try {
+            String mId = principal.getName();
+            loginInfo.put("info", memberService.getDetailMemberInfo(mId));
         } catch (Exception e) {
             log.info("principal is null.");
             loginInfo.put("info", null);

@@ -75,7 +75,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
 
     @Override
-    public Members getMemberByUsername(String username) {
+    public Members getSimpleMemberInfo(String username) {
         Members member = new Members();
 
         try {
@@ -88,6 +88,31 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
                 member.setThum(tmpMember.getThum());
                 member.setMLevel(tmpMember.getMLevel());
                 member.setMPwUpdateDate(tmpMember.getMPwUpdateDate());
+            }
+        } catch (Exception e) {
+            log.info("getMemberByUsername Throw Exception.");
+        }
+
+        return member;
+    }
+
+    public Members getDetailMemberInfo(String username) {
+        Members member = new Members();
+
+        try {
+            Optional<Members> memberOptional = memberRepository.findBymId(username);
+
+            if (memberOptional.isPresent()) {
+                Members tmpMember = memberOptional.get();
+
+                member.setMId(tmpMember.getMId());
+                member.setMEmail(tmpMember.getMEmail());
+                member.setMPhone(tmpMember.getMPhone());
+                member.setMAddr1(tmpMember.getMAddr1());
+                member.setMAddr2(tmpMember.getMAddr2());
+                member.setMAddr3(tmpMember.getMAddr3());
+                member.setThum(tmpMember.getThum());
+
             }
         } catch (Exception e) {
             log.info("getMemberByUsername Throw Exception.");

@@ -140,7 +140,7 @@ export default {
       var query = url.substring(url.indexOf("?"));
       var param = new URLSearchParams(query);
 
-      if (param.size > 0 && param.has("error")) {
+      if (param.size > 0 && param.has("loginError")) {
         alert("로그인 정보를 다시 확인해주세요.");
         this.fn_toggleInfo();
         document.querySelector("input#mPw").focus();

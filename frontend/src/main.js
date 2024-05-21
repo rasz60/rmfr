@@ -15,6 +15,7 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 
 // bootstrap
+
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
