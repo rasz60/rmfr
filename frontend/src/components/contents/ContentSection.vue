@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from "vue-router";
-import contentDatas from "@/assets/js/contents/data.js";
-import contentMethods from "@/assets/js/contents/methods.js";
+import contentDatas from "@js/contents/data.js";
+import contentMethods from "@js/contents/methods.js";
 </script>
 
 <template>
@@ -50,5 +50,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import "@/assets/css/contents/content.css";
+@import "@css/contents/content.css";
 </style>

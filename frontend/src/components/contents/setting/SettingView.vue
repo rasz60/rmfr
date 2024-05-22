@@ -1,6 +1,6 @@
 <script setup>
-import settingMethods from "@/assets/js/contents/setting/methods.js";
-import settingDatas from "@/assets/js/contents/setting/data.js";
+import settingMethods from "@js/contents/setting/methods.js";
+import settingDatas from "@js/contents/setting/data.js";
 </script>
 
 <template>
@@ -326,5 +326,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import "@/assets/css/contents/setting/setting.css";
+@import "@css/contents/setting/setting.css";
 </style>

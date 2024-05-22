@@ -1,6 +1,6 @@
 <script setup>
-import headerDatas from "@/assets/js/header/data.js";
-import headerMethods from "@/assets/js/header/methods.js";
+import headerDatas from "@js/header/data.js";
+import headerMethods from "@js/header/methods.js";
 </script>
 
 <template>
@@ -134,5 +134,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import "@/assets/css/header/header.css";
+@import "@css/header/header.css";
 </style>
