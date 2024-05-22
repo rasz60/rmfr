@@ -1,5 +1,7 @@
 <script setup>
 import { RouterView } from "vue-router";
+import contentDatas from "@/assets/js/contents/data.js";
+import contentMethods from "@/assets/js/contents/methods.js";
 </script>
 
 <template>
@@ -40,87 +42,13 @@ import { RouterView } from "vue-router";
 <script>
 export default {
   data() {
-    return {
-      menus: [
-        {
-          name: "notice",
-          href: "/board/notice",
-          icon: "bullhorn",
-        },
-      ],
-    };
+    return contentDatas;
   },
-  methods: {
-    fn_go_ref(href) {
-      location.href = href;
-    },
-  },
+  methods: contentMethods,
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-section#contents {
-  display: flex;
-  flex-wrap: wrap;
-  height: fit-content;
-  min-height: 800px;
-
-  dl.menu {
-    list-style: none;
-    padding-left: 0;
-
-    dd {
-      width: 100%;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      display: flex;
-      cursor: pointer;
-
-      justify-content: center;
-
-      div.fullIcon {
-        width: 10%;
-      }
-
-      div.fullTxt {
-        width: 80%;
-
-        span {
-          font-size: 14px;
-
-          svg {
-            margin-left: 3px;
-            margin-right: 3px;
-          }
-        }
-      }
-    }
-
-    dd:hover {
-      background-color: #ececec;
-    }
-  }
-
-  div.menuBox {
-    height: auto;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border-right: 1px solid #ececec;
-    border-left: 1px solid #ececec;
-  }
-
-  div#menuSlim {
-    width: 3%;
-    display: none;
-  }
-
-  div#menuFull {
-    width: 15%;
-  }
-
-  div#content {
-    width: 85%;
-  }
-}
+@import "@/assets/css/contents/content.css";
 </style>

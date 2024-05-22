@@ -1,0 +1,66 @@
+form#signupFrm {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  div.row {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    border-bottom: 1px solid #ececec;
+    margin: 0 0;
+    width: 80%;
+
+    div {
+      border-right: 1px solid #ececec;
+
+      span.required {
+        color: orange;
+      }
+
+      label {
+        padding-left: 10px;
+        text-align: left;
+      }
+
+      input.signIpt {
+        border: none;
+        border-bottom: 1px solid darkgray;
+      }
+    }
+    div.w-btn-col {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    div.infoBox {
+      display: flex;
+      justify-content: flex-start;
+
+      span.unchkd {
+        color: red;
+      }
+
+      span.chkd {
+        color: green;
+      }
+
+      span.ruleTxt {
+        text-align: left;
+        color: darkcyan;
+        font-size: 11px;
+        font-style: italic;
+      }
+    }
+  }
+
+  div.row.btnBox {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  div.certBox {
+    display: none;
+  }
+}
