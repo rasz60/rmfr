@@ -6,9 +6,7 @@ import com.project.rmfr.utils.MailUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -40,11 +38,11 @@ public class RestApiController {
         try {
             String mId = principal.getName();
             loginInfo.put("info", memberService.getSimpleMemberInfo(mId));
+            log.info("principal id : " + mId);
         } catch (Exception e) {
             log.info("principal is null.");
             loginInfo.put("info", null);
         }
-
         return loginInfo;
     }
 
@@ -58,8 +56,17 @@ public class RestApiController {
             log.info("principal is null.");
             loginInfo.put("info", null);
         }
-
         return loginInfo;
     }
-
+    @GetMapping("/rest/v1/pwChk/{password}")
+    public boolean pwChk(@PathVariable("password") String password, Principal principal) {
+        boolean chk = false;
+        try {
+            String mId = principal.getName();
+            chk = memberService.passwordChecked(mId, password);
+        } catch (Exception e) {
+            log.info("principal is null");
+        }
+        return chk;
+    }
 }

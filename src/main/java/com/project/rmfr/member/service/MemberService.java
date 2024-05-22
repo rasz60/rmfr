@@ -12,4 +12,10 @@ public interface MemberService {
     public Members getSimpleMemberInfo(String username);
 
     public Members getDetailMemberInfo(String username);
+
+    public boolean passwordChecked(String username, String password);
+
+    public String updateMember(Map<String, Object> param);
+
+    public boolean signout(String username);
 }

@@ -202,12 +202,10 @@ export default {
         full.style.display = "none";
         slim.style.display = "block";
         contents.style.width = "96%";
-        console.log("slim none or null");
       } else {
         slim.style.display = "none";
         full.style.display = "block";
         contents.style.width = "85%";
-        console.log("full none or null");
       }
     },
 

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,8 +49,8 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
     public boolean usernameDuplicateChk(String username) {
         Optional<Members> userOptional= memberRepository.findBymId(username);
-        boolean chk = userOptional.isPresent();
-        return chk;
+
+        return userOptional.isPresent();
     }
 
     public String signupMember(Map<String, Object> param) {
@@ -119,5 +120,88 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
         }
 
         return member;
+    }
+
+    public boolean passwordChecked(String username, String password) {
+        boolean chk = false;
+
+        try {
+            Optional<Members> memberOptional = memberRepository.findBymId(username);
+
+            if (memberOptional.isPresent()) {
+                Members member = memberOptional.get();
+
+                log.info(password + "==" + member.getPassword() + " => " + bCryptPasswordEncoder.matches(password, member.getPassword()));
+
+                chk = bCryptPasswordEncoder.matches(password, member.getPassword());
+            }
+        } catch (Exception e) {
+            log.info("passwordChecked Throw Exception.");
+        }
+
+        return chk;
+    }
+
+    public String updateMember(Map<String, Object> param) {
+        String rst = "";
+
+        try {
+            Optional<Members> memberOptional = memberRepository.findBymId((String) param.get("username"));
+            if (memberOptional.isPresent()) {
+                Members member = memberOptional.get();
+
+                if (param.containsKey("email")) {
+                    log.info("edit email.");
+                    member.setMEmail((String) param.get("email"));
+                }
+
+                if (param.containsKey("password")) {
+                    log.info("edit password.");
+                    member.setMPw(bCryptPasswordEncoder.encode((String) param.get("password")));
+                    member.setMPwUpdateDate(LocalDateTime.now());
+                }
+
+                if (param.containsKey("phoneNumber")) {
+                    log.info("edit phoneNumber.");
+                    member.setMPhone((String) param.get("phoneNumber"));
+                }
+
+                if (param.containsKey("zipCode")) {
+                    log.info("edit zipCode.");
+                    member.setMAddr1((String) param.get("zipCode"));
+                }
+
+                if (param.containsKey("addr1")) {
+                    log.info("edit addr1.");
+                    member.setMAddr2((String) param.get("addr1"));
+                }
+
+                if (param.containsKey("addr2")) {
+                    log.info("edit addr2.");
+                    member.setMAddr3((String) param.get("addr2"));
+                }
+
+                rst = memberRepository.save(member).getMPwUpdateDate().toString();
+            }
+
+
+            log.info(rst);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rst;
+    }
+
+    public boolean signout(String username) {
+        Optional<Members> memberOptional = memberRepository.findBymId(username);
+        boolean chk = memberOptional.isPresent();
+        if (chk) {
+            Members member = memberOptional.get();
+            log.info("===============signout(" + member.getMId() + ")");
+            memberRepository.delete(member);
+        }
+        return this.usernameDuplicateChk(username);
     }
 }
