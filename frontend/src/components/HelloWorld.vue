@@ -16,7 +16,11 @@ import ContentSection from "../components/contents/ContentSection.vue";
 </template>
 
 <script>
-export default {};
+export default {
+  created() {
+    document.title = "rmfr"; // 현재 라우트 이름으로 페이지 타이틀을 설정합니다.
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

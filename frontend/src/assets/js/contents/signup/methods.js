@@ -432,7 +432,7 @@ export default {
 
       // 전송
       this.axios
-        .post("/member/signup/submit", JSON.stringify(signup))
+        .post("/api/signup/submit", JSON.stringify(signup))
         .then((res) => {
           if (res.status == 200) {
             alert("rmfr 가입이 완료되었습니다.");

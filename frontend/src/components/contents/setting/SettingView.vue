@@ -293,7 +293,7 @@ import settingDatas from "@js/contents/setting/data.js";
 
     <div class="row btnBox" v-show="this.cert">
       <a
-        class="btn btn-sm btn-outline-success col-5"
+        class="btn btn-sm btn-outline-success col-4"
         id="btnSignup"
         @click="frmSubmit"
       >
@@ -301,7 +301,7 @@ import settingDatas from "@js/contents/setting/data.js";
       </a>
 
       <a
-        class="btn btn-sm btn-outline-danger col-5"
+        class="btn btn-sm btn-outline-danger col-4"
         id="btnSignup"
         @click="fnSignout"
       >

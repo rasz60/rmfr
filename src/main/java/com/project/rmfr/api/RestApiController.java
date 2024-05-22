@@ -38,7 +38,6 @@ public class RestApiController {
         try {
             String mId = principal.getName();
             loginInfo.put("info", memberService.getSimpleMemberInfo(mId));
-            log.info("principal id : " + mId);
         } catch (Exception e) {
             log.info("principal is null.");
             loginInfo.put("info", null);

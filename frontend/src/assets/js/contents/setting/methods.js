@@ -376,11 +376,9 @@ export default {
           "형식에 맞지 않거나, 인증이 완료되지 않은 정보는 수정되지 않습니다."
         )
       ) {
-        await this.axios
-          .post("/member/settings/update", editInfo)
-          .then((res) => {
-            console.log(res);
-          });
+        await this.axios.post("/api/settings/update", editInfo).then((res) => {
+          console.log(res);
+        });
       }
     }
 
@@ -421,7 +419,7 @@ export default {
   async fnSignout() {
     if (confirm("rmfr의 모든 정보를 삭제하고 탈퇴할까요?")) {
       await this.axios
-        .get("/member/signout/" + this.details.username.value)
+        .get("/api/signout/" + this.details.username.value)
         .then((res) => {
           if (res.status) {
             alert("탈퇴가 완료되었습니다.");

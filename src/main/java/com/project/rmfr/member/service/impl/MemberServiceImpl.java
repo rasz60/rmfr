@@ -41,6 +41,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
                 member = memberOptional.get();
             }
         } catch (Exception e) {
+            log.info("loadUserByUsername throw exception.");
             e.printStackTrace();
         }
 
@@ -68,6 +69,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
                     .mAddr3((String) param.get("mAddr3"))
                     .build()).getMEntrId();
         } catch (Exception e) {
+            log.info("signupMember throw exception.");
             e.printStackTrace();
         }
 
@@ -92,6 +94,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
             }
         } catch (Exception e) {
             log.info("getMemberByUsername Throw Exception.");
+            e.printStackTrace();
         }
 
         return member;
@@ -117,6 +120,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
             }
         } catch (Exception e) {
             log.info("getMemberByUsername Throw Exception.");
+            e.printStackTrace();
         }
 
         return member;
@@ -137,6 +141,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
             }
         } catch (Exception e) {
             log.info("passwordChecked Throw Exception.");
+            e.printStackTrace();
         }
 
         return chk;
@@ -183,11 +188,8 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
                 rst = memberRepository.save(member).getMPwUpdateDate().toString();
             }
-
-
-            log.info(rst);
-
         } catch (Exception e) {
+            log.info("updateMember throw exception.");
             e.printStackTrace();
         }
 
@@ -199,7 +201,6 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
         boolean chk = memberOptional.isPresent();
         if (chk) {
             Members member = memberOptional.get();
-            log.info("===============signout(" + member.getMId() + ")");
             memberRepository.delete(member);
         }
         return this.usernameDuplicateChk(username);
