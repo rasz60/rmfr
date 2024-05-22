@@ -8,7 +8,7 @@ import contentMethods from "@/assets/js/contents/methods.js";
   <section id="contents">
     <div id="menuSlim" class="menuBox">
       <dl class="menu slim">
-        <dd v-for="item in menus" :key="item" @click="fn_go_ref(item.href)">
+        <dd v-for="item in menus" :key="item" @click="fn_go_href(item.href)">
           <span class="slimIcon">
             <font-awesome-icon :icon="['fas', item.icon]" />
           </span>
@@ -17,7 +17,7 @@ import contentMethods from "@/assets/js/contents/methods.js";
     </div>
     <div id="menuFull" class="menuBox">
       <dl class="menu full">
-        <dd v-for="item in menus" :key="item" @click="fn_go_ref(item.href)">
+        <dd v-for="item in menus" :key="item" @click="fn_go_href(item.href)">
           <div class="fullIcon">
             <font-awesome-icon :icon="['fas', item.icon]" />
           </div>
