@@ -1,48 +1,36 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="" variant="info">
+    <b-navbar toggleable="lg" type="dark" variant="dark">
       <b-navbar-brand href="#">
-        <div id="menubar">
-          <span class="toggleBtn" @click="fn_toggleMenu">
-            <font-awesome-icon :icon="['fas', 'bars']" />
-          </span>
-        </div>
+        <font-awesome-icon :icon="['fas', 'bars']" style="color: #fafafa;"></font-awesome-icon>
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/">rmfr</b-nav-item>
+          <b-navbar-brand href="#" style="color: #fafafa;">로고이미지삽입</b-navbar-brand>
         </b-navbar-nav>
 
         <b-navbar-nav class="ms-auto" center>
           <b-nav-form width="30%">
-            <b-form-input size="sm" class="mr-sm-2" placeholder="검색"></b-form-input>
-
-            <b-button size="sm" class="my-2 my-sm-0" type="submit" ><font-awesome-icon :icon="['fas', 'magnifying-glass']" /></b-button>
+            <b-form-input size="lg" class="mr-sm-2" placeholder="검색어를 입력해주세요." style="width: 700px;" ></b-form-input>
+            <b-button><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="color: #fafafa;" size="2x"/></b-button>
           </b-nav-form>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ms-auto" right>
           <b-navbar-brand href="#">
-            <font-awesome-icon :icon="['far', 'bell']" />
+            <font-awesome-icon :icon="['far', 'bell']" style="color: #fafafa;" size="2x"/>
           </b-navbar-brand>
-
-          <b-nav-item-dropdown right>
-            <!-- Using 'button-content' slot -->
-            <template #button-content>
-              <em><font-awesome-icon :icon="['far', 'user']" /></em>
-            </template>
-            <b-dropdown-item href="#">Profile</b-dropdown-item>
-            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
-          </b-nav-item-dropdown>
+          <b-navbar-brand href="#">
+            <font-awesome-icon :icon="['far', 'circle-user']" style="color: #fafafa;" size="2x"/>
+          </b-navbar-brand>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
   </div>
-
 </template>
 
 <script>
@@ -52,6 +40,7 @@ export default {
 
   compatConfig: { MODE: 3 }
 };
+
 </script>
 
 <style>
