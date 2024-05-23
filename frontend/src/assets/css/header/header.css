@@ -113,12 +113,12 @@ section#header {
       background-color: white;
       font-size: 14px;
       border-radius: 8px;
-
+      z-index: 1;
+      box-shadow: 2px 2px 2px 2px lightgray;
       form {
         width: 100%;
       }
 
-      box-shadow: 2px 2px 2px 2px lightgray;
       div {
         padding: 8px;
       }

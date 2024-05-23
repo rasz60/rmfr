@@ -1,5 +1,7 @@
 package com.project.rmfr.entity;
 
+import com.project.rmfr.board.entity.AllNoticeBoard;
+import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.Getter;

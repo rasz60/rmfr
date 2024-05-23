@@ -1,0 +1,62 @@
+.boardBody {
+  margin-bottom: 20px;
+
+  div#boardUtils {
+    div#utilSearch {
+      div {
+        padding: 2px;
+        a.btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  div.btn {
+    width: 100%;
+    border-radius: 10px !important;
+    height: 50px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+
+    span {
+      font-size: 13px;
+    }
+  }
+  div.btn.disabled {
+    font-weight: 500;
+    span {
+      font-size: 15px;
+    }
+  }
+
+  div.btn.btn-outline-light {
+    border-color: #ececec;
+  }
+
+  div.btn-box {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+
+    a {
+      font-size: 20px;
+      padding: 5px;
+      width: 45px;
+      margin: 2px;
+    }
+  }
+}
+
+nav#pagenation {
+  display: flex;
+  justify-content: center;
+
+  li.page-item.active a {
+    color: white !important;
+    background-color: #70aaff !important;
+    border-color: #a8c7f5 !important;
+  }
+}

@@ -1,5 +1,8 @@
-package com.project.rmfr.entity;
+package com.project.rmfr.board.entity;
 
+import com.project.rmfr.board.entity.AllNoticeBoard;
+import com.project.rmfr.entity.ContentHits;
+import com.project.rmfr.entity.ContentLikes;
 import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -61,4 +64,10 @@ public class AllNoticeContents {
 
     @OneToMany(mappedBy = "contentLikesCK.contentId")
     List<ContentLikes> likes = new ArrayList<>();
+
+    public AllNoticeContents(String ancTitle, String ancKw, Clob ancContents) {
+        this.ancTitle = ancTitle;
+        this.ancKw = ancKw;
+        this.ancContents = ancContents;
+    }
 }

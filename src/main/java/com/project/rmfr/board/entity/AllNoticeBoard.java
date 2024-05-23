@@ -1,4 +1,4 @@
-package com.project.rmfr.entity;
+package com.project.rmfr.board.entity;
 
 import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;

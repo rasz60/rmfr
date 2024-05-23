@@ -2,9 +2,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import MainView from "@/components/contents/main/MainView.vue";
 import SignUpView from "@/components/contents/signup/SignUpView.vue";
 import SettingView from "@/components/contents/setting/SettingView.vue";
-import NoticeBoardList from "@/components/contents/board/notice/BoardList.vue";
 
-const router = createRouter({
+import NoticeBoardView from "@/components/contents/board/notice/BoardView.vue";
+import boardViewChild from "./board/board.js";
+
+const contentRouter = createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -20,10 +22,11 @@ const router = createRouter({
       component: SettingView,
     },
     {
-      path: "/board/notice",
-      component: NoticeBoardList,
+      path: "/board",
+      component: NoticeBoardView,
+      children: boardViewChild,
     },
   ],
 });
 
-export default router;
+export default contentRouter;
