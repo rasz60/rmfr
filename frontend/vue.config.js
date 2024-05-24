@@ -9,10 +9,38 @@ module.exports = defineConfig({
     config.output.filename("js/[name].js");
 
     //import 시 파일 파일 경로 alias 설정
-    config.resolve.alias.set("@js", path.resolve(__dirname, "src/assets/js/"));
     config.resolve.alias.set(
-      "@css",
-      path.resolve(__dirname, "src/assets/css/")
+      "@b-js",
+      path.resolve(__dirname, "src/assets/bootstrap/js/")
+    );
+    config.resolve.alias.set(
+      "@b-css",
+      path.resolve(__dirname, "src/assets/bootstrap/css/")
+    );
+    config.resolve.alias.set(
+      "@b-components",
+      path.resolve(__dirname, "src/components/bootstrap/")
+    );
+    config.resolve.alias.set(
+      "@b-router",
+      path.resolve(__dirname, "src/router/bootstrap/")
+    );
+
+    config.resolve.alias.set(
+      "@v-js",
+      path.resolve(__dirname, "src/assets/vuetify/js/")
+    );
+    config.resolve.alias.set(
+      "@v-css",
+      path.resolve(__dirname, "src/assets/vuetify/css/")
+    );
+    config.resolve.alias.set(
+      "@v-components",
+      path.resolve(__dirname, "src/components/vuetify/")
+    );
+    config.resolve.alias.set(
+      "@v-router",
+      path.resolve(__dirname, "src/router/vuetify/")
     );
   },
   indexPath: "index.html",

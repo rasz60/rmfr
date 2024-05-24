@@ -1,5 +1,8 @@
 <script setup>
-import HelloWorld from "./components/HelloWorld.vue";
+// b-components : bootstrap, v-components : vuetify
+
+//import HelloWorld from "@b-components/HelloWorld.vue";
+import HelloWorld from "@v-components/HelloWorld.vue";
 </script>
 
 <template>
@@ -24,6 +27,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 10px;
 }
 </style>

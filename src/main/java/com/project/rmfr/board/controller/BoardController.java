@@ -30,7 +30,8 @@ public class BoardController {
                                    @RequestParam(value = "ancKw", required = false) String ancKw) {
         log.info("param1 : " + ancTitle);
         log.info("param2 : " + ancContents);
-        log.info("param2 : " + ancKw);
+        log.info("param3 : " + ancKw);
+
         return "/index";
     }
 }
