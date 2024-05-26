@@ -1,6 +1,6 @@
 <template>
   <div id="signup">
-    <form id="signupFrm" name="signupFrm">
+    <form id="submitFrom" @submit.prevent="submitFrom">
       <table>
         <tbody>
         <tr>
@@ -14,7 +14,7 @@
         </tr>
         <tr>
           <td>
-            <input type="text" id="m_id" name="m_id" size="40" class="umem"
+            <input type="text" id="mId" class="umem" size="40" v-model="mId"
                    maxlength="20" autofocus placeholder="아이디를 입력해주세요.">
             <div id="idCheck"></div>
           </td>
@@ -23,32 +23,14 @@
           <td class="req">패스워드</td>
         </tr>
         <tr>
-          <td><input type="password" class="umem" name="m_pw" id="m_pw" size="40"
+          <td><input type="password" id="mPw" class="umem" v-model="mPw" size="40"
                      placeholder="비밀번호를 입력해주세요."></td>
         </tr>
         <tr>
           <td>
-            <input type="password" class="umem" id="m_pw_re" size="40"
+            <input type="password" class="umem" id="mPwRe" v-model="mPwRe"  size="40"
                    placeholder="비밀번호를 한번 더 입력해주세요.">
             <div id="pwCheck"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="req">이름</td>
-        </tr>
-        <tr>
-          <td>
-            <input type="text" class="umem" name="m_name" id="m_name" size="40"
-                   placeholder="이름을 입력해주세요.">
-          </td>
-        </tr>
-        <tr>
-          <td class="req">전화번호</td>
-        </tr>
-        <tr>
-          <td>
-            <input type="text" class="umem" name="m_phone" id="m_phone" size="40"
-                   placeholder="전화번호를 입력해주세요." maxlength="13">
           </td>
         </tr>
         <tr>
@@ -56,15 +38,24 @@
         </tr>
         <tr>
           <td>
-            <input type="text" class="umem" name="m_email" id="m_email" size="40"
+            <input type="text" class="umem" id="mEmail" v-model="mEmail" size="40"
                    placeholder="이메일 주소를 입력해주세요.">
           </td>
         </tr>
         <tr>
           <td style="display: flex">
-            <input type="text" class="umem" name="m_email" id="m_email" size="auto"
+            <input type="text" class="umem" id="mEmailChk" v-model="mEmailChk" size="30"
                    placeholder="인증번호">
             <button type="button" id="emailBtn">인증발송</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="req">전화번호</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="umem" id="mPhone" v-model="mPhone" size="40"
+                   placeholder="전화번호를 입력해주세요." maxlength="13">
           </td>
         </tr>
         <tr>
@@ -72,19 +63,18 @@
         </tr>
         <tr>
           <td>
-            <input type="hidden" class="umem" name="m_cname" id="m_cname" size="40">
-            <input type="text" name="m_zip" id="m_zip" size="25" class="umem" readonly>
+            <input type="text" class="umem" id="mAddr1" v-model="mAddr1" size="26" readonly>
             <button type="button" id="zipBtn">우편번호찾기</button>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="text" class="umem" id="m_addr1" name="m_addr1" size="40" readonly>
+            <input type="text" class="umem" id="mAddr2" v-model="mAddr2" size="40" readonly>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="text" class="umem" id="m_addr2" name="m_addr2" size="40">
+            <input type="text" class="umem" id="mAddr3" v-model="mAddr3" size="40">
           </td>
         </tr>
         <tr>
@@ -93,10 +83,6 @@
               <label>
                 <input type="checkbox" id="allChk">
                 <span>전부 동의합니다.</span>
-              </label><br>
-              <label>
-                <input type="checkbox" id="uChk1">
-                <span>만 14세 이상입니다.</span>
               </label><br>
               <label>
                 <input type="checkbox" id="uChk2">
@@ -111,7 +97,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <button type="button" id="btnSignup">가입하기</button>
+            <button type="submit" id="btnSignup">가입하기</button>
           </td>
         </tr>
         </tbody>
@@ -125,6 +111,23 @@ export default {
   // 홈페이지 url 이름 설정.
   name: "SignUp",
 
+  data(){
+    return {
+      mId: '',
+      mPw: '',
+      mPwRe: '',
+      mEmail: '',
+      mEmailChk: '',
+      mAddr1: '',
+      mAddr2: '',
+      mAddr3: ''
+    }
+  },
+  methods: {
+    submitFrom(){
+      console.log('dd');
+    }
+  }
 
 };
 

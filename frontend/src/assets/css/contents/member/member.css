@@ -154,7 +154,7 @@ div#signin input:hover{
 
 /* 로그인 버튼 */
 button#loginBtn {
-    width: 85%;
+    width:70%;
     height: 50px;
     background-color: #a0a0a0;
     border: none;
@@ -164,7 +164,7 @@ button#loginBtn {
 }
 
 button#loginBtn:hover{
-    width: 87%;
+    width: 72%;
     height: 55px;
     opacity: 100%;
     background-color: #000000;

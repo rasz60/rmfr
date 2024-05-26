@@ -1,7 +1,5 @@
 <template>
-  <div id="wrap">
-    <p>content</p>
-  </div>
+  <p>cc</p>
 </template>
 
 <script>
@@ -13,8 +11,5 @@ export default {
 </script>
 
 <style scoped>
-#wrap{
-  width: 100%;
-  height: 100%;
-}
+
 </style>
