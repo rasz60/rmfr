@@ -1,6 +1,6 @@
 package com.project.rmfr.AllNotice.Entity;
 
-import com.project.rmfr.Member.Entity.Members;
+import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

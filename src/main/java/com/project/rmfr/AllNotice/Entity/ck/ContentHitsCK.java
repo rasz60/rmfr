@@ -2,7 +2,7 @@ package com.project.rmfr.AllNotice.Entity.ck;
 
 import com.project.rmfr.AllNotice.Entity.AllNoticeBoard;
 import com.project.rmfr.AllNotice.Entity.AllNoticeContents;
-import com.project.rmfr.Member.Entity.Members;
+import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.*;
 

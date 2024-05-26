@@ -9,7 +9,7 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-navbar-brand href="#" style="color: #fafafa;">로고이미지삽입</b-navbar-brand>
+          <b-navbar-brand href="/" style="font-weight: bold; color: white;">rfmr</b-navbar-brand>
         </b-navbar-nav>
 
         <b-navbar-nav class="ms-auto" center>
@@ -24,8 +24,8 @@
           <b-navbar-brand href="#">
             <font-awesome-icon :icon="['far', 'bell']" style="color: #fafafa;" size="2x"/>
           </b-navbar-brand>
-          <b-navbar-brand href="#">
-            <font-awesome-icon :icon="['far', 'circle-user']" style="color: #fafafa;" size="2x"/>
+          <b-navbar-brand href="/member/signin">
+            <font-awesome-icon :icon="['far', 'circle-user']" style="color: #fafafa;" size="2x" />
           </b-navbar-brand>
         </b-navbar-nav>
       </b-collapse>
@@ -38,7 +38,6 @@ export default {
   // 홈페이지 url 이름 설정.
   name: "headerComponent",
 
-  compatConfig: { MODE: 3 }
 };
 
 </script>
