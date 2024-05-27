@@ -54,49 +54,35 @@ export default {
   },
 
   // 아이디 검증
-  fnUsernameVaild(evt) {
+  fnUsernameVaild(v) {
     var chk = false;
-    var target = evt.target;
-    var dupchkBtn = document.querySelector("a#username");
 
-    var value = target.value.trim(); // 공백제거
+    var value = v.trim(); // 공백제거
     value = value.length > 20 ? value.substring(0, 20) : value; // 20자리 이상인 경우 잘라내기
 
     // 아이디 정규식 체크
     var regExp = /^[a-z0-9-_]{6,20}$/;
     chk = regExp.test(value);
 
-    var regChk = document.querySelector("span.v-badge#" + evt.target.id);
-
-    // 정규식 체크 결과
     if (chk) {
-      regChk.className = "chkd v-badge";
-      this.signupInfo.username.chkd = true;
+      this.signupInfo.value = value;
+      this.signupInfo.chkd = true;
+      return true;
     } else {
-      regChk.className = "unchkd v-badge";
-      this.signupInfo.username.chkd = false;
+      this.signupInfo.value = value;
+      this.signupInfo.chkd = false;
+      return "6~20자리의 영문소문자, 숫자, -, _ 조합으로 입력해주세요.";
     }
 
-    // 중복확인 다시 하도록 초기화
-    dupchkBtn.className = "btn btn-sm btn-outline-secondary";
-    dupchkBtn.innerText = "중복확인";
-    this.signupInfo.username.dupchk = false;
-
-    // target value 세팅
-    target.value = value;
-
     // 가입 버튼 활성화 여부 체크
-    this.signupValid();
+    //this.signupValid();
   },
 
   // 아이디 중복 체크
-  async fnUsernameDupChk() {
-    var username = document.querySelector(
-      "form#signupFrm input#username"
-    ).value;
+  async fnUsernameDupChk(evt) {
+    var username = this.signupInfo.username.value;
     var idChkd = this.signupInfo.username.chkd;
-    var dupchkBtn = document.querySelector("a#username");
-
+    var dupchkBtn = evt.target;
     // 정규식 검증 여부
     if (!idChkd) {
       alert("형식에 맞는 아이디를 입력해주세요.");

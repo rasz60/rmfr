@@ -4,6 +4,54 @@ import signupMethods from "@v-js/contents/signup/methods.js";
 </script>
 
 <template>
+  <v-sheet id="signupBox">
+    <v-form @submit.prevent id="vuetify_signup_frm">
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            id="username"
+            v-model="signupInfo.username.value"
+            label="아이디(ID)"
+            :rules="usernameRules"
+            variant="outlined"
+            required
+            prepend-icon="fas fa-asterisk"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn @click="fnUsernameDupChk($event)" text="중복확인"></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="password"
+            label="비밀번호(Password)"
+            :rules="pwRules"
+            variant="outlined"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="password"
+            label="비밀번호 확인(Password Check)"
+            :rules="pwChkRules"
+            variant="outlined"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+    </v-form>
+  </v-sheet>
+
+  <!--기존-->
   <form id="signupFrm" name="signupFrm">
     <div class="row">
       <div class="col-2">
@@ -314,4 +362,24 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import "@v-css/contents/signup/signup.css";
+#signupBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+#vuetify_signup_frm {
+  width: 70%;
+
+  .col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btnCol {
+    padding-top: 0;
+  }
+}
 </style>

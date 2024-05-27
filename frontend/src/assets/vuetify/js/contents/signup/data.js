@@ -41,6 +41,28 @@ const data = {
     },
   },
   validCode: "",
+  usernameRules: [
+    (value) => {
+      if (value) return true;
+      return "아이디는 필수 입력사항입니다.";
+    },
+    (value) => this.fnUsernameVaild(value),
+  ],
+
+  pwRules: [
+    (value) => {
+      if (value) return true;
+      return "비밀번호는 필수 입력사항입니다.";
+    },
+    (value) => this.fnUsernameVaild(value),
+  ],
+
+  pwChkRules: [
+    (value) => {
+      if (value) return true;
+      return "비밀번호를 확인해주세요.";
+    },
+  ],
 };
 
 export default data;
