@@ -1,5 +1,5 @@
 <script setup>
-//import headerDatas from "@v-js/header/data.js";
+import headerDatas from "@v-js/header/data.js";
 import headerMethods from "@v-js/header/methods.js";
 </script>
 
@@ -7,7 +7,10 @@ import headerMethods from "@v-js/header/methods.js";
   <v-layout id="header">
     <v-app-bar id="headerMenu">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon class="toggleBtn"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon
+          class="toggleBtn"
+          @click="fn_toggleMenu"
+        ></v-app-bar-nav-icon>
         <v-app-bar-title id="logo">
           <a href="/">
             <v-icon icon="fas fa-r" class="logo-icons" />
@@ -34,65 +37,130 @@ import headerMethods from "@v-js/header/methods.js";
       </div>
 
       <template v-slot:append>
-        <v-action-items id="buttonBox">
-          <v-tooltip
-            location="bottom center"
-            :origin="origin"
-            no-click-animation
-          >
-            <template v-slot:activator="{ props }">
-              <v-btn
-                class="headerBtn"
-                href="/member/signup"
-                icon="fas fa-user-plus"
-                v-bind="props"
-              ></v-btn>
-            </template>
-            <div>Sign Up</div>
-          </v-tooltip>
+        <div id="buttonBox">
+          <v-btn class="headerBtn" href="/member/signup" v-show="!login">
+            <v-icon icon="fas fa-user-plus"></v-icon>
+            <v-tooltip location="bottom center" activator="parent">
+              Signup
+            </v-tooltip>
+          </v-btn>
 
-          <v-tooltip
-            location="bottom center"
-            :origin="origin"
-            no-click-animation
+          <v-btn
+            class="headerBtn"
+            v-show="!login"
+            @click.stop="loginDrawer = !loginDrawer"
           >
-            <template v-slot:activator="{ props }">
-              <v-btn
-                class="headerBtn"
-                v-bind="props"
-                icon="fas fa-right-to-bracket"
-                @click="fn_toggleInfo"
-                @click.stop="drawer = !drawer"
-              ></v-btn>
-            </template>
-            <div>Login</div>
-          </v-tooltip>
-        </v-action-items>
+            <v-icon icon="fas fa-right-to-bracket"></v-icon>
+            <v-tooltip location="bottom center" activator="parent">
+              Login
+            </v-tooltip>
+          </v-btn>
+
+          <v-btn class="headerBtn" v-show="login">
+            <v-icon icon="fas fa-bell"></v-icon>
+            <v-tooltip location="bottom" activator="parent">Alarms</v-tooltip>
+          </v-btn>
+
+          <v-btn
+            class="headerBtn"
+            v-show="login"
+            @click.stop="loginDrawer = !loginDrawer"
+          >
+            <v-icon icon="fas fa-user-circle"></v-icon>
+            <v-tooltip location="bottom" activator="parent">Info</v-tooltip>
+          </v-btn>
+        </div>
       </template>
     </v-app-bar>
 
-    <div id="loginInfo">
-      <form
+    <v-card class="mx-auto" id="loginInfo" v-show="loginDrawer">
+      <v-form
+        @submit.prevent
         id="login"
+        v-show="!login"
         action="/member/loginProc"
         method="post"
-        v-show="!this.login"
       >
-        <div>
-          <label for="username" class="col-3">아이디</label>
-          <input type="text" name="mId" id="mId" class="col-8" />
-        </div>
+        <v-text-field
+          label="아이디(ID)"
+          variant="underlined"
+          prepend-inner-icon="far fa-id-badge"
+          name="mId"
+          v-model="info.mId"
+        >
+        </v-text-field>
+        <v-text-field
+          label="비밀번호(Password)"
+          variant="underlined"
+          prepend-inner-icon="fas fa-key"
+          :append-inner-icon="pwVisible ? 'fas fa-eye' : 'fas fa-eye-slash'"
+          :type="pwVisible ? 'text' : 'password'"
+          @click:append-inner="pwVisible = !pwVisible"
+          name="mPw"
+          v-model="info.mPw"
+        >
+        </v-text-field>
+        <v-btn
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          block
+          @click="fn_submitFrm"
+        >
+          로그인
+        </v-btn>
 
-        <div>
-          <label for="mPw" class="col-3">비밀번호</label>
-          <input type="password" name="mPw" id="mPw" class="col-8" />
-        </div>
+        <a
+          class="text-blue text-decoration-none"
+          href="/member/signup"
+          target="_self"
+        >
+          rmfr 가입하기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+        </a>
+      </v-form>
 
-        <div>
-          <a class="btn btn-sm btn-primary" @click="fn_submitFrm"> 로그인 </a>
-        </div>
-      </form>
-
+      <div id="info" v-show="login">
+        <v-row id="basicInfo">
+          <v-col id="thumImg" cols="3">
+            <a
+              id="tmpImg"
+              class="display-6"
+              v-show="info.tmpImg != ''"
+              href="/member/settings"
+            >
+              {{ info.tmpImg }}
+            </a>
+          </v-col>
+          <v-col cols="9" id="basic">
+            <a id="mId" class="display-6" href="/member/settings">
+              @{{ info.mId }}
+            </a>
+            <a id="mUd" class="display-6" href="/member/settings">
+              패스워드 변경까지 D-{{ info.mUd }}
+            </a>
+          </v-col>
+        </v-row>
+        <v-row
+          id="setting"
+          class="infoMenu"
+          @click="fn_infoMenu('/member/settings')"
+        >
+          <v-col cols="9" class="infoTxt">계정설정</v-col>
+          <v-col cols="3" class="infoIcon">
+            <v-icon icon="fas fa-gear"></v-icon>
+          </v-col>
+        </v-row>
+        <v-row id="logout" class="infoMenu" @click="fn_infoMenu('/logout')">
+          <v-col cols="9" class="infoTxt">로그아웃</v-col>
+          <v-col cols="3" class="infoIcon">
+            <v-icon icon="fas fa-right-from-bracket"></v-icon>
+          </v-col>
+        </v-row>
+      </div>
+    </v-card>
+    <!--
+    <div id="loginInfo">
       <div id="info" v-show="this.login">
         <div id="basicInfo" class="row">
           <div id="thumImg" class="col-3">
@@ -132,51 +200,16 @@ import headerMethods from "@v-js/header/methods.js";
         </div>
       </div>
     </div>
+  -->
   </v-layout>
 </template>
 
 <script>
 export default {
-  data: () => ({
-    login: false,
-    items: [
-      {
-        title: "Foo",
-        value: "foo",
-      },
-      {
-        title: "Bar",
-        value: "bar",
-      },
-      {
-        title: "Fizz",
-        value: "fizz",
-      },
-      {
-        title: "Buzz",
-        value: "buzz",
-      },
-    ],
-  }),
-  methods: {
-    headerMethods,
-    fn_toggleInfo() {
-      var info = document.querySelector("div#loginInfo");
-      var curr = info.style.display;
-      var chk = curr == "" || curr == "none";
-
-      if (chk) {
-        info.style.display = "flex";
-      } else {
-        info.style.display = "none";
-        document.querySelector("input#mId").value = "";
-        document.querySelector("input#mPw").value = "";
-      }
-    },
-  },
+  data: () => headerDatas,
+  methods: headerMethods,
   mounted() {
     this.fn_loginChk();
-    console.log(this.drawer);
   },
 };
 </script>

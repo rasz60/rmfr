@@ -32,7 +32,11 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 axios.defaults.headers.put["Content-Type"] = "application/json";
 axios.defaults.headers.delete["Content-Type"] = "application/json";
 
+// 전역변수 선언
+import { ref } from "vue";
+const menuDrawer = ref(false);
 app.config.globalProperties.axios = axios;
+app.config.globalProperties.$menuDrawer = menuDrawer;
 
 // fontawesome library : solid, brands, regular 타입 사용
 library.add(fas, fab, far);

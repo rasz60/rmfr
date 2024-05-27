@@ -59,19 +59,9 @@ export default {
   },
 
   fn_toggleMenu() {
-    var slim = document.querySelector("div#menuSlim");
-    var full = document.querySelector("div#menuFull");
-    var contents = document.querySelector("div#content");
-
-    if (slim.style.display == "none" || slim.style.display == "") {
-      full.style.display = "none";
-      slim.style.display = "block";
-      contents.style.width = "96%";
-    } else {
-      slim.style.display = "none";
-      full.style.display = "block";
-      contents.style.width = "85%";
-    }
+    console.log("fn_toggleMenu : " + this.$menuDrawer.value);
+    this.$menuDrawer.value = !this.$menuDrawer.value;
+    console.log("fn_toggleMenu : " + this.$menuDrawer.value);
   },
 
   fn_toggleInfo() {
@@ -89,8 +79,8 @@ export default {
   },
 
   fn_submitFrm() {
-    var username = document.querySelector("input#mId").value;
-    var password = document.querySelector("input#mPw").value;
+    var username = this.info.mId;
+    var password = this.info.mPw;
 
     if (username != "" && password != "") {
       document.querySelector("form#login").submit();

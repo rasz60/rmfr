@@ -242,7 +242,7 @@ export default {
     await this.axios.get("/rest/v1/emailValid/" + mailAddress).then((res) => {
       const jsonData = res.data;
       this.validCode = jsonData.token; // base64 encoding된 인증번호
-      this.setTimer(30); // 3분 타이머 적용
+      this.setTimer(179); // 3분 타이머 적용
       alert("인증번호가 발송되었습니다.");
       this.certBoxCtrl(0); // 인증번호 입력 창 관리
     });

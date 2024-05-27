@@ -41,12 +41,20 @@ section#contents {
     }
   }
 
-  div.menuBox {
+  #sidebar {
     height: auto;
     padding-top: 20px;
     padding-bottom: 20px;
     border-right: 1px solid #ececec;
     border-left: 1px solid #ececec;
+
+    .menuItem {
+      .menuIcon {
+        font-size: 16px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
   }
 
   div#menuSlim {

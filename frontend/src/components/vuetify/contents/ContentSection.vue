@@ -7,20 +7,28 @@ import contentMethods from "@v-js/contents/methods.js";
 <template>
   <section id="contents">
     <v-layout id="layout">
-      <v-navigation-drawer expand-on-hover rail id="sidebar">
+      <v-navigation-drawer id="sidebar" :rail="$menuDrawer.value">
         <v-list density="compact" nav>
           <v-list-item
+            class="menuItem"
+            link
             v-for="item in menus"
             :key="item"
             :prepend-icon="item.icon"
-            :title="item.name"
-            :value="item.href"
+            href="/board/notice"
           >
+            <v-icon
+              class="menuIcon"
+              v-for="char in item.name"
+              :key="char"
+              :icon="'fas fa-' + char"
+              v-show="!$menuDrawer.value"
+            ></v-icon>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
-      <v-main style="height: 250px">
+      <v-main>
         <RouterView />
       </v-main>
     </v-layout>
