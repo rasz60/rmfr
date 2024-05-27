@@ -2,7 +2,7 @@
   <div id="wrap">
     <!-- 로그인시작 -->
     <div id="signin">
-      <form id="loginFrm" @submit.prevent="loginFrm" action="/member/loginProc" method="post">
+      <form id="loginFrm" @submit.prevent="fn_submitFrm" action="/member/loginProc" method="post">
         <table>
           <tbody>
           <tr>
@@ -56,9 +56,17 @@ export default {
     }
   },
   methods: {
-    loginFrm(){
-      console.log('dd');
-    }
+    fn_submitFrm() {
+      var username = document.querySelector("input#mId").value;
+      var password = document.querySelector("input#mPw").value;
+
+      if (username != "" && password != "") {
+        document.querySelector("form#login").submit();
+      } else {
+        alert("아이디와 비밀번호를 모두 입력해주세요.");
+        return false;
+      }
+    },
   }
 };
 </script>
