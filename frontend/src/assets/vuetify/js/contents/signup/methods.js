@@ -199,7 +199,7 @@ export default {
 
   async validate() {
     let chk = await this.$refs.form.validate();
-    console.log(chk);
+
     if (!chk.valid) {
       alert("입력한 값을 다시 확인해주세요.");
       return false;

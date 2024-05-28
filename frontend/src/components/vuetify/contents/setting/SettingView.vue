@@ -4,6 +4,199 @@ import settingDatas from "@v-js/contents/setting/data.js";
 </script>
 
 <template>
+  <v-sheet id="settingBox">
+    <v-form id="settingFrm">
+      <v-row v-show="!cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="password"
+            label="비밀번호(Password)"
+            variant="underlined"
+            required
+            prepend-inner-icon="fas fa-asterisk"
+            id="currPw"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn @click="currPwChk">변경하기</v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            id="mId"
+            label="아이디(ID)"
+            variant="underlined"
+            readonly
+            prepend-inner-icon="fas fa-asterisk"
+            v-model="details.username.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="password"
+            label="새 비밀번호(New Password)"
+            :rules="pwRules"
+            variant="underlined"
+            :readonly="!details.password.chngFlag"
+            v-model="details.password.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn @click="details.password.chngFlag = !details.password.chngFlag"
+            >변경하기</v-btn
+          >
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="password"
+            label="새 비밀번호 확인(New Password Check)"
+            :rules="pwChkVal"
+            variant="underlined"
+            :readonly="!details.password.chngFlag"
+            v-model="details.password.chkval"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="email"
+            label="이메일(email)"
+            :rules="emailRules"
+            variant="underlined"
+            required
+            prepend-inner-icon="fas fa-asterisk"
+            v-model="details.email.bValue"
+            :readonly="details.email.certDone"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn
+            :readonly="details.email.certDone"
+            @click="fnEmailCert"
+            :text="
+              details.email.certDone
+                ? '인증완료'
+                : details.email.cert
+                  ? '재발송'
+                  : '인증하기'
+            "
+          ></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk && details.email.cert">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            label="인증번호 확인"
+            @keyup="validCodeChk($event.target.value)"
+            variant="underlined"
+            required
+            prepend-inner-icon="fas fa-asterisk"
+            :readonly="details.email.certDone || !details.email.cert"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol" v-show="details.email.cert">
+          <span id="validCodeTimer"></span>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="3" class="col">
+          <v-select
+            :items="['------', '010', '011', '016', '017', '018', '019']"
+            variant="underlined"
+            label="휴대폰번호(Phone Number)"
+            v-model="details.phoneNumber.head"
+          ></v-select>
+        </v-col>
+        <v-col cols="1" class="col">
+          <v-icon icon="fas fa-minus" />
+        </v-col>
+        <v-col cols="3" class="col">
+          <v-text-field
+            type="text"
+            :rules="pnChk"
+            variant="underlined"
+            v-model="details.phoneNumber.mid"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col">
+          <v-icon icon="fas fa-minus" />
+        </v-col>
+        <v-col cols="3" class="col">
+          <v-text-field
+            type="text"
+            :rules="pnChk"
+            variant="underlined"
+            v-model="details.phoneNumber.last"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            name="zipcode"
+            label="우편번호(Zip Code)"
+            variant="underlined"
+            readonly
+            @keyup="fnAlert()"
+            v-model="details.zipCode.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn text="검색하기" @click.stop="execDaumPostcode"></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            name="addr1"
+            label="주소(Address)"
+            variant="underlined"
+            readonly
+            @keyup="fnAlert()"
+            v-model="details.addr1.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn text="초기화" @click="fnAddrReset"></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="cPwChk">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            label="상세주소(Details)"
+            variant="underlined"
+            v-model="details.addr2.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"> </v-col>
+      </v-row>
+    </v-form>
+  </v-sheet>
+
+  <!-- 기존 -->
+  <!--
   <form id="signupFrm" name="signupFrm">
     <div class="row" v-show="!this.cert">
       <div class="col-2">
@@ -214,11 +407,10 @@ import settingDatas from "@v-js/contents/setting/data.js";
       <div class="col-2">
         <label for="zipCode" class="col-12">
           우편번호&nbsp;
-          <!--
           <span class="required">
             <font-awesome-icon :icon="['fas', 'asterisk']" />
           </span>
-          -->
+
         </label>
       </div>
       <div class="col-7 w-btn-col">
@@ -248,11 +440,10 @@ import settingDatas from "@v-js/contents/setting/data.js";
       <div class="col-2">
         <label for="addr1" class="col-12">
           주소&nbsp;
-          <!--
           <span class="required">
             <font-awesome-icon :icon="['fas', 'asterisk']" />
           </span>
-          -->
+
         </label>
       </div>
       <div class="col-7">
@@ -309,6 +500,7 @@ import settingDatas from "@v-js/contents/setting/data.js";
       </a>
     </div>
   </form>
+  -->
 </template>
 
 <script>

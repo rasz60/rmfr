@@ -4,13 +4,12 @@ const data = {
     username: {
       value: "",
       name: "아이디",
-      nullable: false,
     },
     password: {
       value: "",
-      eValue: "",
+      chkval: "",
       name: "비밀번호",
-      nullable: false,
+      chngFlag: false,
       chkd: false,
     },
     email: {
@@ -22,8 +21,13 @@ const data = {
     },
     phoneNumber: {
       value: "",
+      bHead: "",
+      bMid: "",
+      bLast: "",
+      head: "",
+      mid: "",
+      last: "",
       name: "휴대폰",
-      nullable: false,
     },
     zipCode: {
       value: "",
@@ -42,6 +46,7 @@ const data = {
     },
   },
   validCode: "",
+  cPwChk: false,
 };
 
 export default data;

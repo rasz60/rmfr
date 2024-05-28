@@ -11,8 +11,9 @@ export default {
             alert("비밀번호가 일치하지 않습니다.");
             return false;
           } else {
+            this.cPwChk = rst;
             this.userInfo();
-            this.cert = rst;
+            //this.cert = rst;
           }
         });
     } else {
@@ -29,25 +30,27 @@ export default {
 
         var email = jsonData.memail;
         this.details.email.bValue = email;
-        this.details.email.eValue = email;
-        document.querySelector("input#emailId").value = email.substring(
-          0,
-          email.indexOf("@")
-        );
-        document.querySelector("select#domain").value = email.substring(
-          email.indexOf("@") + 1
-        );
-
+        this.details.email.certDone = true;
         var phone = jsonData.mphone;
         if (phone != "" && phone != null) {
-          document.querySelector("select#pHead").value = phone.substring(0, 3);
-          document.querySelector("input#pMid").value = phone.substring(
-            3,
-            phone.length - 4
-          );
-          document.querySelector("input#pLast").value = phone.substring(
-            phone.length - 4
-          );
+          var pHead = phone.substring(0, 3);
+          var pMid = "";
+          var pLast = "";
+          if (phone.length == 11) {
+            pMid = phone.substring(4, 7);
+            pLast = phone.substring(8, 11);
+          } else {
+            pMid = phone.substring(4, 6);
+            pLast = phone.substring(7, 10);
+          }
+
+          this.details.phoneNumber.bHead = pHead;
+          this.details.phoneNumber.bMid = pMid;
+          this.details.phoneNumber.bLast = pLast;
+
+          this.details.phoneNumber.head = pHead;
+          this.details.phoneNumber.mid = pMid;
+          this.details.phoneNumber.last = pLast;
         }
 
         var addr1 = jsonData.maddr1;
@@ -57,18 +60,6 @@ export default {
         this.details.zipCode.value = addr1;
         this.details.addr1.value = addr2;
         this.details.addr2.value = addr3;
-
-        if (addr1 != "" && addr1 != null) {
-          document.querySelector("input#zipCode").value = addr1;
-        }
-
-        if (addr2 != "" && addr2 != null) {
-          document.querySelector("input#addr1").value = addr2;
-        }
-
-        if (addr3 != "" && addr3 != null) {
-          document.querySelector("input#addr2").value = addr3;
-        }
       }
     });
   },

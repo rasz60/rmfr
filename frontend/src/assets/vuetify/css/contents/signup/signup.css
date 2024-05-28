@@ -1,62 +1,29 @@
-form#signupFrm {
+#signupBox {
   width: 100%;
-  margin-top: 10px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  padding-top: 30px;
 
-  div.row {
-    display: flex;
-    align-items: center;
-    height: 70px;
-    border-bottom: 1px solid #ececec;
-    margin: 0 0;
-    width: 80%;
+  #vuetify_signup_frm {
+    width: 70%;
 
-    div {
-      border-right: 1px solid #ececec;
-
-      span.required {
-        color: orange;
-      }
-
-      label {
-        padding-left: 10px;
-        text-align: left;
-      }
-
-      input.signIpt {
-        border: none;
-        border-bottom: 1px solid darkgray;
-      }
-    }
-    div.w-btn-col {
+    .col {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      align-items: center;
     }
 
-    div.infoBox {
-      display: flex;
-      justify-content: flex-start;
+    .btnCol {
+      padding-top: 0;
 
-      span.unchkd {
+      span#validCodeTimer {
+        font-style: italic;
+        font-size: 15px;
+      }
+
+      span#validCodeTimer.expired {
         color: red;
       }
-
-      span.chkd {
-        color: green;
-      }
-
-      span.ruleTxt {
-        text-align: left;
-        color: darkcyan;
-        font-size: 11px;
-        font-style: italic;
-      }
     }
-  }
-
-  div.certBox {
-    display: none;
   }
 }

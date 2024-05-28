@@ -321,33 +321,4 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import "@v-css/contents/signup/signup.css";
-#signupBox {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
-
-#vuetify_signup_frm {
-  width: 70%;
-
-  .col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .btnCol {
-    padding-top: 0;
-  }
-}
-
-span#validCodeTimer {
-  font-style: italic;
-  font-size: 15px;
-}
-
-span#validCodeTimer.expired {
-  color: red;
-}
 </style>
