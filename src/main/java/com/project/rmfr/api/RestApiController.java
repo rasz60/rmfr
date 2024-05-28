@@ -27,10 +27,10 @@ public class RestApiController {
         return memberService.usernameDuplicateChk(username);
     }
 
-    @GetMapping("/rest/v1/emailValid/{emailAddress}")
-    public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress) {
-        return mailUtils.sendEmail(emailAddress);
-    }
+//    @GetMapping("/rest/v1/emailValid/{emailAddress}")
+//    public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress) {
+//        return mailUtils.sendEmail(emailAddress);
+//    }
 
     @GetMapping("/rest/v1/loginchk")
     public Map<String, Members> loginChk(Principal principal) {

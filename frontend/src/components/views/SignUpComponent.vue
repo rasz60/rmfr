@@ -27,7 +27,6 @@ import signupMethods from "@b-js/contents/signup/methods.js";
                    autofocus
                    placeholder="아이디를 입력해주세요."
                    @keyup="fnUsernameVaild($event)">
-            <!--            <div id="idCheck" @click="fnUsernameDupChk"></div>-->
             <a class="btn btn-sm btn-outline-secondary"
                id="username"
                @click="fnUsernameDupChk">중복확인</a>
@@ -81,81 +80,43 @@ import signupMethods from "@b-js/contents/signup/methods.js";
             </div>
           </td>
         </tr>
-<!--        <tr>
+        <tr>
+          <td class="req">이메일</td>
+        </tr>
+        <tr>
           <td>
-            <div class="row">
-              <div class="col-2">
-                <label for="email" class="col-12">
-                  이메일&nbsp;
-                  <span class="required">
-                <font-awesome-icon :icon="['fas', 'asterisk']" />
-              </span>
-                </label>
-              </div>
-              <div class="col-7 w-btn-col">
-                <input
-                    type="text"
-                    name="emailId"
-                    id="emailId"
-                    class="signIpt col-5"
-                    placeholder="id"
-                    @keyup="fnEmailValid"
-                />
-                @
-                <select id="domain" class="email domain col-4" @change="fnEmailValid">
-                  <option value="0">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>
-                  <option value="naver.com">naver.com</option>
-                  <option value="gmail.com">gmail.com</option>
-                  <option value="hanmail.net">hanmail.net</option>
-                  <option value="hotmail.com">hotmail.com</option>
-                  <option value="daum.net">daum.net</option>
-                </select>
-                &nbsp;
-                <a class="btn btn-sm btn-secondary cert" @click="fnEmailCert">
-                  인증하기
-                </a>
-              </div>
-              <div class="col-3 infoBox">
-                <span class="unchkd v-badge" id="email">
-                  <font-awesome-icon :icon="['fas', 'circle-check']" />
-                </span>
-                <span class="ruleTxt"></span>
-              </div>
-            </div>
+            <input
+                type="text"
+                name="emailId"
+                id="emailId"
+                class="umem"
+                size="15"
+                placeholder="아이디"
+                @keyup="fnEmailValid"
+            />
+            @
+            <input
+                type="text"
+                name="emailDomain"
+                id="emailDomain"
+                class="umem"
+                size="15"
+                placeholder="주소"
+                @change="fnEmailValid" />
           </td>
         </tr>
         <tr>
           <td>
-            <div class="row certBox">
-              <div class="col-2">
-                <label for="emailCert" class="col-12">
-                  이메일 인증
-                  <span class="required">
-                    <font-awesome-icon :icon="['fas', 'asterisk']" />
-                  </span>
-                </label>
-              </div>
-              <div class="col-7 w-btn-col">
-                <input
-                    type="text"
-                    id="emailCert"
-                    class="signIpt col-10"
-                    placeholder="이메일로 발송된 인증번호를 확인해주세요."
-                />
-                &nbsp;
-                <a class="btn btn-sm btn-outline-secondary" @click="validCodeChk"
-                >인증하기</a
-                >
-              </div>
-              <div class="col-3 infoBox">
-                <span class="unchkd v-badge" id="emailCert">
-                  <font-awesome-icon :icon="['fas', 'envelope-circle-check']" />
-                </span>
-                <span class="ruleTxt"></span>
-              </div>
+            <div>
+              <span class="unchkd v-badge" id="pw">
+                <font-awesome-icon :icon="['fas', 'circle-check']" />
+              </span>
+              <span class="ruleTxt" style="font-size:12px">
+                이메일은 필수 입력값 입니다.
+              </span>
             </div>
           </td>
-        </tr>-->
+        </tr>
         <tr>
           <td class="req">전화번호</td>
         </tr>
@@ -206,10 +167,10 @@ import signupMethods from "@b-js/contents/signup/methods.js";
                 id="zipCode"
                 v-model="signupInfo.zipCode.value"
                 @click="fnSearchZipCode"
-                size="23" readonly>
-            <button type="button"
-                    id="zipBtn"
-                    @click="execDaumPostcode">우편번호찾기</button>
+                placeholder="우편번호 찾기 눌러주세요."
+                size="27" readonly>
+            <a class="btn btn-sm btn-outline-secondary"
+               @click="execDaumPostcode">우편번호찾기</a>
           </td>
         </tr>
         <tr>
@@ -237,17 +198,20 @@ import signupMethods from "@b-js/contents/signup/methods.js";
           </td>
         </tr>
         <tr>
-          <td colspan="2">
-            <button type="submit"
-                    id="btnSignup"
-                    @click="frmSubmit">가입하기</button>
+          <td></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="row btnBox">
+              <a class="btn btn-sm btn-secondary"
+                 id="btnSignup"
+                 style="width: 80%"
+                 @click="frmSubmit">
+                가입하기
+              </a>
+            </div>
           </td>
         </tr>
-        <div class="row btnBox">
-          <a class="btn btn-sm btn-secondary" id="btnSignup" @click="frmSubmit">
-            가입하기
-          </a>
-        </div>
         </tbody>
       </table>
     </form>
