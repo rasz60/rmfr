@@ -5,21 +5,24 @@ import signupMethods from "@v-js/contents/signup/methods.js";
 
 <template>
   <v-sheet id="signupBox">
-    <v-form @submit.prevent id="vuetify_signup_frm">
+    <v-form @submit.prevent id="vuetify_signup_frm" ref="form">
       <v-row>
         <v-col cols="11" class="col">
           <v-text-field
-            id="username"
+            id="mId"
             v-model="signupInfo.username.value"
             label="아이디(ID)"
             :rules="usernameRules"
-            variant="outlined"
+            variant="underlined"
             required
-            prepend-icon="fas fa-asterisk"
+            prepend-inner-icon="fas fa-asterisk"
           ></v-text-field>
         </v-col>
         <v-col cols="1" class="col btnCol">
-          <v-btn @click="fnUsernameDupChk($event)" text="중복확인"></v-btn>
+          <v-btn
+            @click="fnUsernameDupChk()"
+            :text="signupInfo.username.dupchk ? '확인완료' : '중복확인'"
+          ></v-btn>
         </v-col>
       </v-row>
 
@@ -29,8 +32,10 @@ import signupMethods from "@v-js/contents/signup/methods.js";
             type="password"
             label="비밀번호(Password)"
             :rules="pwRules"
-            variant="outlined"
+            variant="underlined"
             required
+            prepend-inner-icon="fas fa-asterisk"
+            v-model="signupInfo.password.value"
           ></v-text-field>
         </v-col>
         <v-col cols="1" class="col btnCol"></v-col>
@@ -41,320 +46,274 @@ import signupMethods from "@v-js/contents/signup/methods.js";
           <v-text-field
             type="password"
             label="비밀번호 확인(Password Check)"
-            :rules="pwChkRules"
-            variant="outlined"
+            :rules="pwChkVal"
+            variant="underlined"
             required
+            prepend-inner-icon="fas fa-asterisk"
+            v-model="signupInfo.password.chkval"
           ></v-text-field>
         </v-col>
         <v-col cols="1" class="col btnCol"></v-col>
       </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="email"
+            label="이메일(email)"
+            :rules="emailRules"
+            variant="underlined"
+            required
+            prepend-inner-icon="fas fa-asterisk"
+            v-model="signupInfo.email.value"
+            :readonly="signupInfo.email.certDone"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn
+            :readonly="signupInfo.email.certDone"
+            @click="fnEmailCert"
+            :text="
+              signupInfo.email.certDone
+                ? '인증완료'
+                : signupInfo.email.cert
+                  ? '재발송'
+                  : '인증하기'
+            "
+          ></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row v-show="signupInfo.email.cert">
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            label="인증번호 확인"
+            @keyup="validCodeChk($event.target.value)"
+            variant="underlined"
+            required
+            prepend-inner-icon="fas fa-asterisk"
+            :readonly="signupInfo.email.certDone || !signupInfo.email.cert"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol" v-show="signupInfo.email.cert">
+          <span id="validCodeTimer"></span>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="3" class="col">
+          <v-select
+            :items="['------', '010', '011', '016', '017', '018', '019']"
+            variant="underlined"
+            label="휴대폰번호(Phone Number)"
+            v-model="signupInfo.phoneNumber.head"
+          ></v-select>
+        </v-col>
+        <v-col cols="1" class="col">
+          <v-icon icon="fas fa-minus" />
+        </v-col>
+        <v-col cols="3" class="col">
+          <v-text-field
+            type="text"
+            :rules="pnChk"
+            variant="underlined"
+            v-model="signupInfo.phoneNumber.mid"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col">
+          <v-icon icon="fas fa-minus" />
+        </v-col>
+        <v-col cols="3" class="col">
+          <v-text-field
+            type="text"
+            :rules="pnChk"
+            variant="underlined"
+            v-model="signupInfo.phoneNumber.last"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"></v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            name="zipcode"
+            label="우편번호(Zip Code)"
+            variant="underlined"
+            readonly
+            @keyup="fnAlert()"
+            v-model="signupInfo.zipCode.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn text="검색하기" @click.stop="execDaumPostcode"></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            name="addr1"
+            label="주소(Address)"
+            variant="underlined"
+            readonly
+            @keyup="fnAlert()"
+            v-model="signupInfo.addr1.value"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol">
+          <v-btn text="초기화" @click="fnAddrReset"></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="11" class="col">
+          <v-text-field
+            type="text"
+            label="상세주소(Details)"
+            variant="underlined"
+            v-model="signupInfo.addr2.value"
+            :readonly="signupInfo.addr1.value == ''"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="col btnCol"> </v-col>
+      </v-row>
+
+      <v-btn @click="validate" color="primary">회원가입</v-btn>
     </v-form>
   </v-sheet>
-
-  <!--기존-->
-  <form id="signupFrm" name="signupFrm">
-    <div class="row">
-      <div class="col-2">
-        <label for="username" class="col-12">
-          아이디&nbsp;
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-        </label>
-      </div>
-      <div class="col-7 w-btn-col">
-        <input
-          type="text"
-          id="username"
-          class="signIpt col-10"
-          placeholder="id"
-          @keyup="fnUsernameVaild($event)"
-        />
-        <a
-          class="btn btn-sm btn-outline-secondary"
-          id="username"
-          @click="fnUsernameDupChk"
-          >중복확인</a
-        >
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="username">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;&nbsp;
-        <span class="ruleTxt">
-          6~20자리, 영문 소/대문자, 숫자, 특수문자 (-, _)
-        </span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="pw" class="col-12">
-          비밀번호&nbsp;
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-        </label>
-      </div>
-      <div class="col-7">
-        <input
-          type="password"
-          id="pw"
-          class="signIpt col-12"
-          placeholder="password"
-          @keyup="fnPasswordValid($event)"
-        />
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="pw">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;&nbsp;
-        <span class="ruleTxt">
-          8~16자리, 영문 소/대문자, 숫자, <br />특수문자
-          ($,`,~,!,@,$,!,%,*,#,^,?,&,,(,),-,_,=,+)
-        </span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="pwChk" class="col-12">
-          비밀번호 확인&nbsp;
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-        </label>
-      </div>
-      <div class="col-7">
-        <input
-          type="password"
-          id="pwChk"
-          class="signIpt col-12"
-          placeholder="password check"
-          @keyup="fnPasswordChk($event)"
-        />
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="pwChk">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt"></span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="email" class="col-12">
-          이메일&nbsp;
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-        </label>
-      </div>
-      <div class="col-7 w-btn-col">
-        <input
-          type="text"
-          name="emailId"
-          id="emailId"
-          class="signIpt col-5"
-          placeholder="id"
-          @keyup="fnEmailValid"
-        />
-        @
-        <select id="domain" class="email domain col-4" @change="fnEmailValid">
-          <option value="0">--------------</option>
-          <option value="naver.com">naver.com</option>
-          <option value="gmail.com">gmail.com</option>
-          <option value="hanmail.net">hanmail.net</option>
-          <option value="hotmail.com">hotmail.com</option>
-          <option value="daum.net">daum.net</option>
-        </select>
-        &nbsp;
-        <a class="btn btn-sm btn-secondary cert" @click="fnEmailCert">
-          인증하기
-        </a>
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="email">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt"></span>
-      </div>
-    </div>
-
-    <div class="row certBox">
-      <div class="col-2">
-        <label for="emailCert" class="col-12">
-          이메일 인증&nbsp;
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-        </label>
-      </div>
-      <div class="col-7 w-btn-col">
-        <input
-          type="text"
-          id="emailCert"
-          class="signIpt col-10"
-          placeholder="이메일로 발송된 인증번호를 확인해주세요."
-        />
-        &nbsp;
-        <a class="btn btn-sm btn-outline-secondary" @click="validCodeChk"
-          >인증하기</a
-        >
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="emailCert">
-          <font-awesome-icon :icon="['fas', 'envelope-circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt"></span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="phone" class="col-12">휴대폰</label>
-      </div>
-      <div class="col-7 w-btn-col">
-        <select class="col-3" id="pHead" @change="fnPhoneNumberValid($event)">
-          <option value="0">------------</option>
-          <option value="010">010</option>
-          <option value="011">011</option>
-          <option value="016">016</option>
-          <option value="017">017</option>
-          <option value="018">018</option>
-          <option value="019">019</option>
-        </select>
-        -
-        <input
-          type="text"
-          class="signIpt col-3"
-          id="pMid"
-          @keyup="fnPhoneNumberValid($event)"
-        />
-        -
-        <input
-          type="text"
-          class="signIpt col-3"
-          id="pLast"
-          @keyup="fnPhoneNumberValid($event)"
-        />
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="phone">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt">
-          형식에 맞지않는 휴대폰 번호는 저장되지 않습니다.
-        </span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="addr1" class="col-12">
-          우편번호&nbsp;
-          <!--
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-          -->
-        </label>
-      </div>
-      <div class="col-7 w-btn-col">
-        <input
-          type="text"
-          id="zipCode"
-          class="signIpt col-10"
-          placeholder=""
-          readonly
-          @click="fnSearchZipCode"
-          v-model="signupInfo.zipCode.value"
-        />
-        <a class="btn btn-sm btn-outline-secondary" @click="execDaumPostcode">
-          주소찾기
-        </a>
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="zipCode">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt"></span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="addr2" class="col-12">
-          주소&nbsp;
-          <!--
-          <span class="required">
-            <font-awesome-icon :icon="['fas', 'asterisk']" />
-          </span>
-          -->
-        </label>
-      </div>
-      <div class="col-7">
-        <input
-          type="text"
-          id="addr2"
-          class="signIpt col-12"
-          placeholder=""
-          readonly
-          @click="fnSearchZipCode"
-          v-model="signupInfo.addr1.value"
-        />
-      </div>
-      <div class="col-3 infoBox">
-        <span class="unchkd v-badge" id="addr1">
-          <font-awesome-icon :icon="['fas', 'circle-check']" />
-        </span>
-        &nbsp;
-        <span class="ruleTxt"></span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="addr3" class="col-12">상세주소</label>
-      </div>
-      <div class="col-7">
-        <input
-          type="text"
-          id="addr3"
-          class="signIpt col-12"
-          placeholder=""
-          v-model="signupInfo.addr2.value"
-        />
-      </div>
-      <div class="col-3 infoBox"></div>
-    </div>
-
-    <div class="row btnBox">
-      <a class="btn btn-sm btn-secondary" id="btnSignup" @click="frmSubmit">
-        가입하기
-      </a>
-    </div>
-  </form>
 </template>
 
 <script>
 export default {
+  name: "signupView",
   data() {
     return signupDatas;
+  },
+  computed: {
+    usernameRules() {
+      var rules = [];
+
+      const nullchk = (v) => {
+        if (v) return true;
+        return "아이디는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp = /^(?=.*[a-z0-9])[a-z0-9_-]{6,20}$/;
+        var chk = regExp.test(v.trim());
+
+        this.signupInfo.username.chkd = chk;
+
+        if (chk) return true;
+        return "6~20자리의 영문소문자, 숫자, -, _ 조합으로 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      const dupchk = (v) => {
+        this.signupInfo.username.dupchk =
+          this.signupInfo.username.lastdupchk == v;
+      };
+      rules.push(dupchk);
+
+      return rules;
+    },
+    pwRules() {
+      const rules = [];
+      const nullchk = (v) => {
+        if (v) return true;
+        return "비밀번호는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp =
+          /(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
+        var chk = regExp.test(v);
+        this.signupInfo.password.regChkd = chk;
+        if (chk) return true;
+        return "8~16자리의 영문 소/대문자, 숫자, 특수문자($,`,~,!,@,$,!,%,*,#,^,?,&,,(,),-,_,=,+) 조합으로 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
+    pwChkVal() {
+      const rules = [];
+
+      const nullchk = (v) => {
+        if (v) return true;
+        return "비빌번호는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      if (this.signupInfo.password.chkval) {
+        const chkval = (v) => {
+          var chk = this.signupInfo.password.value == v;
+          this.signupInfo.password.pwChkd = chk;
+          if (chk) return true;
+          return "비밀번호가 일치하지 않습니다.";
+        };
+        rules.push(chkval);
+      }
+      return rules;
+    },
+    emailRules() {
+      const rules = [];
+
+      const nullchk = (v) => {
+        if (v) return true;
+        this.signupInfo.email.chkd = false;
+        return "이메일은 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var chk = regExp.test(v);
+
+        this.signupInfo.email.chkd = chk;
+
+        if (chk) return true;
+        return "형식에 맞는 이메일 주소를 입력해주세요. (ex> emailId@domain.com)";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
+
+    pnChk() {
+      const rules = [];
+
+      const regchk = (v) => {
+        var regExp = /[0-9]$/;
+        var chk = regExp.test(v);
+
+        if (chk) return true;
+        else if (v == null || v == "") return true;
+        return "숫자로만 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      const lengthChk = (v) => {
+        if (v.length >= 3 && v.length <= 4) return true;
+        else if (v == null || v == "") return true;
+        return "입력한 휴대폰 번호의 자리 수를 확인해주세요.";
+      };
+      rules.push(lengthChk);
+
+      return rules;
+    },
   },
   methods: signupMethods,
 
   mounted() {
     this.loadDaumPostcodeScript();
-    this.validCodeTime;
   },
 };
 </script>
@@ -381,5 +340,14 @@ export default {
   .btnCol {
     padding-top: 0;
   }
+}
+
+span#validCodeTimer {
+  font-style: italic;
+  font-size: 15px;
+}
+
+span#validCodeTimer.expired {
+  color: red;
 }
 </style>

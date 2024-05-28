@@ -1,68 +1,53 @@
 const data = {
+  popup: null,
   signupInfo: {
     username: {
       value: "",
       name: "아이디",
-      required: true,
+      lastdupchk: "",
       chkd: false,
       dupchk: false,
     },
     password: {
       value: "",
+      chkval: "",
       name: "비밀번호",
-      required: true,
-      chkd: false,
+      regChkd: false,
+      pwChkd: false,
     },
     email: {
       value: "",
+      lastChkVal: "",
+      lastCertVal: "",
       name: "이메일",
-      required: true,
       chkd: false,
+      cert: false,
+      certDone: false,
     },
     phoneNumber: {
-      value: "",
+      head: "",
+      mid: "",
+      last: "",
+      full: "",
       name: "휴대폰",
-      required: false,
     },
     zipCode: {
       value: "",
       name: "우편번호",
-      required: false,
     },
     addr1: {
       value: "",
       name: "주소",
-      required: false,
     },
     addr2: {
       value: "",
       name: "상세주소",
-      required: false,
     },
   },
   validCode: "",
-  usernameRules: [
-    (value) => {
-      if (value) return true;
-      return "아이디는 필수 입력사항입니다.";
-    },
-    (value) => this.fnUsernameVaild(value),
-  ],
-
-  pwRules: [
-    (value) => {
-      if (value) return true;
-      return "비밀번호는 필수 입력사항입니다.";
-    },
-    (value) => this.fnUsernameVaild(value),
-  ],
-
-  pwChkRules: [
-    (value) => {
-      if (value) return true;
-      return "비밀번호를 확인해주세요.";
-    },
-  ],
+  validCodeTime: null,
+  validCodeTimer: "00:00",
+  loading: false,
 };
 
 export default data;

@@ -29,6 +29,7 @@ public class MailUtils {
             helper.setTo(toAddress);
             helper.setSubject("rmfr 회원가입 인증 메일입니다.");
             helper.setText("rmfr 회원가입 인증 메일입니다.\n회원가입 화면으로 돌아가 아래 인증코드를 입력해주세요.\n\n인증코드 : "+ validCode);
+            helper.setFrom("rmfr <rmfr@gmail.com>");
             result.put("resultCode", 200);
             result.put("token", base64ValidCode);
         } catch (MessagingException e) {

@@ -9,6 +9,8 @@ import HelloWorld from "@v-components/HelloWorld.vue";
 </template>
 
 <script>
+// cookie menuDrawer 저장
+
 export default {};
 </script>
 

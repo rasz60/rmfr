@@ -23,7 +23,6 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final HttpSession httpSession;
 
     /*
      * @RequiredArgsConstructor : 초기화되지 않았거나 @NotNull인 필드의 생성자 생성
@@ -41,8 +40,8 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
                 member = memberOptional.get();
             }
         } catch (Exception e) {
-            log.info("loadUserByUsername throw exception.");
             e.printStackTrace();
+            log.info("loadUserByUsername throw exception.");
         }
 
         return member;
