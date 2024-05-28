@@ -26,9 +26,4 @@ public class MemberController {
         return "/index";
     }
 
-    @GetMapping("settings")
-    public String settings() {
-        return "/index";
-    }
-
 }
