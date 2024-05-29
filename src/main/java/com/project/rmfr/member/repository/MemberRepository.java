@@ -2,7 +2,9 @@ package com.project.rmfr.member.repository;
 
 import com.project.rmfr.member.entity.Members;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Members, Long> {
@@ -13,4 +15,6 @@ public interface MemberRepository extends JpaRepository<Members, Long> {
      */
 
     Optional<Members> findBymId(String userName);
+
+    List<Members> findBymEmail(String mEmail);
 }

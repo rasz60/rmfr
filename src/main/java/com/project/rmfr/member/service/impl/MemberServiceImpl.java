@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -207,5 +209,18 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
             memberRepository.delete(member);
         }
         return this.usernameDuplicateChk(username);
+    }
+
+    public List<String> mailChkExists(String mEmail) {
+        List<String> members = new ArrayList<>();
+        try {
+            List<Members> memberList = memberRepository.findBymEmail(mEmail);
+            for (Members m : memberList) {
+                members.add(m.getMId());
+            }
+        } catch (Exception e ) {
+            e.printStackTrace();
+        }
+        return members;
     }
 }

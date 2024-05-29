@@ -132,12 +132,11 @@ import headerMethods from "@v-js/header/methods.js";
         </a>
       </v-form>
 
-      <!-- 찾기 -->
+      <!-- 정보 찾기 -->
       <v-form
         @submit.prevent
-        id="login"
-        v-show="findInfo.findFlag"
-        action="/member/loginProc"
+        id="findInfo"
+        v-show="findInfo.findFlag && !findInfo.certDone"
         method="post"
         ref="findForm"
       >
@@ -147,26 +146,38 @@ import headerMethods from "@v-js/header/methods.js";
           variant="underlined"
           prepend-inner-icon="far fa-id-badge"
           v-show="findInfo.pwFindFlag"
+          v-model="findInfo.mId"
         >
         </v-text-field>
-
-        <v-text-field
-          type="email"
-          label="이메일(email)"
-          variant="underlined"
-          :rules="emailRules"
-          prepend-inner-icon="fas fa-at"
-          v-model="findInfo.mEmail"
-        >
-        </v-text-field>
-        <v-text-field
-          type="text"
-          label="인증번호(code)"
-          variant="underlined"
-          prepend-inner-icon="fas fa-code"
-          :readonly="!findInfo.cert"
-        >
-        </v-text-field>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+              type="email"
+              label="이메일(email)"
+              variant="underlined"
+              :rules="emailRules"
+              prepend-inner-icon="fas fa-at"
+              v-model="findInfo.mEmail"
+            >
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col :cols="findInfo.cert ? 9 : 12">
+            <v-text-field
+              type="text"
+              label="인증번호(code)"
+              variant="underlined"
+              prepend-inner-icon="fas fa-code"
+              :readonly="!findInfo.cert"
+              @keyup="validCodeChk($event.target.value)"
+            >
+            </v-text-field>
+          </v-col>
+          <v-col :cols="findInfo.cert ? 3 : 0">
+            <span id="validCodeTimer"></span>
+          </v-col>
+        </v-row>
         <v-btn
           class="mb-8"
           color="blue"
@@ -174,13 +185,7 @@ import headerMethods from "@v-js/header/methods.js";
           variant="tonal"
           block
           @click="validateFindForm"
-          :text="
-            findInfo.certDone
-              ? '변경하기'
-              : findInfo.cert
-                ? '인증번호재발송'
-                : '인증번호발송'
-          "
+          :text="findInfo.cert ? '인증번호재발송' : '인증번호발송'"
         >
         </v-btn>
 
@@ -190,6 +195,42 @@ import headerMethods from "@v-js/header/methods.js";
         >
           로그인 창으로 이동&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
         </a>
+      </v-form>
+
+      <v-form ref="nPwForm" v-show="findInfo.certDone">
+        <v-select
+          :items="this.findInfo.mIdList"
+          variant="underlined"
+          label="변경할 아이디(ID)"
+        ></v-select>
+        <v-text-field
+          type="password"
+          label="새 비밀번호(New Password)"
+          variant="underlined"
+          :rules="pwRules"
+          prepend-inner-icon="fas fa-key"
+          v-model="findInfo.nPw"
+        >
+        </v-text-field>
+        <v-text-field
+          type="password"
+          label="새 비밀번호 확인(New Password Check)"
+          variant="underlined"
+          :rules="pwChkRules"
+          prepend-inner-icon="fas fa-key"
+          v-model="findInfo.nPwChkVal"
+        >
+        </v-text-field>
+        <v-btn
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          block
+          @click="validateNpwForm"
+          text="비밀번호변경"
+        >
+        </v-btn>
       </v-form>
 
       <div id="info" v-show="login">
@@ -302,6 +343,46 @@ export default {
       };
       rules.push(regchk);
 
+      return rules;
+    },
+    pwRules() {
+      const rules = [];
+      const nullchk = (v) => {
+        if (v) return true;
+        return "비밀번호는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp =
+          /(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
+        var chk = regExp.test(v);
+        this.findInfo.npwRegChk = chk;
+        if (chk) return true;
+        return "8~16자리의 영문 소/대문자, 숫자, 특수문자($,`,~,!,@,$,!,%,*,#,^,?,&,,(,),-,_,=,+) 조합으로 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
+    pwChkRules() {
+      const rules = [];
+
+      const nullchk = (v) => {
+        if (v) return true;
+        return "비빌번호는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      if (this.findInfo.nPwChkVal) {
+        const chkval = (v) => {
+          var chk = this.findInfo.nPw == v;
+          this.findInfo.nPwChk = chk;
+          if (chk) return true;
+          return "비밀번호가 일치하지 않습니다.";
+        };
+        rules.push(chkval);
+      }
       return rules;
     },
   },

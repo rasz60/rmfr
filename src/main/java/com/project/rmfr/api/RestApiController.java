@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -63,6 +65,16 @@ public class RestApiController {
         try {
             String mId = principal.getName();
             chk = memberService.passwordChecked(mId, password);
+        } catch (Exception e) {
+            log.info("principal is null");
+        }
+        return chk;
+    }
+    @GetMapping("/rest/v1/mailChkExists/{mEmail}")
+    public List<String> mailChkExists(@PathVariable("mEmail") String mEmail) {
+        List<String> chk = new ArrayList<>();
+        try {
+            chk = memberService.mailChkExists(mEmail);
         } catch (Exception e) {
             log.info("principal is null");
         }
