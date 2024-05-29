@@ -77,7 +77,41 @@ export default {
       document.querySelector("input#mPw").value = "";
     }
   },
+  fnFlagInit() {
+    console.log("this");
+    this.loginDrawer = !this.loginDrawer;
+    this.findInfo.pwVisible = false;
+    this.findInfo.findFlag = false;
+    this.findInfo.cert = false;
+    this.findInfo.certDone = false;
+  },
+  fnFindFlag(type) {
+    if (type == "id") {
+      this.findInfo.findFlag = true;
+      this.findInfo.pwFindFlag = false;
+    } else {
+      this.findInfo.findFlag = true;
+      this.findInfo.pwFindFlag = true;
+    }
+  },
+  async validateFindForm() {
+    let chk = await this.$refs.findForm.validate();
 
+    if (chk.valid) {
+      this.fnFindInfoCert();
+    }
+  },
+  fnFindInfoCert() {
+    var email = this.findInfo.mEmail;
+
+    this.fnEmailChkExists(email);
+    console.log("find : " + email);
+  },
+  async fnEmailChkExists(m) {
+    await this.axios.get("rest/v1/mailChkExists/" + m).then((res) => {
+      console.log(res);
+    });
+  },
   fn_submitFrm() {
     var username = this.info.mId;
     var password = this.info.mPw;

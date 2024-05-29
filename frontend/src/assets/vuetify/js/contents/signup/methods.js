@@ -45,18 +45,20 @@ export default {
     var mailAddress = this.signupInfo.email.value;
 
     // 인증번호 발송 api 호출
-    await this.axios.get("/rest/v1/emailValid/" + mailAddress).then((res) => {
-      const jsonData = res.data;
-      this.validCode = jsonData.token; // base64 encoding된 인증번호
+    await this.axios
+      .get("/rest/v1/emailValid/" + mailAddress + "/s")
+      .then((res) => {
+        const jsonData = res.data;
+        this.validCode = jsonData.token; // base64 encoding된 인증번호
 
-      if (this.validCodeTime != null) {
-        this.clearTimer(this.validCodeTime);
-      }
-      document.querySelector("span#validCodeTimer").className = "";
-      this.validCodeTime = this.setTimer(179); // 3분 타이머 적용
-      this.signupInfo.email.cert = true;
-      alert("인증번호가 발송되었습니다.");
-    });
+        if (this.validCodeTime != null) {
+          this.clearTimer(this.validCodeTime);
+        }
+        document.querySelector("span#validCodeTimer").className = "";
+        this.validCodeTime = this.setTimer(179); // 3분 타이머 적용
+        this.signupInfo.email.cert = true;
+        alert("인증번호가 발송되었습니다.");
+      });
   },
 
   // 타이머 설정

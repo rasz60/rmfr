@@ -16,7 +16,7 @@ public class MailUtils {
     @Autowired
     private JavaMailSender sender;
 
-    public Map<String, Object> sendEmail(String toAddress) {
+    public Map<String, Object> sendEmail(String toAddress, String type) {
         Map<String, Object> result = new HashMap<String, Object>();
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -24,11 +24,17 @@ public class MailUtils {
         String validCode = createToken();
         String base64ValidCode = Base64Util.encode(validCode);
         result.put("token", base64ValidCode);
+        String subject = "";
+        if ("s".equals(type)) {
+            subject = "rmfr 회원가입 인증 메일입니다.";
+        } else {
+            subject = "rmfr 인증 메일입니다.";
+        }
 
         try {
             helper.setTo(toAddress);
-            helper.setSubject("rmfr 회원가입 인증 메일입니다.");
-            helper.setText("rmfr 회원가입 인증 메일입니다.\n회원가입 화면으로 돌아가 아래 인증코드를 입력해주세요.\n\n인증코드 : "+ validCode);
+            helper.setSubject(subject);
+            helper.setText("rmfr 인증 메일입니다.\nrmfr 화면으로 돌아가 아래 인증코드를 입력해주세요.\n\n인증코드 : "+ validCode);
             helper.setFrom("rmfr <rmfr@gmail.com>");
             result.put("resultCode", 200);
             result.put("token", base64ValidCode);

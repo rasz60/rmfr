@@ -153,36 +153,40 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
             Optional<Members> memberOptional = memberRepository.findBymId((String) param.get("username"));
             if (memberOptional.isPresent()) {
                 Members member = memberOptional.get();
-
-                if (param.containsKey("email")) {
-                    log.info("edit email.");
-                    member.setMEmail((String) param.get("email"));
+                String info = "";
+                if (param.containsKey("mEmail")) {
+                    info += "mEmail";
+                    member.setMEmail((String) param.get("mEmail"));
                 }
 
                 if (param.containsKey("password")) {
-                    log.info("edit password.");
+                    info += "".equals(info) ? ", password" : "password";
                     member.setMPw(bCryptPasswordEncoder.encode((String) param.get("password")));
                     member.setMPwUpdateDate(LocalDateTime.now());
                 }
 
-                if (param.containsKey("phoneNumber")) {
-                    log.info("edit phoneNumber.");
-                    member.setMPhone((String) param.get("phoneNumber"));
+                if (param.containsKey("mPhone")) {
+                    info += "".equals(info) ? ", mPhone" : "mPhone";
+                    member.setMPhone((String) param.get("mPhone"));
                 }
 
-                if (param.containsKey("zipCode")) {
-                    log.info("edit zipCode.");
-                    member.setMAddr1((String) param.get("zipCode"));
+                if (param.containsKey("mAddr1")) {
+                    info += "".equals(info) ? ", mAddr1" : "mAddr1";
+                    member.setMAddr1((String) param.get("mAddr1"));
                 }
 
-                if (param.containsKey("addr1")) {
-                    log.info("edit addr1.");
-                    member.setMAddr2((String) param.get("addr1"));
+                if (param.containsKey("mAddr2")) {
+                    info += "".equals(info) ? ", mAddr2" : "mAddr2";
+                    member.setMAddr2((String) param.get("mAddr2"));
                 }
 
-                if (param.containsKey("addr2")) {
-                    log.info("edit addr2.");
-                    member.setMAddr3((String) param.get("addr2"));
+                if (param.containsKey("mAddr3")) {
+                    info += "".equals(info) ? ", mAddr3" : "mAddr3";
+                    member.setMAddr3((String) param.get("mAddr3"));
+                }
+
+                if (! "".equals(info) ) {
+                    log.info("edit " + info);
                 }
 
                 rst = memberRepository.save(member).getMPwUpdateDate().toString();

@@ -27,9 +27,9 @@ public class RestApiController {
         return memberService.usernameDuplicateChk(username);
     }
 
-    @GetMapping("/rest/v1/emailValid/{emailAddress}")
-    public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress) {
-        return mailUtils.sendEmail(emailAddress);
+    @GetMapping("/rest/v1/emailValid/{emailAddress}/{type}")
+    public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress, @PathVariable("type") String type) {
+        return mailUtils.sendEmail(emailAddress, type);
     }
 
     @GetMapping("/rest/v1/loginchk")

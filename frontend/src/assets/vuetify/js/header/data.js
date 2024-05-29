@@ -2,6 +2,18 @@ export default {
   loginDrawer: false,
   login: false,
   pwVisible: false,
+  findInfo: {
+    findFlag: false,
+    pwFindFlag: false,
+    cert: false,
+    chkd: false,
+    certDone: false,
+    mEmail: "",
+    mId: "",
+    validCode: "",
+    validCodeTime: null,
+    validCodeTimer: "00:00",
+  },
   info: {
     mId: "",
     mPw: "",

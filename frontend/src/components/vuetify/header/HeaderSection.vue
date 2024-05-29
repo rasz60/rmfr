@@ -45,11 +45,7 @@ import headerMethods from "@v-js/header/methods.js";
             </v-tooltip>
           </v-btn>
 
-          <v-btn
-            class="headerBtn"
-            v-show="!login"
-            @click.stop="loginDrawer = !loginDrawer"
-          >
+          <v-btn class="headerBtn" v-show="!login" @click="fnFlagInit">
             <v-icon icon="fas fa-right-to-bracket"></v-icon>
             <v-tooltip location="bottom center" activator="parent">
               Login
@@ -77,7 +73,7 @@ import headerMethods from "@v-js/header/methods.js";
       <v-form
         @submit.prevent
         id="login"
-        v-show="!login"
+        v-show="!login && !findInfo.findFlag"
         action="/member/loginProc"
         method="post"
       >
@@ -116,7 +112,83 @@ import headerMethods from "@v-js/header/methods.js";
           href="/member/signup"
           target="_self"
         >
-          rmfr 가입하기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+          가입하기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+        </a>
+        &nbsp;
+        <a
+          class="text-blue text-decoration-none"
+          href="#"
+          @click.stop="fnFindFlag('id')"
+        >
+          ID 찾기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+        </a>
+        &nbsp;
+        <a
+          class="text-blue text-decoration-none"
+          href="#"
+          @click.stop="fnFindFlag('pw')"
+        >
+          PW 찾기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+        </a>
+      </v-form>
+
+      <!-- 찾기 -->
+      <v-form
+        @submit.prevent
+        id="login"
+        v-show="findInfo.findFlag"
+        action="/member/loginProc"
+        method="post"
+        ref="findForm"
+      >
+        <v-text-field
+          type="ID"
+          label="아이디(ID)"
+          variant="underlined"
+          prepend-inner-icon="far fa-id-badge"
+          v-show="findInfo.pwFindFlag"
+        >
+        </v-text-field>
+
+        <v-text-field
+          type="email"
+          label="이메일(email)"
+          variant="underlined"
+          :rules="emailRules"
+          prepend-inner-icon="fas fa-at"
+          v-model="findInfo.mEmail"
+        >
+        </v-text-field>
+        <v-text-field
+          type="text"
+          label="인증번호(code)"
+          variant="underlined"
+          prepend-inner-icon="fas fa-code"
+          :readonly="!findInfo.cert"
+        >
+        </v-text-field>
+        <v-btn
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          block
+          @click="validateFindForm"
+          :text="
+            findInfo.certDone
+              ? '변경하기'
+              : findInfo.cert
+                ? '인증번호재발송'
+                : '인증번호발송'
+          "
+        >
+        </v-btn>
+
+        <a
+          class="text-blue text-decoration-none"
+          @click.stop="findInfo.findFlag = !findInfo.findFlag"
+        >
+          로그인 창으로 이동&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
         </a>
       </v-form>
 
@@ -207,6 +279,32 @@ import headerMethods from "@v-js/header/methods.js";
 <script>
 export default {
   data: () => headerDatas,
+  computed: {
+    emailRules() {
+      const rules = [];
+
+      const nullchk = (v) => {
+        if (v) return true;
+        this.findInfo.chkd = false;
+        return "인증번호를 수신할 이메일 주소를 입력해주세요.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var chk = regExp.test(v);
+
+        this.findInfo.chkd = chk;
+
+        if (chk) return true;
+        return "형식에 맞는 이메일 주소를 입력해주세요. (ex> emailId@domain.com)";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
+  },
   methods: headerMethods,
   mounted() {
     this.fn_loginChk();

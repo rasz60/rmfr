@@ -5,7 +5,7 @@ import settingDatas from "@v-js/contents/setting/data.js";
 
 <template>
   <v-sheet id="settingBox">
-    <v-form id="settingFrm">
+    <v-form id="settingFrm" @submit.prevent ref="form">
       <v-row v-show="!cPwChk">
         <v-col cols="11" class="col">
           <v-text-field
@@ -43,7 +43,7 @@ import settingDatas from "@v-js/contents/setting/data.js";
             label="새 비밀번호(New Password)"
             :rules="pwRules"
             variant="underlined"
-            :readonly="!details.password.chngFlag"
+            :disabled="!details.password.chngFlag"
             v-model="details.password.value"
           ></v-text-field>
         </v-col>
@@ -61,7 +61,7 @@ import settingDatas from "@v-js/contents/setting/data.js";
             label="새 비밀번호 확인(New Password Check)"
             :rules="pwChkVal"
             variant="underlined"
-            :readonly="!details.password.chngFlag"
+            :disabled="!details.password.chngFlag"
             v-model="details.password.chkval"
           ></v-text-field>
         </v-col>
@@ -75,10 +75,9 @@ import settingDatas from "@v-js/contents/setting/data.js";
             label="이메일(email)"
             :rules="emailRules"
             variant="underlined"
-            required
             prepend-inner-icon="fas fa-asterisk"
-            v-model="details.email.bValue"
-            :readonly="details.email.certDone"
+            v-model="details.email.eValue"
+            :readonly="!details.email.chngFlag || details.email.certDone"
           ></v-text-field>
         </v-col>
         <v-col cols="1" class="col btnCol">
@@ -90,7 +89,9 @@ import settingDatas from "@v-js/contents/setting/data.js";
                 ? '인증완료'
                 : details.email.cert
                   ? '재발송'
-                  : '인증하기'
+                  : !details.email.chngFlag
+                    ? '변경하기'
+                    : '인증하기'
             "
           ></v-btn>
         </v-col>
@@ -103,7 +104,6 @@ import settingDatas from "@v-js/contents/setting/data.js";
             label="인증번호 확인"
             @keyup="validCodeChk($event.target.value)"
             variant="underlined"
-            required
             prepend-inner-icon="fas fa-asterisk"
             :readonly="details.email.certDone || !details.email.cert"
           ></v-text-field>
@@ -192,6 +192,8 @@ import settingDatas from "@v-js/contents/setting/data.js";
         </v-col>
         <v-col cols="1" class="col btnCol"> </v-col>
       </v-row>
+
+      <v-btn @click="validate" color="primary" v-show="cPwChk">정보수정</v-btn>
     </v-form>
   </v-sheet>
 
@@ -507,6 +509,76 @@ import settingDatas from "@v-js/contents/setting/data.js";
 export default {
   data() {
     return settingDatas;
+  },
+  computed: {
+    pwRules() {
+      const rules = [];
+
+      const regchk = (v) => {
+        var regExp =
+          /(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
+        var chk = regExp.test(v);
+        this.details.password.regChkd = chk;
+        if (chk) return true;
+        return "8~16자리의 영문 소/대문자, 숫자, 특수문자($,`,~,!,@,$,!,%,*,#,^,?,&,,(,),-,_,=,+) 조합으로 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
+    pwChkVal() {
+      const rules = [];
+
+      if (this.details.password.chkval) {
+        const chkval = (v) => {
+          var chk = this.details.password.value == v;
+          this.details.password.chkd = chk;
+          if (chk) return true;
+          return "비밀번호가 일치하지 않습니다.";
+        };
+        rules.push(chkval);
+      }
+      return rules;
+    },
+    pnChk() {
+      const rules = [];
+
+      const regchk = (v) => {
+        var regExp = /[0-9]$/;
+        var chk = regExp.test(v);
+
+        if (chk) return true;
+        else if (v == null || v == "") return true;
+        return "숫자로만 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      const lengthChk = (v) => {
+        if (v.length >= 3 && v.length <= 4) return true;
+        else if (v == null || v == "") return true;
+        return "입력한 휴대폰 번호의 자리 수를 확인해주세요.";
+      };
+      rules.push(lengthChk);
+
+      return rules;
+    },
+    emailRules() {
+      const rules = [];
+
+      const regchk = (v) => {
+        var regExp =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var chk = regExp.test(v);
+
+        this.details.email.chkd = chk;
+
+        if (chk) return true;
+        return "형식에 맞는 이메일 주소를 입력해주세요. (ex> emailId@domain.com)";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
   },
   methods: settingMethods,
   mounted() {

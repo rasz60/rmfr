@@ -30,144 +30,52 @@ export default {
 
         var email = jsonData.memail;
         this.details.email.bValue = email;
-        this.details.email.certDone = true;
+        this.details.email.eValue = email;
         var phone = jsonData.mphone;
         if (phone != "" && phone != null) {
           var pHead = phone.substring(0, 3);
           var pMid = "";
           var pLast = "";
           if (phone.length == 11) {
-            pMid = phone.substring(4, 7);
-            pLast = phone.substring(8, 11);
+            pMid = phone.substring(3, 7);
+            pLast = phone.substring(7, 11);
           } else {
-            pMid = phone.substring(4, 6);
-            pLast = phone.substring(7, 10);
+            pMid = phone.substring(3, 6);
+            pLast = phone.substring(6, 10);
           }
-
-          this.details.phoneNumber.bHead = pHead;
-          this.details.phoneNumber.bMid = pMid;
-          this.details.phoneNumber.bLast = pLast;
 
           this.details.phoneNumber.head = pHead;
           this.details.phoneNumber.mid = pMid;
           this.details.phoneNumber.last = pLast;
+          this.details.phoneNumber.full = phone;
         }
 
-        var addr1 = jsonData.maddr1;
-        var addr2 = jsonData.maddr2;
-        var addr3 = jsonData.maddr3;
-
-        this.details.zipCode.value = addr1;
-        this.details.addr1.value = addr2;
-        this.details.addr2.value = addr3;
+        this.details.zipCode.value = jsonData.maddr1;
+        this.details.addr1.value = jsonData.maddr2;
+        this.details.addr2.value = jsonData.maddr3;
       }
     });
   },
 
-  //비밀번호 검증
-  fnPasswordValid(evt) {
-    var chk = false;
-    var target = evt.target;
-    var value = target.value.trim(); // 공백제거
-    value = value.length > 16 ? value.substring(0, 16) : value; //16자리 이상인 경우 잘라내기
-
-    // 정규식 체크
-    var regExp =
-      /(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
-    chk = regExp.test(value);
-
-    // 정규식 체크 결과
-    if (chk) {
-      // password value 세팅
-      document.querySelector("span.v-badge#" + target.id).className =
-        "v-badge chkd";
-      this.details.password.eValue = value;
-    } else {
-      // password value 초기화
-      document.querySelector("span.v-badge#" + target.id).className =
-        "v-badge unchkd";
-      this.details.password.eValue = "";
-    }
-    target.value = value;
-
-    // 패스워드 체크
-    this.fnPasswordChk();
-  },
-
-  // 비밀번호 확인
-  fnPasswordChk() {
-    var target = document.querySelector("input#newPwChk");
-    var value = target.value.trim(); // 공백 제거
-    value = value.length > 16 ? value.substring(0, 16) : value; // 16자리 이상 잘라내기
-
-    // 정규식 체크된 value가 있고, 비밀번호 확인으로 입력한 값과 같은지 체크
-    var chk =
-      this.details.password.eValue != "" &&
-      this.details.password.eValue == value;
-
-    if (chk) {
-      // 비밀번호 확인 완료 처리
-      document.querySelector("span.v-badge#" + target.id).className =
-        "v-badge chkd";
-      this.details.password.chkd = true;
-    } else {
-      // 비밀번호 확인 실패 처리
-      document.querySelector("span.v-badge#" + target.id).className =
-        "v-badge unchkd";
-      this.details.password.chkd = false;
-    }
-    target.value = value;
-  },
-
-  // 이메일 검증
-  fnEmailValid() {
-    var emailId = document.querySelector("input#emailId");
-    var emailDomain = document.querySelector("select#domain");
-    var certSnd = document.querySelector("a.cert");
-
-    // 항목 모두 입력된 경우
-    if (emailId.value != "" && emailDomain.value != "0") {
-      this.details.email.eValue = emailId.value + "@" + emailDomain.value;
-
-      // 값 입력 완료된 경우 처리
-      document.querySelector("span.v-badge#email").className = "v-badge chkd";
-      if (this.details.email.eValue == this.details.email.bValue) {
-        certSnd.className = "btn btn-sm btn-dark cert";
-        certSnd.innerText = "인증완료";
-      } else {
-        certSnd.className = "btn btn-sm btn-outline-secondary cert";
-        certSnd.innerText = "인증하기";
-      }
-    } else {
-      // 값이 완성되지 않은 경우 초기화
-      document.querySelector("span.v-badge#email").className = "v-badge unchkd";
-      certSnd.className = "btn btn-sm btn-secondary cert";
-      certSnd.innerText = "인증하기";
-      this.details.email.eValue = "";
-    }
-
-    // 가입버튼 활성화 여부 체크
-    //this.signupValid();
-  },
-
   // 이메일 인증번호 발송
   fnEmailCert() {
-    var certSnd = document.querySelector("a.cert");
     // 입력된 값 체크
-    if (this.details.email.eValue == "") {
-      alert("이메일 주소를 정확히 입력해주세요.");
-      return false;
+    if (!this.details.email.chngFlag) {
+      this.details.email.chngFlag = true;
+      this.details.email.eValue = "";
+    } else if (
+      this.details.email.chngFlag &&
+      this.details.email.chkd &&
+      !this.details.email.certDone
+    ) {
+      // 인증번호 발송
+      this.sendValidCode();
     }
     // 이메일 주소 완성되지 않은 경우
-    else {
-      // UI 처리
-      var certChk = certSnd.className.indexOf("btn-outline-secondary") > 0;
-      if (certChk) {
-        certSnd.innerText = "다시발송";
-        certSnd.className = "btn btn-sm btn-dark cert";
-        // 인증번호 발송
-        this.sendValidCode();
-      }
+    else if (this.details.email.chngFlag && !this.details.email.chkd) {
+      alert("이메일 주소를 정확히 입력해주세요.");
+    } else if (this.details.email.chngFlag && this.details.email.certDone) {
+      alert("이미 이메일 인증이 완료되었습니다.");
     }
   },
 
@@ -177,145 +85,93 @@ export default {
     var mailAddress = this.details.email.eValue;
 
     // 인증번호 발송 api 호출
-    await this.axios.get("/rest/v1/emailValid/" + mailAddress).then((res) => {
-      const jsonData = res.data;
-      this.validCode = jsonData.token; // base64 encoding된 인증번호
-      this.setTimer(30); // 3분 타이머 적용
-      alert("인증번호가 발송되었습니다.");
-      this.certBoxCtrl(0); // 인증번호 입력 창 관리
-    });
-  },
+    await this.axios
+      .get("/rest/v1/emailValid/" + mailAddress + "/c")
+      .then((res) => {
+        const jsonData = res.data;
+        this.validCode = jsonData.token; // base64 encoding된 인증번호
 
-  // 인증번호 입력 창 관리
-  certBoxCtrl(type) {
-    var certBox = document.querySelector("div.certBox");
-
-    // type == 0 ? 활성화 : 비활성화 ;
-    if (type == 0) {
-      certBox.style.display = "flex";
-    } else {
-      certBox.style.display = "none";
-    }
-  },
-
-  // 인증번호 만료
-  validCodeExpired() {
-    this.validCode = "";
-    alert("인증번호 유효시간이 만료되었습니다.\n다시 인증번호를 발송해주세요.");
+        if (this.validCodeTime != null) {
+          this.clearTimer(this.validCodeTime);
+        }
+        document.querySelector("span#validCodeTimer").className = "";
+        this.validCodeTime = this.setTimer(179); // 3분 타이머 적용
+        this.details.email.cert = true;
+        alert("인증번호가 발송되었습니다.");
+      });
   },
 
   // 타이머 설정
   setTimer(time) {
     // 1초에 한 번 씩 반복
-    this.validCodeTime = setInterval(function () {
-      if (time <= 0) {
-        // 시간이 모두 지나면 만료 처리
-        this.clearTimer();
-        this.validCodeExpired();
+    let interval = setInterval(function () {
+      var span = document.querySelector("span#validCodeTimer");
+      if (time == 0) {
+        span.className = "expired";
+        this.clearInterval(interval);
+        this.validCode = "";
+        alert(
+          "인증번호 유효시간이 만료되었습니다.\n다시 인증번호를 발송해주세요."
+        );
       }
       var minutes = "0" + Math.trunc(time / 60);
       var seconds =
         time % 60 < 10 ? "0" + Math.trunc(time % 60) : Math.trunc(time % 60);
       var timerString = minutes + ":" + seconds;
-      document.querySelector("div.certBox div.infoBox span.ruleTxt").innerText =
-        timerString;
+      span.innerText = timerString;
       time--;
     }, 1000);
+    return interval;
   },
 
   // 타이머 초기화
-  clearTimer() {
-    document.querySelector("div.certBox div.infoBox span.ruleTxt").innerText =
-      "00:00";
-    clearInterval(this.validCodeTime);
+  clearTimer(interval) {
+    clearInterval(interval);
   },
 
   // 인증번호 확인
-  validCodeChk() {
-    var validCode = this.validCode;
-
-    // 만료된 인증번호인 경우
-    if (validCode == "") {
+  validCodeChk(v) {
+    if (this.validCode == "") {
       alert("인증번호가 만료되었습니다. 다시 발송하여 인증해주세요.");
       return false;
+    }
+
+    // base64 encoding
+    var validCodeIpt = window.btoa(v);
+    // 인증번호 체크
+    if (this.validCode == validCodeIpt) {
+      this.clearTimer(this.validCodeTime);
+      this.details.email.certDone = true;
+      alert("인증이 완료되었습니다.");
+      return true;
     } else {
-      // base64 encoding
-      var validCodeIpt = window.btoa(
-        document.querySelector("input#emailCert").value
-      );
-
-      // 인증번호 체크
-      if (validCode == validCodeIpt) {
-        // 인증 완료 처리
-        var certSnd = document.querySelector("a.cert");
-        var certIpt = document.querySelector("input#emailId");
-        var certSelect = document.querySelector("select#domain");
-        alert("메일 인증이 완료되었습니다.");
-        this.clearTimer();
-        this.certBoxCtrl(1);
-        this.details.email.chkd = true;
-        certSnd.innerText = "인증완료";
-
-        certIpt.disabled = true;
-        certSelect.disabled = true;
-      }
-      // 인증 실패
-      else {
-        alert("인증번호를 다시 확인해주세요.");
-      }
+      alert("인증번호를 다시 확인해주세요.");
+      return false;
     }
-  },
-
-  // 핸드폰 번호 검증
-  fnPhoneNumberValid(evt) {
-    var target = evt.target;
-    var value = target.value.trim(); //공백제거
-
-    // 앞자리 제외 value 체크
-    if (target.id != "pHead") {
-      // 4자리 이상인 경우 잘라내기
-      value = value.length > 4 ? value.substring(0, 4) : value;
-      target.value = value;
-    }
-
-    // 전화번호 형식 체크
-    this.fnPhoneNumber();
   },
 
   // 전화번호 형식 체크
   fnPhoneNumber() {
-    var pHead = document.querySelector("select#pHead").value;
-    var pMid = document.querySelector("input#pMid").value;
-    var pLast = document.querySelector("input#pLast").value;
+    var pHead = this.details.phoneNumber.head;
+    var pMid = this.details.phoneNumber.mid;
+    var pLast = this.details.phoneNumber.last;
+    var chk = true;
 
-    // 010으로 시작하면 4자리, 아니면 3~4자리
-    var pMidMin = pHead == "010" ? 4 : 3;
-    var pMidMax = pHead == "010" ? 4 : 3;
+    if (pHead && pMid && pLast) {
+      if (pHead == "010") {
+        chk = pMid.length == 4;
+      } else {
+        chk = pMid.length >= 3 && pMid.length <= 4;
+      }
 
-    var pBadge = document.querySelector("span.v-badge#phone");
+      if (chk) {
+        chk = pLast.length == 4;
+      }
 
-    // 모든 값이 입력되어있고, 각 자리마다 길이가 맞는 경우
-    if (
-      pHead != "0" &&
-      (pMid.length == pMidMin || pMid.length == pMidMax) &&
-      pLast.length == 4
-    ) {
-      // 검증 완료 처리
-      this.details.phoneNumber.eValue = pHead + pMid + pLast;
-      pBadge.className = "chkd v-badge";
-    } else {
-      // 초기화
-      this.details.phoneNumber.eValue = "";
-      pBadge.className = "unchkd v-badge";
+      if (chk) {
+        this.details.phoneNumber.full = pHead + pMid + pLast;
+      }
     }
-  },
-
-  fnPhoneNumberDel() {
-    document.querySelector("select#pHead").value = 0;
-    document.querySelector("input#pMid").value = "";
-    document.querySelector("input#pLast").value = "";
-
-    this.details.phoneNumber.nullable = true;
   },
 
   // 다음 주소 api script tag 추가
@@ -331,25 +187,23 @@ export default {
   },
   // 다음 주소 검색 호출
   execDaumPostcode() {
+    console.log(window.postcode);
     if (window.daum && window.daum.Postcode) {
       // 팝업 호출
-      new window.daum.Postcode({
+      this.popup = new window.daum.Postcode({
         oncomplete: (data) => {
+          console.log(window.postcode);
+
           // 우편번호 검색 완료 후의 처리 로직
           this.details.zipCode.value = data.zonecode;
           this.details.addr1.value = data.address;
-          this.details.addr2.value = "";
 
-          document.querySelector("input#zipCode").value = data.zonecode;
-          document.querySelector("input#addr1").value = data.address;
-          document.querySelector("input#addr2").value = "";
-
-          document.querySelector("span#zipCode.v-badge").className =
-            "chkd v-badge";
-          document.querySelector("span#addr1.v-badge").className =
-            "chkd v-badge";
+          // 가입버튼 활성화 여부 체크
+          //this.signupValid();
         },
-      }).open();
+      });
+
+      this.popup.open();
     }
     // 오류 처리
     else {
@@ -357,54 +211,72 @@ export default {
     }
   },
 
+  fnAlert() {
+    alert("주소 검색을 이용하여 입력해주세요.");
+  },
+
+  fnAddrReset() {
+    this.details.zipCode.value = "";
+    this.details.addr1.value = "";
+    this.details.addr2.value = "";
+  },
+
+  async validate() {
+    let chk = await this.$refs.form.validate();
+    var chk2 = true;
+    if (!chk.valid) {
+      if (this.details.email.chngFlag && !this.details.email.certDone) {
+        chk2 = confirm(
+          "인증되지 않은 메일 주소를 저장할 수 없습니다. 변경한 이메일을 제외하고 저장할까요?"
+        );
+      }
+
+      if (this.details.password.chngFlag && this.details.password.chkd) {
+        chk2 = confirm(
+          "형식에 맞지 않은 비밀번호를 저장할 수 없습니다. 변경한 비밀번호를 제외하고 저장할까요?"
+        );
+      }
+    }
+
+    if (chk2) {
+      if (chk) {
+        chk2 = confirm("수정한 정보를 저장할까요?");
+      }
+      chk2 ? this.frmSubmit() : false;
+    }
+  },
   // 수정 정보 submit
   async frmSubmit() {
     let editInfo = this.submitValueSet();
 
     if (Object.keys(editInfo).length > 1) {
-      if (
-        confirm(
-          "형식에 맞지 않거나, 인증이 완료되지 않은 정보는 수정되지 않습니다."
-        )
-      ) {
-        await this.axios.post("/api/settings/update", editInfo).then((res) => {
-          console.log(res);
-        });
-      }
+      await this.axios.post("/api/settings/update", editInfo).then(() => {
+        alert("정보 저장이 완료되었습니다.");
+        location.href = "/";
+      });
     }
-
-    alert("정보 저장이 완료되었습니다.");
-    location.href = "/";
   },
 
   submitValueSet() {
-    let details = {};
-    for (var i in this.details) {
-      let d = this.details[i];
-      if (i == "username") {
-        details[i] = d.value;
-      } else {
-        var v = this.setBefore(d);
+    let details = {
+      username: this.details.username.value,
+    };
 
-        if (!d.nullable) {
-          v == "" || v == null ? false : (details[i] = v);
-        } else {
-          details[i] = v;
-        }
-      }
+    if (this.details.password.chngFlag && this.details.password.chkd) {
+      details.password = this.details.password.value;
     }
+
+    if (this.details.email.chngFlag && this.details.email.certDone) {
+      details.mEmail = this.details.email.eValue;
+    }
+
+    this.fnPhoneNumber();
+    details.mPhone = this.details.phoneNumber.full;
+    details.mAddr1 = this.details.zipCode.value;
+    details.mAddr2 = this.details.addr1.value;
+    details.mAddr3 = this.details.addr2.value;
 
     return details;
-  },
-
-  setBefore(info) {
-    var setVal = info.eValue == null ? info.value : info.eValue;
-
-    if (info.chkd != null && info.chkd == false) {
-      setVal = "";
-    }
-
-    return setVal;
   },
 
   async fnSignout() {
