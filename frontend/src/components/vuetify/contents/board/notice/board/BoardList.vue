@@ -1,76 +1,73 @@
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+
+const page = ref(1);
+const items = Array.from({ length: 15 }, (k, v) => ({
+  seq: 15 - v,
+  title: "제목" + (15 - v),
+  regId: "작성자" + (15 - v),
+  regDate: new Date().toLocaleDateString(),
+  hits: Math.ceil(Math.random() * 10 + 1),
+}));
+const pageLength =
+  items.length % 10 > 0 ? items.length / 10 + 1 : items.length / 10;
+</script>
 
 <template>
-  <div class="boardBody">
-    <div id="boardUtils" class="row">
-      <div class="col-1">총 {{ totalCnt }}개</div>
-      <div class="col-7"></div>
-      <div id="utilSearch" class="col-4 row">
-        <div class="col-3">
-          <select class="form-select form-select-sm">
-            <option>제목</option>
-            <option>작성자</option>
-            <option>작성일</option>
-          </select>
-        </div>
-        <div class="col-7">
-          <input type="text" class="form-control form-control-sm" />
-        </div>
-        <div class="col-2">
-          <a class="btn btn-sm btn-light">검색</a>
-        </div>
-      </div>
-    </div>
-    <div class="btn btn-lg btn-secondary disabled">
-      <span class="col-1">순번</span>
-      <span class="col-6">제목</span>
-      <span class="col-3">작성자</span>
-      <span class="col-2">작성일</span>
-    </div>
-    <div class="btn btn-lg btn-outline-light text-dark" v-show="totalCnt == 0">
-      <span class="col-12">작성된 글이 없습니다.</span>
-    </div>
-
-    <div
-      v-for="i in listCnt"
-      :key="i"
-      class="btn btn-lg btn-outline-light text-dark"
-    >
-      <span class="col-1">{{ end - i + 1 }}</span>
-      <span class="col-6">제목</span>
-      <span class="col-3">작성자</span>
-      <span class="col-2">작성일</span>
-    </div>
-    <div class="btn-box">
-      <a class="btn btn-sm btn-outline-primary" href="/board/notice/item/c">
-        <font-awesome-icon :icon="['far', 'pen-to-square']" />
-      </a>
-    </div>
-  </div>
-
-  <nav aria-label="Page navigation" id="pagenation">
-    <ul class="pagination">
-      <li class="page-item">
-        <a class="page-link text-dark" href="#" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-      <li
-        class="page-item"
-        v-for="i in pageCnt"
-        :key="i"
-        :id="i"
-        @click="pageMove(i)"
-      >
-        <a class="page-link text-dark" href="#">{{ i }}</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link text-dark" href="#" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <v-sheet class="boardBody">
+    <v-row id="boardUtils" no-gutters>
+      <v-col cols="1" id="totalCnt">총 {{ totalCnt }}개</v-col>
+      <v-col cols="7"></v-col>
+      <v-col cols="4">
+        <v-row>
+          <v-col cols="3">
+            <v-select
+              label="검색유형"
+              :items="['제목', '작성자', '작성일']"
+              variant="underlined"
+            >
+            </v-select>
+          </v-col>
+          <v-col cols="9">
+            <v-text-field
+              variant="underlined"
+              label="검색어"
+              append-icon="fa-magnifying-glass"
+              @click:append-icon="fnBoardSearch"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-card id="boardList">
+      <v-list select-strategy="classic">
+        <v-list-item id="boardListTop">
+          <v-row>
+            <v-col cols="1" @click="fnSortOrder(0)">순번</v-col>
+            <v-col cols="5" @click="fnSortOrder(1)">제목</v-col>
+            <v-col cols="3" @click="fnSortOrder(2)">작성자</v-col>
+            <v-col cols="2" @click="fnSortOrder(3)">작성일</v-col>
+            <v-col cols="1" @click="fnSortOrder(4)">조회수</v-col>
+          </v-row>
+        </v-list-item>
+        <v-list-item
+          v-for="item in items"
+          :key="item"
+          class="boardItem"
+          @click="fnShowDetails"
+        >
+          <v-row>
+            <v-col cols="1">{{ item.seq }}</v-col>
+            <v-col cols="5">{{ item.title }}</v-col>
+            <v-col cols="3">{{ item.regId }}</v-col>
+            <v-col cols="2">{{ item.regDate }}</v-col>
+            <v-col cols="1">{{ item.hits }}</v-col>
+          </v-row>
+        </v-list-item>
+      </v-list>
+    </v-card>
+    <v-pagination :length="pageLength" v-model="page"></v-pagination>
+  </v-sheet>
 </template>
 
 <script>
@@ -116,4 +113,32 @@ export default {
 
 <style scoped>
 @import "@v-css/contents/board/notice/boardList.css";
+
+#totalCnt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#boardList {
+  padding: 15px;
+
+  #boardListTop {
+    background-color: darkgray;
+    color: white;
+    border-radius: 5px 5px 0 0 !important;
+    font-weight: 500;
+  }
+  .boardItem {
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 15px;
+  }
+
+  .boardItem:hover {
+    background-color: #f6f6f6;
+    font-weight: 500;
+  }
+}
 </style>

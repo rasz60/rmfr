@@ -1,21 +1,22 @@
 <script setup></script>
 
 <template>
-  <div id="boardBox">
-    <div class="boardHeader">
-      <h2 class="display-6 title">
-        &nbsp;
-        <font-awesome-icon :icon="['fas', 'bullhorn']" />
-        &nbsp;
-        <font-awesome-icon
-          v-for="char in 'notice'"
-          :key="char"
-          :icon="['fas', char]"
-        />
-      </h2>
-    </div>
+  <v-sheet id="boardBox">
+    <v-sheet class="boardHeader">
+      <v-row>
+        <v-col cols="12">
+          <v-icon icon="fas fa-bullhorn" />
+          &nbsp;
+          <v-icon
+            v-for="char in 'notice'"
+            :key="char"
+            :icon="'fas fa-' + char"
+          />
+        </v-col>
+      </v-row>
+    </v-sheet>
     <RouterView />
-  </div>
+  </v-sheet>
 </template>
 
 <script>
@@ -36,6 +37,7 @@ div#content {
 
 div#boardBox {
   width: 95%;
+  margin: 0 auto;
 
   select,
   input,
