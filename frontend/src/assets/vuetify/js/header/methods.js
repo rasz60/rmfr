@@ -77,12 +77,35 @@ export default {
       document.querySelector("input#mPw").value = "";
     }
   },
-  fnFlagInit() {
-    this.loginDrawer = !this.loginDrawer;
-    this.findInfo.pwVisible = false;
+  fnFlagInit(type) {
+    // 로그인 버튼 클릭 시 모든 데이터 초기화
+    if (type == 0) {
+      this.loginDrawer = !this.loginDrawer;
+    }
+    this.pwVisible = false;
+
     this.findInfo.findFlag = false;
     this.findInfo.cert = false;
     this.findInfo.certDone = false;
+    this.findInfo.pwFindFlag = false;
+    this.findInfo.chkd = false;
+    if (this.findInfo.validCodeTime != null) {
+      this.clearTimer(this.findInfo.validCodeTime);
+    }
+    this.findInfo.validCode = "";
+    this.findInfo.validCodeTimer = "00:00";
+    this.findInfo.mEmail = "";
+    this.findInfo.mIdList = [];
+    this.findInfo.mId = "";
+    this.findInfo.nPw = "";
+    this.findInfo.nPwChkVal = "";
+    this.findInfo.npwRegChk = false;
+    this.findInfo.nPwChk = false;
+
+    // 폼 입력 값 초기화
+    this.$refs.loginForm.reset();
+    this.$refs.findForm.reset();
+    this.$refs.nPwForm.reset();
   },
   fnFindFlag(type) {
     if (type == "id") {
@@ -94,6 +117,7 @@ export default {
     }
   },
   async validateFindForm() {
+    // 인증번호 발송 form validation
     let chk = await this.$refs.findForm.validate();
 
     if (chk.valid) {
@@ -101,20 +125,40 @@ export default {
     }
   },
   fnFindInfoCert() {
-    var email = this.findInfo.mEmail;
+    var param = this.findInfo.mEmail + "/";
+    var mId = this.findInfo.mId;
 
-    this.fnEmailChkExists(email);
-    console.log("find : " + email);
+    if (this.findInfo.pwFindFlag) {
+      param += mId;
+    } else {
+      param += "0";
+    }
+
+    this.fnEmailChkExists(param);
+    console.log("find : " + param);
   },
-  async fnEmailChkExists(m) {
-    await this.axios.get("rest/v1/mailChkExists/" + m).then((res) => {
+  async fnEmailChkExists(p) {
+    await this.axios.get("rest/v1/mailChkExists/" + p).then((res) => {
       const jsonData = res.data;
-      if (jsonData.length > 0) {
-        this.findInfo.mIdList = jsonData;
-        this.sendValidCode();
+      if (!this.findInfo.pwFindFlag) {
+        if (jsonData.length > 0) {
+          this.findInfo.mIdList = jsonData;
+          this.sendValidCode();
+        } else {
+          alert("해당 메일주소로 가입된 아이디가 없습니다.");
+          return false;
+        }
       } else {
-        alert("해당 메일주소로 가입된 아이디가 없습니다.");
-        return false;
+        if (jsonData[0] == "200") {
+          this.sendValidCode();
+        } else {
+          var msg =
+            jsonData[0] == "501"
+              ? "존재하지 않는 아이디입니다."
+              : "회원 정보의 이메일 주소와 일치하지 않습니다.";
+          alert(msg);
+          return false;
+        }
       }
     });
   },
@@ -131,7 +175,7 @@ export default {
         const jsonData = res.data;
         this.findInfo.validCode = jsonData.token; // base64 encoding된 인증번호
 
-        if (this.validCodeTime != null) {
+        if (this.findInfo.validCodeTime != null) {
           this.clearTimer(this.findInfo.validCodeTime);
         }
         document.querySelector("span#validCodeTimer").className = "";
@@ -167,27 +211,55 @@ export default {
   // 타이머 초기화
   clearTimer(interval) {
     clearInterval(interval);
+    document.querySelector("span#validCodeTimer").innerText = "00:00";
   },
 
   // 인증번호 확인
   validCodeChk(v) {
-    if (this.findInfo.validCode == "") {
-      alert("인증번호가 만료되었습니다. 다시 발송하여 인증해주세요.");
-      return false;
-    }
+    if (this.findInfo.cert) {
+      if (this.findInfo.validCode == "") {
+        alert("인증번호가 만료되었습니다. 다시 발송하여 인증해주세요.");
+        return false;
+      }
 
-    // base64 encoding
-    var validCodeIpt = window.btoa(v);
-    // 인증번호 체크
-    if (this.findInfo.validCode == validCodeIpt) {
-      this.clearTimer(this.findInfo.validCodeTime);
-      this.findInfo.certDone = true;
-      alert("인증이 완료되었습니다.");
-      return true;
-    } else {
-      alert("인증번호를 다시 확인해주세요.");
-      return false;
+      // base64 encoding
+      var validCodeIpt = window.btoa(v);
+      // 인증번호 체크
+      if (this.findInfo.validCode == validCodeIpt) {
+        this.clearTimer(this.findInfo.validCodeTime);
+        this.findInfo.certDone = true;
+        alert("인증이 완료되었습니다.");
+        return true;
+      } else {
+        alert("인증번호를 다시 확인해주세요.");
+        return false;
+      }
     }
+  },
+
+  async validateNPwForm() {
+    // 비밀번호 변경 form validation
+    let chk = await this.$refs.nPwForm.validate();
+
+    if (chk.valid) {
+      this.fnPwChange();
+    }
+  },
+
+  async fnPwChange() {
+    let data = {
+      username: this.findInfo.mId,
+      password: this.findInfo.nPw,
+    };
+
+    await this.axios.post("/api/settings/update", data).then((res) => {
+      console.log(res);
+
+      if (res.status == 200) {
+        alert("비밀번호 변경이 완료되었습니다.");
+        this.fnFlagInit();
+      }
+    });
   },
 
   fn_submitFrm() {

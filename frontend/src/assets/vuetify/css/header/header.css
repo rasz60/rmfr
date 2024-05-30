@@ -86,12 +86,23 @@
     box-shadow: 2px 2px 2px 2px lightgray;
     padding-top: 30px;
 
-    #login {
+    #login,
+    #findInfo,
+    #nPwInfo {
       width: 100%;
       padding-left: 15px;
       padding-right: 15px;
       i {
         font-size: 16px;
+      }
+      .v-col {
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+      #timer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
     /*

@@ -23,17 +23,27 @@ public class RestApiController {
     private final MemberService memberService;
     private final MailUtils mailUtils;
 
-
+    /*
+    * 아이디 중복 체크
+    */
     @GetMapping("/rest/v1/usernameDupChk/{username}")
     public boolean usernameDupChk(@PathVariable("username") String username) {
         return memberService.usernameDuplicateChk(username);
     }
 
+    /*
+     * 이메일 인증
+     * type { s : 회원 가입(signup), c : 단순 인증(cert) }
+     */
     @GetMapping("/rest/v1/emailValid/{emailAddress}/{type}")
     public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress, @PathVariable("type") String type) {
         return mailUtils.sendEmail(emailAddress, type);
     }
-
+    /*
+     * 로그인 여부 확인
+     * 1. principal에 저장된 userid get
+     * 2. userid로 간단한 유저 정보 return
+     */
     @GetMapping("/rest/v1/loginchk")
     public Map<String, Members> loginChk(Principal principal) {
         Map<String, Members> loginInfo = new HashMap<>();
@@ -46,7 +56,9 @@ public class RestApiController {
         }
         return loginInfo;
     }
-
+    /*
+     * 회원 정보 상세(회원 정보 수정 화면)
+     */
     @GetMapping("/rest/v1/loginUserDetails")
     public Map<String, Members> loginUserDetails(Principal principal) {
         Map<String, Members> loginInfo = new HashMap<>();
@@ -59,6 +71,9 @@ public class RestApiController {
         }
         return loginInfo;
     }
+    /*
+    * 회원 정보 수정 시 현재 비밀번호 인증
+    */
     @GetMapping("/rest/v1/pwChk/{password}")
     public boolean pwChk(@PathVariable("password") String password, Principal principal) {
         boolean chk = false;
@@ -70,11 +85,24 @@ public class RestApiController {
         }
         return chk;
     }
-    @GetMapping("/rest/v1/mailChkExists/{mEmail}")
-    public List<String> mailChkExists(@PathVariable("mEmail") String mEmail) {
+    /*
+    * 가입된 이메일 주소인지 체크
+    */
+    @GetMapping("/rest/v1/mailChkExists/{mEmail}/{mId}")
+    public List<String> mailChkExists(@PathVariable("mEmail") String mEmail, @PathVariable(value = "mId", required = false) String mId) {
         List<String> chk = new ArrayList<>();
         try {
-            chk = memberService.mailChkExists(mEmail);
+            if ( "0".equals(mId) ) {
+                chk = memberService.mailChkExists(mEmail);
+            } else {
+                Members member = memberService.getDetailMemberInfo(mId);
+                if ( member.getMId() == null ) {
+                    chk.add("501");
+                } else {
+                    String rst = mEmail.equals(member.getMEmail()) ? "200" : "502";
+                    chk.add(rst);
+                }
+            }
         } catch (Exception e) {
             log.info("principal is null");
         }

@@ -20,18 +20,25 @@ public class ApiController {
     private final MemberService memberService;
     private final MailUtils mailUtils;
 
+    /*
+    * 회원가입 처리 로직 
+    */
     @PostMapping("signup/submit")
     @ResponseBody
     public String signupSubmit(@RequestBody Map<String, Object> param) {
         return memberService.signupMember(param);
     }
-
+    /*
+     * 회원 정보 수정 로직
+     */
     @PostMapping("settings/update")
     @ResponseBody
     public String updateInfo(@RequestBody Map<String, Object> param) {
         return memberService.updateMember(param);
     }
-
+    /*
+    * 회원 탈퇴 로직
+    */
     @GetMapping("signout/{username}")
     @ResponseBody
     public String signout(@PathVariable("username") String username) {

@@ -45,7 +45,7 @@ import headerMethods from "@v-js/header/methods.js";
             </v-tooltip>
           </v-btn>
 
-          <v-btn class="headerBtn" v-show="!login" @click="fnFlagInit">
+          <v-btn class="headerBtn" v-show="!login" @click="fnFlagInit(0)">
             <v-icon icon="fas fa-right-to-bracket"></v-icon>
             <v-tooltip location="bottom center" activator="parent">
               Login
@@ -76,6 +76,7 @@ import headerMethods from "@v-js/header/methods.js";
         v-show="!login && !findInfo.findFlag"
         action="/member/loginProc"
         method="post"
+        ref="loginForm"
       >
         <v-text-field
           label="아이디(ID)"
@@ -137,18 +138,22 @@ import headerMethods from "@v-js/header/methods.js";
         @submit.prevent
         id="findInfo"
         v-show="findInfo.findFlag && !findInfo.certDone"
-        method="post"
         ref="findForm"
       >
-        <v-text-field
-          type="ID"
-          label="아이디(ID)"
-          variant="underlined"
-          prepend-inner-icon="far fa-id-badge"
-          v-show="findInfo.pwFindFlag"
-          v-model="findInfo.mId"
-        >
-        </v-text-field>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+              type="ID"
+              label="아이디(ID)"
+              variant="underlined"
+              prepend-inner-icon="far fa-id-badge"
+              v-show="findInfo.pwFindFlag"
+              v-model="findInfo.mId"
+              :rules="usernameRules"
+            >
+            </v-text-field>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -162,7 +167,7 @@ import headerMethods from "@v-js/header/methods.js";
             </v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row id="my0">
           <v-col :cols="findInfo.cert ? 9 : 12">
             <v-text-field
               type="text"
@@ -174,7 +179,7 @@ import headerMethods from "@v-js/header/methods.js";
             >
             </v-text-field>
           </v-col>
-          <v-col :cols="findInfo.cert ? 3 : 0">
+          <v-col id="timer" :cols="3" v-show="findInfo.cert">
             <span id="validCodeTimer"></span>
           </v-col>
         </v-row>
@@ -189,19 +194,23 @@ import headerMethods from "@v-js/header/methods.js";
         >
         </v-btn>
 
-        <a
-          class="text-blue text-decoration-none"
-          @click.stop="findInfo.findFlag = !findInfo.findFlag"
-        >
+        <a class="text-blue text-decoration-none" @click="fnFlagInit">
           로그인 창으로 이동&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
         </a>
       </v-form>
 
-      <v-form ref="nPwForm" v-show="findInfo.certDone">
+      <v-form
+        ref="nPwForm"
+        @submit.prevent
+        id="nPwInfo"
+        method="post"
+        v-show="findInfo.certDone"
+      >
         <v-select
           :items="this.findInfo.mIdList"
           variant="underlined"
-          label="변경할 아이디(ID)"
+          label="가입된 아이디(ID)"
+          v-show="!findInfo.pwFindFlag"
         ></v-select>
         <v-text-field
           type="password"
@@ -210,6 +219,7 @@ import headerMethods from "@v-js/header/methods.js";
           :rules="pwRules"
           prepend-inner-icon="fas fa-key"
           v-model="findInfo.nPw"
+          v-show="findInfo.pwFindFlag"
         >
         </v-text-field>
         <v-text-field
@@ -219,6 +229,7 @@ import headerMethods from "@v-js/header/methods.js";
           :rules="pwChkRules"
           prepend-inner-icon="fas fa-key"
           v-model="findInfo.nPwChkVal"
+          v-show="findInfo.pwFindFlag"
         >
         </v-text-field>
         <v-btn
@@ -227,10 +238,15 @@ import headerMethods from "@v-js/header/methods.js";
           size="large"
           variant="tonal"
           block
-          @click="validateNpwForm"
+          @click="validateNPwForm"
+          v-show="findInfo.pwFindFlag"
           text="비밀번호변경"
         >
         </v-btn>
+
+        <a class="text-blue text-decoration-none" @click="fnFlagInit">
+          로그인 창으로 이동&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
+        </a>
       </v-form>
 
       <div id="info" v-show="login">
@@ -321,6 +337,28 @@ import headerMethods from "@v-js/header/methods.js";
 export default {
   data: () => headerDatas,
   computed: {
+    usernameRules() {
+      var rules = [];
+
+      const nullchk = (v) => {
+        if (!this.findInfo.pwFindFlag) return true;
+        if (v) return true;
+        return "아이디는 필수 입력사항입니다.";
+      };
+      rules.push(nullchk);
+
+      const regchk = (v) => {
+        var regExp = /^(?=.*[a-z0-9])[a-z0-9_-]{6,20}$/;
+        var chk = regExp.test(v);
+
+        if (!this.findInfo.pwFindFlag) return true;
+        if (chk) return true;
+        return "6~20자리의 영문소문자, 숫자, -, _ 조합으로 입력해주세요.";
+      };
+      rules.push(regchk);
+
+      return rules;
+    },
     emailRules() {
       const rules = [];
 

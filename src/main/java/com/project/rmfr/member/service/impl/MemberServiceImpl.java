@@ -26,11 +26,6 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /*
-     * @RequiredArgsConstructor : 초기화되지 않았거나 @NotNull인 필드의 생성자 생성
-     * @Transactional : 내부 로직 수행 중 오류 발생 시 원복
-     */
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Members member = null;
@@ -162,28 +157,28 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
                 }
 
                 if (param.containsKey("password")) {
-                    info += "".equals(info) ? ", password" : "password";
+                    info += "".equals(info) ? "password" : ", password";
                     member.setMPw(bCryptPasswordEncoder.encode((String) param.get("password")));
                     member.setMPwUpdateDate(LocalDateTime.now());
                 }
 
                 if (param.containsKey("mPhone")) {
-                    info += "".equals(info) ? ", mPhone" : "mPhone";
+                    info += "".equals(info) ? "mPhone" : ", mPhone";
                     member.setMPhone((String) param.get("mPhone"));
                 }
 
                 if (param.containsKey("mAddr1")) {
-                    info += "".equals(info) ? ", mAddr1" : "mAddr1";
+                    info += "".equals(info) ? "mAddr1" : ", mAddr1";
                     member.setMAddr1((String) param.get("mAddr1"));
                 }
 
                 if (param.containsKey("mAddr2")) {
-                    info += "".equals(info) ? ", mAddr2" : "mAddr2";
+                    info += "".equals(info) ? "mAddr2" : ", mAddr2";
                     member.setMAddr2((String) param.get("mAddr2"));
                 }
 
                 if (param.containsKey("mAddr3")) {
-                    info += "".equals(info) ? ", mAddr3" : "mAddr3";
+                    info += "".equals(info) ? "mAddr3" : ", mAddr3";
                     member.setMAddr3((String) param.get("mAddr3"));
                 }
 
