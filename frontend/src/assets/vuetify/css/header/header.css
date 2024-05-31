@@ -1,14 +1,18 @@
 #header {
-  height: 80px;
-  display: flex;
+  width: 98.3%;
+  height: 85px;
   border-bottom: 1px solid #ececec;
   overflow: visible !important;
+  position: fixed !important;
+  margin-top: -15px;
 
   #headerMenu {
     height: 100%;
     box-shadow: none;
   }
-
+  .v-toolbar__content {
+    margin: auto 0;
+  }
   a {
     text-decoration: none;
     cursor: pointer;
@@ -75,7 +79,7 @@
 
   #loginInfo {
     position: absolute;
-    top: 60px;
+    top: 70px;
     right: 10px;
     width: 350px;
     padding: 10px;

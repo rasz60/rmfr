@@ -4,6 +4,7 @@ section#contents {
   flex-wrap: wrap;
   height: fit-content;
   min-height: 800px;
+  margin-top: 80px;
 
   dl.menu {
     list-style: none;

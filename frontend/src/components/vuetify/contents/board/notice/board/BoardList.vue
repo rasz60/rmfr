@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
-
+import boardListData from "@v-js/contents/board/data.js";
+import boardListMethods from "@v-js/contents/board/methods.js";
 const page = ref(1);
 const items = Array.from({ length: 15 }, (k, v) => ({
   seq: 15 - v,
@@ -58,7 +59,7 @@ const pageLength =
         >
           <v-row>
             <v-col cols="1">{{ item.seq }}</v-col>
-            <v-col cols="5">{{ item.title }}</v-col>
+            <v-col cols="5" class="title">{{ item.title }}</v-col>
             <v-col cols="3">{{ item.regId }}</v-col>
             <v-col cols="2">{{ item.regDate }}</v-col>
             <v-col cols="1">{{ item.hits }}</v-col>
@@ -66,48 +67,27 @@ const pageLength =
         </v-list-item>
       </v-list>
     </v-card>
-    <v-pagination :length="pageLength" v-model="page"></v-pagination>
+    <v-row id="btnRow">
+      <v-col cols="1"></v-col>
+      <v-col cols="10">
+        <v-pagination :length="pageLength" v-model="page"></v-pagination>
+      </v-col>
+      <v-col cols="1">
+        <v-btn icon="far fa-pen-to-square" href="/board/notice/item/c"></v-btn>
+      </v-col>
+    </v-row>
   </v-sheet>
 </template>
 
 <script>
 export default {
   data() {
-    return {
-      totalCnt: 15,
-      perCnt: 10,
-      listCnt: 0,
-      start: 0,
-      end: 0,
-      pageCnt: 0,
-      currPage: 1,
-    };
+    return boardListData;
   },
   mounted() {
     this.boardListInit();
   },
-  methods: {
-    boardListInit() {
-      this.pageCnt = Math.floor(this.totalCnt / this.perCnt + 1);
-      var testIdx = this.currPage * this.perCnt;
-
-      if (this.totalCnt - testIdx > 0) {
-        this.start = this.totalCnt - testIdx + 1;
-        this.end = this.totalCnt - testIdx + 10;
-        this.listCnt = this.perCnt;
-      } else {
-        this.start = 1;
-        this.end = testIdx - this.totalCnt;
-        this.listCnt = this.end - this.start + 1;
-      }
-    },
-    pageMove(idx) {
-      this.currPage = idx;
-      //this.selectPage(idx);
-      this.boardListInit();
-    },
-    selectPage() {},
-  },
+  methods: boardListMethods,
 };
 </script>
 
@@ -124,7 +104,7 @@ export default {
   padding: 15px;
 
   #boardListTop {
-    background-color: darkgray;
+    background-color: silver;
     color: white;
     border-radius: 5px 5px 0 0 !important;
     font-weight: 500;
@@ -139,6 +119,14 @@ export default {
   .boardItem:hover {
     background-color: #f6f6f6;
     font-weight: 500;
+
+    .title {
+      text-decoration: underline;
+    }
   }
+}
+
+#btnRow {
+  margin-top: 12px;
 }
 </style>

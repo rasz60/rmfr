@@ -1,6 +1,26 @@
 <script setup></script>
 
 <template>
+  <v-sheet>
+    <v-form>
+      <v-row>
+        <v-text-field
+          prepend-icon="fas fa-t"
+          variant="outlined"
+          label="제목(title)"
+        ></v-text-field>
+      </v-row>
+      <v-row>
+        <v-text-field
+          prepend-icon="fas fa-tag"
+          variant="outlined"
+          label="키워드(keywords)"
+        ></v-text-field>
+      </v-row>
+    </v-form>
+  </v-sheet>
+
+  <!--
   <form id="createItemFrm" method="post" action="/board/notice/item/create">
     <div class="row">
       <div class="col-2">
@@ -65,6 +85,7 @@
       </div>
     </div>
   </form>
+  -->
 </template>
 
 <script>
