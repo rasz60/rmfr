@@ -1,21 +1,74 @@
 <script setup></script>
 
 <template>
-  <v-sheet>
-    <v-form>
-      <v-row>
+  <v-sheet class="boardBody">
+    <v-form
+      @submit.prevent
+      id="createItemFrm"
+      ref="form"
+      method="post"
+      action="/board/notice/item/create"
+    >
+      <v-row class="body-row">
         <v-text-field
           prepend-icon="fas fa-t"
           variant="outlined"
           label="제목(title)"
+          :rules="titleRules"
+          name="ancTitle"
         ></v-text-field>
       </v-row>
-      <v-row>
-        <v-text-field
-          prepend-icon="fas fa-tag"
-          variant="outlined"
+      <v-row class="body-row">
+        <v-combobox
+          v-model="ancKw"
+          :items="ancKw"
           label="키워드(keywords)"
-        ></v-text-field>
+          prepend-icon="fas fa-filter"
+          variant="outlined"
+          chips
+          clearable
+          multiple
+          :rules="keywordRules"
+          name="ancKw"
+        >
+          <template v-slot:selection="{ attrs, item, select, selected }">
+            <v-chip
+              v-bind="attrs"
+              :model-value="selected"
+              closable
+              @click="select"
+              @click:close="remove(item)"
+            >
+              <strong>{{ item }}</strong
+              >&nbsp;
+              <span>(interest)</span>
+            </v-chip>
+          </template>
+        </v-combobox>
+      </v-row>
+      <v-row class="body-row">
+        <v-textarea
+          prepend-icon="fas fa-comments"
+          variant="outlined"
+          rows="10"
+          label="내용(contents)"
+          auto-grow
+          :rules="contentsRules"
+          name="ancContents"
+        ></v-textarea>
+      </v-row>
+      <v-row id="btn-row" class="body-row">
+        <v-btn
+          icon="fas fa-save"
+          class="board-item-btn"
+          @click="fnSave"
+        ></v-btn>
+        <v-btn icon="fas fa-eraser" class="board-item-btn"></v-btn>
+        <v-btn
+          icon="fas fa-list"
+          class="board-item-btn"
+          href="/board/notice"
+        ></v-btn>
       </v-row>
     </v-form>
   </v-sheet>
@@ -92,141 +145,125 @@
 export default {
   data() {
     return {
-      title: "",
-      keyword: {},
-      contents: "",
+      ancTitle: "",
+      ancContents: "",
+      ancKw: [],
     };
+  },
+  computed: {
+    titleRules() {
+      const rules = [];
+
+      const nullChk = (v) => {
+        if (v) return true;
+        return "제목은 필수 값입니다.";
+      };
+      rules.push(nullChk);
+
+      const lengthChk = (v) => {
+        console.log(v.length);
+        if (v.length <= 100) return true;
+        return "내용은 100자를 넘길 수 없습니다.";
+      };
+      rules.push(lengthChk);
+
+      return rules;
+    },
+
+    contentsRules() {
+      const rules = [];
+
+      const nullChk = (v) => {
+        if (v) return true;
+        return "내용은 필수 값입니다.";
+      };
+      rules.push(nullChk);
+
+      return rules;
+    },
+
+    keywordRules() {
+      const rules = [];
+
+      const regExp = (v) => {
+        if (v.length > 0) {
+          var chkVal = v[v.length - 1];
+
+          if (chkVal.indexOf("|") < 0) return true;
+
+          v.splice(v.length - 1, 1);
+          return "특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.";
+        } else {
+          return true;
+        }
+      };
+      rules.push(regExp);
+
+      return rules;
+    },
   },
   methods: {
     fnHashTag(evt) {
-      var ipt = document.querySelector("input#tags");
-      var value = ipt.value.trim();
-
-      var parent = document.querySelector("div#tagItems");
-      var tagcnt = parent.childNodes.length;
-
       if (evt.keyCode == 13) {
-        if (value.length > 10) {
-          alert("키워드는 10자 이하로 사용할 수 있습니다.");
-          value = value.substring(0, 10);
+        console.log(this.chips);
+
+        var val = this.chips[this.chips.length - 1];
+
+        if (val.indexOf("|") > 0) {
+          this.chips.splice(this.chips.length - 1, 1);
+          alert("특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.");
+          return false;
         }
 
-        var rex = new RegExp(/[^ㄱ-ㅎ가-힣A-Za-z0-9-_]/, "gi");
-        value = value.replace(rex, "");
-
-        var idx = Object.keys(this.keyword).length;
-        console.log(idx);
-
-        if (idx < 10) {
-          var nxIdx = 0;
-          if (idx > 0) {
-            console.log(Object.keys(this.keyword)[idx - 1]);
-            console.log(parseInt(Object.keys(this.keyword)[idx - 1]));
-            nxIdx = parseInt(Object.keys(this.keyword)[idx - 1]) + 1;
-          }
-
-          this.keyword[nxIdx] = value;
-          if (value != "") {
-            var badge = document.createElement("badge");
-            var delbtn = document.createElement("span");
-
-            badge.className = "badge badge bg-secondary";
-            badge.innerText = "#" + value;
-
-            delbtn.className = "deltag";
-            delbtn.id = idx;
-            delbtn.innerText = "x";
-
-            delbtn.addEventListener("click", this.fnDeltag);
-
-            badge.appendChild(delbtn);
-            parent.appendChild(badge);
-          }
-        } else {
+        if (this.chips.length > 10) {
+          this.chips.splice(this.chips.length - 1, 1);
           alert("10개 이상의 키워드를 등록할 수 없습니다.");
           return false;
         }
-        ipt.value = "";
-      } else if (evt.keyCode == 8) {
-        if (value == "" && tagcnt > 0) {
-          var target = parent.childNodes[tagcnt - 1].childNodes[1];
-          delete this.keyword[target.id];
-          target.parentNode.remove();
-        }
       }
     },
-    fnDeltag(e) {
-      delete this.keyword[e.target.id];
-      e.target.parentNode.remove();
+    async fnSave() {
+      var chk = await this.validate();
+
+      if (chk) {
+        document.querySelector("form#createItemFrm").submit();
+      }
     },
-    fnSave() {
-      document.querySelector("form#createItemFrm").submit();
+
+    async validate() {
+      let chk = await this.$refs.form.validate();
+
+      if (!chk.valid) {
+        alert("입력한 값을 다시 확인해주세요.");
+      }
+      return chk.valid;
+    },
+
+    remove(item) {
+      this.chips.splice(this.chips.indexOf(item), 1);
     },
   },
 };
 </script>
 
 <style>
-form#createItemFrm {
-  textarea {
-    resize: none;
-  }
-  div.row {
-    border-bottom: 1px solid #ececec;
-    padding-top: 10px;
-    padding-bottom: 10px;
+.boardBody {
+  margin-top: 50px !important;
+  margin: 0 auto;
+}
 
-    div label {
-      display: flex;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-    }
-    div#hashtag {
-      display: flex;
+.body-row {
+  margin-top: 20px !important;
+}
 
-      div#tagItems {
-        display: flex;
-        flex-wrap: no-wrap;
-      }
-      div#tagIpt {
-        width: 100%;
-        padding-left: 5px;
+#btn-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 
-        input {
-          width: 100%;
-          border: none;
-          box-shadow: none;
-        }
-      }
-
-      badge {
-        margin-left: 2px;
-        margin-right: 2px;
-        padding-left: 8px;
-        padding-right: 8px;
-        line-height: 1.5em;
-        font-size: 13px;
-
-        span.deltag {
-          padding-left: 3px;
-          padding-right: 3px;
-          cursor: pointer;
-        }
-      }
-    }
-
-    div#btnRow {
-      display: flex;
-      justify-content: flex-end;
-
-      a {
-        font-size: 20px;
-        padding: 5px;
-        width: 45px;
-        margin: 2px;
-      }
-    }
+  .board-item-btn {
+    margin-left: 5px;
+    margin-right: 5px;
   }
 }
 </style>
