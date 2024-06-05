@@ -10,7 +10,7 @@ export default {
       this.fn_toggleInfo();
       document.querySelector("input#mPw").focus();
     } else {
-      await this.axios.get("/rest/v1/loginchk").then((res) => {
+      await this.axios.get("/rest/member/loginchk").then((res) => {
         var jsonData = res.data.info;
         if (jsonData != "" && jsonData != null) {
           // 결과
@@ -138,7 +138,7 @@ export default {
     console.log("find : " + param);
   },
   async fnEmailChkExists(p) {
-    await this.axios.get("rest/v1/mailChkExists/" + p).then((res) => {
+    await this.axios.get("rest/member/mailChkExists/" + p).then((res) => {
       const jsonData = res.data;
       if (!this.findInfo.pwFindFlag) {
         if (jsonData.length > 0) {
@@ -170,7 +170,7 @@ export default {
 
     // 인증번호 발송 api 호출
     await this.axios
-      .get("/rest/v1/emailValid/" + mailAddress + "/c")
+      .get("/rest/member/emailValid/" + mailAddress + "/c")
       .then((res) => {
         const jsonData = res.data;
         this.findInfo.validCode = jsonData.token; // base64 encoding된 인증번호
@@ -252,7 +252,7 @@ export default {
       password: this.findInfo.nPw,
     };
 
-    await this.axios.post("/api/settings/update", data).then((res) => {
+    await this.axios.post("/api/member/settings/update", data).then((res) => {
       console.log(res);
 
       if (res.status == 200) {

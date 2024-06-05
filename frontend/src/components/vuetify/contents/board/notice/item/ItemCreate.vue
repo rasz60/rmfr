@@ -2,18 +2,13 @@
 
 <template>
   <v-sheet class="boardBody">
-    <v-form
-      @submit.prevent
-      id="createItemFrm"
-      ref="form"
-      method="post"
-      action="/board/notice/item/create"
-    >
+    <v-form @submit.prevent id="createItemFrm" ref="form" method="post">
       <v-row class="body-row">
         <v-text-field
           prepend-icon="fas fa-t"
           variant="outlined"
           label="제목(title)"
+          v-model="ancTitle"
           :rules="titleRules"
           name="ancTitle"
         ></v-text-field>
@@ -50,11 +45,12 @@
         <v-textarea
           prepend-icon="fas fa-comments"
           variant="outlined"
-          rows="10"
+          rows="15"
           label="내용(contents)"
           auto-grow
           :rules="contentsRules"
           name="ancContents"
+          v-model="ancContents"
         ></v-textarea>
       </v-row>
       <v-row id="btn-row" class="body-row">
@@ -188,10 +184,10 @@ export default {
       const regExp = (v) => {
         if (v.length > 0) {
           var chkVal = v[v.length - 1];
-
           if (chkVal.indexOf("|") < 0) return true;
 
           v.splice(v.length - 1, 1);
+          alert("특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.");
           return "특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.";
         } else {
           return true;
@@ -203,30 +199,21 @@ export default {
     },
   },
   methods: {
-    fnHashTag(evt) {
-      if (evt.keyCode == 13) {
-        console.log(this.chips);
-
-        var val = this.chips[this.chips.length - 1];
-
-        if (val.indexOf("|") > 0) {
-          this.chips.splice(this.chips.length - 1, 1);
-          alert("특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.");
-          return false;
-        }
-
-        if (this.chips.length > 10) {
-          this.chips.splice(this.chips.length - 1, 1);
-          alert("10개 이상의 키워드를 등록할 수 없습니다.");
-          return false;
-        }
-      }
-    },
     async fnSave() {
       var chk = await this.validate();
 
       if (chk) {
-        document.querySelector("form#createItemFrm").submit();
+        const content = {
+          ancTitle: this.ancTitle,
+          ancContents: this.ancContents,
+          ancKw: this.ancKw,
+        };
+
+        await this.axios
+          .post("/api/board/notice/item/create", JSON.stringify(content))
+          .then((res) => {
+            console.log(res.data);
+          });
       }
     },
 

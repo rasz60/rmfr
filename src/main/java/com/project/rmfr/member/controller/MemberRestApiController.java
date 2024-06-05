@@ -1,4 +1,4 @@
-package com.project.rmfr.api;
+package com.project.rmfr.member.controller;
 
 import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.service.MemberService;
@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class RestApiController {
+public class MemberRestApiController {
 
     private final HttpSession httpSession;
     private final MemberService memberService;
@@ -26,7 +26,7 @@ public class RestApiController {
     /*
     * 아이디 중복 체크
     */
-    @GetMapping("/rest/v1/usernameDupChk/{username}")
+    @GetMapping("/rest/member/usernameDupChk/{username}")
     public boolean usernameDupChk(@PathVariable("username") String username) {
         return memberService.usernameDuplicateChk(username);
     }
@@ -35,7 +35,7 @@ public class RestApiController {
      * 이메일 인증
      * type { s : 회원 가입(signup), c : 단순 인증(cert) }
      */
-    @GetMapping("/rest/v1/emailValid/{emailAddress}/{type}")
+    @GetMapping("/rest/member/emailValid/{emailAddress}/{type}")
     public Map<String, Object> emailValid(@PathVariable("emailAddress") String emailAddress, @PathVariable("type") String type) {
         return mailUtils.sendEmail(emailAddress, type);
     }
@@ -44,7 +44,7 @@ public class RestApiController {
      * 1. principal에 저장된 userid get
      * 2. userid로 간단한 유저 정보 return
      */
-    @GetMapping("/rest/v1/loginchk")
+    @GetMapping("/rest/member/loginchk")
     public Map<String, Members> loginChk(Principal principal) {
         Map<String, Members> loginInfo = new HashMap<>();
         try {
@@ -59,7 +59,7 @@ public class RestApiController {
     /*
      * 회원 정보 상세(회원 정보 수정 화면)
      */
-    @GetMapping("/rest/v1/loginUserDetails")
+    @GetMapping("/rest/member/loginUserDetails")
     public Map<String, Members> loginUserDetails(Principal principal) {
         Map<String, Members> loginInfo = new HashMap<>();
         try {
@@ -74,7 +74,7 @@ public class RestApiController {
     /*
     * 회원 정보 수정 시 현재 비밀번호 인증
     */
-    @GetMapping("/rest/v1/pwChk/{password}")
+    @GetMapping("/rest/member/pwChk/{password}")
     public boolean pwChk(@PathVariable("password") String password, Principal principal) {
         boolean chk = false;
         try {
@@ -88,7 +88,7 @@ public class RestApiController {
     /*
     * 가입된 이메일 주소인지 체크
     */
-    @GetMapping("/rest/v1/mailChkExists/{mEmail}/{mId}")
+    @GetMapping("/rest/member/mailChkExists/{mEmail}/{mId}")
     public List<String> mailChkExists(@PathVariable("mEmail") String mEmail, @PathVariable(value = "mId", required = false) String mId) {
         List<String> chk = new ArrayList<>();
         try {

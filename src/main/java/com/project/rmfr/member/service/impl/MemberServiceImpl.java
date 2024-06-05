@@ -27,6 +27,12 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
+    public Members loadUser(String mId) {
+        return (Members) loadUserByUsername(mId);
+    }
+
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Members member = null;
 

@@ -3,7 +3,7 @@ export default {
     var currPw = document.querySelector("input#currPw").value;
     if (currPw != "") {
       await this.axios
-        .get("/rest/v1/pwChk/" + encodeURIComponent(currPw))
+        .get("/rest/member/pwChk/" + encodeURIComponent(currPw))
         .then((res) => {
           var rst = res.data;
 
@@ -23,7 +23,7 @@ export default {
   },
 
   async userInfo() {
-    await this.axios.get("/rest/v1/loginUserDetails").then((res) => {
+    await this.axios.get("/rest/member/loginUserDetails").then((res) => {
       let jsonData = res.data.info;
       if (jsonData != null) {
         this.details.username.value = jsonData.mid;
@@ -86,7 +86,7 @@ export default {
 
     // 인증번호 발송 api 호출
     await this.axios
-      .get("/rest/v1/emailValid/" + mailAddress + "/c")
+      .get("/rest/member/emailValid/" + mailAddress + "/c")
       .then((res) => {
         const jsonData = res.data;
         this.validCode = jsonData.token; // base64 encoding된 인증번호
@@ -250,10 +250,12 @@ export default {
     let editInfo = this.submitValueSet();
 
     if (Object.keys(editInfo).length > 1) {
-      await this.axios.post("/api/settings/update", editInfo).then(() => {
-        alert("정보 저장이 완료되었습니다.");
-        location.href = "/";
-      });
+      await this.axios
+        .post("/api/member/settings/update", editInfo)
+        .then(() => {
+          alert("정보 저장이 완료되었습니다.");
+          location.href = "/";
+        });
     }
   },
 
@@ -282,7 +284,7 @@ export default {
   async fnSignout() {
     if (confirm("rmfr의 모든 정보를 삭제하고 탈퇴할까요?")) {
       await this.axios
-        .get("/api/signout/" + this.details.username.value)
+        .get("/api/member/signout/" + this.details.username.value)
         .then((res) => {
           if (res.status) {
             alert("탈퇴가 완료되었습니다.");

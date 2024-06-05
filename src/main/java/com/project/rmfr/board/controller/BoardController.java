@@ -24,14 +24,5 @@ public class BoardController {
         return "/index";
     }
 
-    @PostMapping("notice/item/create")
-    public String CreateNoticeItem(@RequestParam("ancTitle") String ancTitle,
-                                   @RequestParam(value = "ancContents", required = false) String ancContents,
-                                   @RequestParam(value = "ancKw", required = false) String ancKw) {
-        log.info("param1 : " + ancTitle);
-        log.info("param2 : " + ancContents);
-        log.info("param3 : " + ancKw);
 
-        return "/index";
-    }
 }

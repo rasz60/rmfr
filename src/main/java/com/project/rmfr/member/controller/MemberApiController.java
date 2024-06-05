@@ -1,4 +1,4 @@
-package com.project.rmfr.api;
+package com.project.rmfr.member.controller;
 
 import com.project.rmfr.member.service.MemberService;
 import com.project.rmfr.utils.MailUtils;
@@ -8,14 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/member/")
 @RequiredArgsConstructor
 @Slf4j
-public class ApiController {
+public class MemberApiController {
     private final HttpSession httpSession;
     private final MemberService memberService;
     private final MailUtils mailUtils;
@@ -44,4 +43,6 @@ public class ApiController {
     public String signout(@PathVariable("username") String username) {
         return memberService.signout(username) ? "200" : "500";
     }
+
+
 }

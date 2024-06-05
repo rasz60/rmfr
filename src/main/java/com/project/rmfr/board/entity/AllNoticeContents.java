@@ -5,8 +5,11 @@ import com.project.rmfr.entity.ContentHits;
 import com.project.rmfr.entity.ContentLikes;
 import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Clob;
@@ -18,12 +21,13 @@ import java.util.List;
 @Table(name = "allNoticeContents")
 @Getter
 @Setter
+@DynamicInsert
 public class AllNoticeContents {
     // Contents 테이블
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
+    @Column(columnDefinition = "VARCHAR(100)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     private String ancUuid;
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -33,30 +37,31 @@ public class AllNoticeContents {
     @Column(columnDefinition = "VARCHAR(1000)", nullable = false)
     private String ancTitle;
 
+    @Lob
     @Column(columnDefinition = "LONGTEXT", nullable=false)
-    private Clob ancContents;
+    private String ancContents;
 
     @Column(columnDefinition = "VARCHAR(300)")
     private String ancKw;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancRegDate;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(referencedColumnName="mId" ,name = "ancRegId")
     private Members ancRegId;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancUpdateDate;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(referencedColumnName="mId" ,name = "ancUpdaterId")
     private Members ancUpdaterId;
 
-    @Column(columnDefinition = "INT DEFAULT 1", nullable = false)
+    @Column(columnDefinition = "INT DEFAULT 1")
     private int ancState;
 
-    @Column(columnDefinition = "INT DEFAULT 1", nullable = false)
+    @Column(columnDefinition = "INT DEFAULT 1")
     private int ancAuth;
 
     @OneToMany(mappedBy = "contentHitsCK.ancUuid")
@@ -65,9 +70,12 @@ public class AllNoticeContents {
     @OneToMany(mappedBy = "contentLikesCK.contentId")
     List<ContentLikes> likes = new ArrayList<>();
 
-    public AllNoticeContents(String ancTitle, String ancKw, Clob ancContents) {
+    @Builder
+    public AllNoticeContents(String ancTitle, String ancKw, String ancContents, Members member) {
         this.ancTitle = ancTitle;
         this.ancKw = ancKw;
         this.ancContents = ancContents;
+        this.ancRegId = member;
+        this.ancUpdaterId = member;
     }
 }

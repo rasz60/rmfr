@@ -8,19 +8,21 @@ export default {
       alert("형식에 맞는 아이디를 입력해주세요.");
     } else {
       // 정규식 검증이 끝난 경우, 중복 체크 api 호출
-      await this.axios.get("/rest/v1/usernameDupChk/" + value).then((res) => {
-        const jsonData = res.data;
-        // 중복인 경우 true, 아닌 경우 false
-        this.signupInfo.username.dupchk = !jsonData;
-        if (!jsonData) {
-          // 사용 가능한 경우에만 value 세팅
-          alert("사용 가능한 아이디입니다.");
-          this.signupInfo.username.lastdupchk = value;
-        } else {
-          // 중복인 경우 value 초기화
-          alert("이미 사용 중인 아이디입니다.");
-        }
-      });
+      await this.axios
+        .get("/rest/member/usernameDupChk/" + value)
+        .then((res) => {
+          const jsonData = res.data;
+          // 중복인 경우 true, 아닌 경우 false
+          this.signupInfo.username.dupchk = !jsonData;
+          if (!jsonData) {
+            // 사용 가능한 경우에만 value 세팅
+            alert("사용 가능한 아이디입니다.");
+            this.signupInfo.username.lastdupchk = value;
+          } else {
+            // 중복인 경우 value 초기화
+            alert("이미 사용 중인 아이디입니다.");
+          }
+        });
     }
   },
 
@@ -46,7 +48,7 @@ export default {
 
     // 인증번호 발송 api 호출
     await this.axios
-      .get("/rest/v1/emailValid/" + mailAddress + "/s")
+      .get("/rest/member/emailValid/" + mailAddress + "/s")
       .then((res) => {
         const jsonData = res.data;
         this.validCode = jsonData.token; // base64 encoding된 인증번호
@@ -190,7 +192,7 @@ export default {
 
     // 전송
     this.axios
-      .post("/api/signup/submit", JSON.stringify(signup))
+      .post("/api/member/signup/submit", JSON.stringify(signup))
       .then((res) => {
         if (res.status == 200) {
           alert("rmfr 가입이 완료되었습니다.");
