@@ -22,10 +22,7 @@ public class BoardApiController {
     @ResponseBody
     public String CreateNoticeItem(@RequestBody Map<String, Object> param, Principal principal) {
         param.put("userId", (principal == null ? "rassayz60" : principal.getName()));
-        log.info("param : " + param);
 
-        allNoticeContentsService.createItem(param);
-
-        return "/index";
+        return "".equals(allNoticeContentsService.createItem(param)) ? "500" : "200";
     }
 }

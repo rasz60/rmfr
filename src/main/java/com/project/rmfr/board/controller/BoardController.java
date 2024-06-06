@@ -24,5 +24,8 @@ public class BoardController {
         return "/index";
     }
 
-
+    @GetMapping("notice/item/d")
+    public String DetailsNoticeForm() {
+        return "/index";
+    }
 }

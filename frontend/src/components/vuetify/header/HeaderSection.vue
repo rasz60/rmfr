@@ -288,48 +288,6 @@ import headerMethods from "@v-js/header/methods.js";
         </v-row>
       </div>
     </v-card>
-    <!--
-    <div id="loginInfo">
-      <div id="info" v-show="this.login">
-        <div id="basicInfo" class="row">
-          <div id="thumImg" class="col-3">
-            <a
-              id="tmpImg"
-              class="display-6"
-              v-show="this.tmpImg != ''"
-              href="/member/settings"
-            >
-            </a>
-          </div>
-          <div id="basic" class="col-9">
-            <a id="mId" class="display-6" href="/member/settings"> </a>
-
-            <a id="mUd" class="display-6" href="/member/settings">
-              패스워드 변경까지 D-
-            </a>
-          </div>
-        </div>
-
-        <div
-          id="setting"
-          class="row infoMenu"
-          @click="fn_infoMenu('/member/settings')"
-        >
-          <div id="" class="infoTxt col-9">계정설정</div>
-          <div id="" class="infoIcon col-3">
-            <font-awesome-icon :icon="['fas', 'gear']" />
-          </div>
-        </div>
-
-        <div id="logout" class="row infoMenu" @click="fn_infoMenu('/logout')">
-          <div id="" class="infoTxt col-9">로그아웃</div>
-          <div id="" class="infoIcon col-3">
-            <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
-          </div>
-        </div>
-      </div>
-    </div>
-  -->
   </v-layout>
 </template>
 

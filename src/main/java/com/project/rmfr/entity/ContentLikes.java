@@ -16,4 +16,6 @@ public class ContentLikes {
 
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private String contentType;
+
+    public ContentLikes() {}
 }

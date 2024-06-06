@@ -1,17 +1,6 @@
 <script setup>
-import { ref } from "vue";
 import boardListData from "@v-js/contents/board/data.js";
 import boardListMethods from "@v-js/contents/board/methods.js";
-const page = ref(1);
-const items = Array.from({ length: 15 }, (k, v) => ({
-  seq: 15 - v,
-  title: "제목" + (15 - v),
-  regId: "작성자" + (15 - v),
-  regDate: new Date().toLocaleDateString(),
-  hits: Math.ceil(Math.random() * 10 + 1),
-}));
-const pageLength =
-  items.length % 10 > 0 ? items.length / 10 + 1 : items.length / 10;
 </script>
 
 <template>
@@ -55,14 +44,14 @@ const pageLength =
           v-for="item in items"
           :key="item"
           class="boardItem"
-          @click="fnShowDetails"
+          @click="fnShowDetails(item.ancUuid)"
         >
           <v-row>
             <v-col cols="1">{{ item.seq }}</v-col>
-            <v-col cols="5" class="title">{{ item.title }}</v-col>
-            <v-col cols="3">{{ item.regId }}</v-col>
-            <v-col cols="2">{{ item.regDate }}</v-col>
-            <v-col cols="1">{{ item.hits }}</v-col>
+            <v-col cols="5" class="title">{{ item.ancTitle }}</v-col>
+            <v-col cols="3">{{ item.ancRegId }}</v-col>
+            <v-col cols="2">{{ item.ancRegDate }}</v-col>
+            <v-col cols="1">{{ item.ancHits }}</v-col>
           </v-row>
         </v-list-item>
       </v-list>
@@ -85,9 +74,14 @@ export default {
     return boardListData;
   },
   mounted() {
-    this.boardListInit();
+    this.getItems(1);
   },
   methods: boardListMethods,
+  watch: {
+    page(v) {
+      this.getItems(v);
+    },
+  },
 };
 </script>
 

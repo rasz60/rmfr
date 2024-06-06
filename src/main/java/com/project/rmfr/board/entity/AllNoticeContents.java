@@ -64,11 +64,13 @@ public class AllNoticeContents {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int ancAuth;
 
-    @OneToMany(mappedBy = "contentHitsCK.ancUuid")
+    @OneToMany(mappedBy = "contentHitsCK.ancUuid", fetch = FetchType.EAGER)
     List<ContentHits> hits = new ArrayList<>();
 
-    @OneToMany(mappedBy = "contentLikesCK.contentId")
+    @OneToMany(mappedBy = "contentLikesCK.contentId", fetch = FetchType.EAGER)
     List<ContentLikes> likes = new ArrayList<>();
+
+    public AllNoticeContents() {}
 
     @Builder
     public AllNoticeContents(String ancTitle, String ancKw, String ancContents, Members member) {

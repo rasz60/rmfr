@@ -52,4 +52,6 @@ public class ContentComments {
 
     @Column(columnDefinition = "INT DEFAULT 1", nullable = false)
     private int ancCommentState;
+
+    public ContentComments() {}
 }

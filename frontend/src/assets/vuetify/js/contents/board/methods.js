@@ -1,17 +1,35 @@
+import { ref } from "vue";
 export default {
-  boardListInit() {
-    this.pageCnt = Math.floor(this.totalCnt / this.perCnt + 1);
-    var testIdx = this.currPage * this.perCnt;
+  async getItems(page) {
+    this.items = [];
 
-    if (this.totalCnt - testIdx > 0) {
-      this.start = this.totalCnt - testIdx + 1;
-      this.end = this.totalCnt - testIdx + 10;
-      this.listCnt = this.perCnt;
-    } else {
-      this.start = 1;
-      this.end = testIdx - this.totalCnt;
-      this.listCnt = this.end - this.start + 1;
-    }
+    await this.axios.get("/rest/board/getItems/" + page).then((res) => {
+      let contents = res.data.content;
+      let pages = res.data;
+      this.page = ref(page);
+      this.pageLength = pages.totalPages;
+
+      contents.forEach((v, i) => {
+        var totalEle = pages.totalElements;
+        var perItems = pages.size;
+        var currPage = pages.number;
+
+        var startSeq = totalEle - currPage * perItems;
+        this.totalCnt = totalEle;
+        let content = {
+          seq: startSeq - i,
+          ancUuid: v.ancUuid,
+          ancTitle: v.ancTitle,
+          ancRegId: v.ancRegId,
+          ancRegDate: v.ancRegDate.replace("T", " "),
+          ancHits: v.hits,
+        };
+        this.items.push(content);
+      });
+    });
+  },
+  fnSetItmes() {
+    console.log("");
   },
   pageMove(idx) {
     this.currPage = idx;
@@ -23,5 +41,8 @@ export default {
     var sort = this.sort[order].order;
     this.sort[order].order =
       sort == null ? "asc" : sort == "asc" ? "desc" : null;
+  },
+  fnShowDetails(ancUuid) {
+    location.href = "/board/notice/item/d?itemId=" + ancUuid;
   },
 };

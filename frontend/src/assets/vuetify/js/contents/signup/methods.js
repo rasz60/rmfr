@@ -45,7 +45,7 @@ export default {
   async sendValidCode() {
     // 메일 주소
     var mailAddress = this.signupInfo.email.value;
-
+    console.log("");
     // 인증번호 발송 api 호출
     await this.axios
       .get("/rest/member/emailValid/" + mailAddress + "/s")
@@ -56,7 +56,9 @@ export default {
         if (this.validCodeTime != null) {
           this.clearTimer(this.validCodeTime);
         }
-        document.querySelector("span#validCodeTimer").className = "";
+        document.querySelector(
+          "#vuetify_signup_frm span#validCodeTimer"
+        ).className = "";
         this.validCodeTime = this.setTimer(179); // 3분 타이머 적용
         this.signupInfo.email.cert = true;
         alert("인증번호가 발송되었습니다.");
@@ -67,7 +69,9 @@ export default {
   setTimer(time) {
     // 1초에 한 번 씩 반복
     let interval = setInterval(function () {
-      var span = document.querySelector("span#validCodeTimer");
+      var span = document.querySelector(
+        "#vuetify_signup_frm span#validCodeTimer"
+      );
       if (time == 0) {
         span.className = "expired";
         this.clearInterval(interval);

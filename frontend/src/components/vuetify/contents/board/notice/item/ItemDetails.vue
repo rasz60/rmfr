@@ -2,7 +2,7 @@
 
 <template>
   <v-sheet class="boardBody">
-    <v-form @submit.prevent id="createItemFrm" ref="form" method="post">
+    <v-form @submit.prevent id="editItemFrm" ref="form" method="post">
       <v-row class="body-row">
         <v-text-field
           prepend-icon="fas fa-t"
@@ -68,83 +68,22 @@
       </v-row>
     </v-form>
   </v-sheet>
-
-  <!--
-  <form id="createItemFrm" method="post" action="/board/notice/item/create">
-    <div class="row">
-      <div class="col-2">
-        <label for="title">제목</label>
-      </div>
-      <div class="col-10">
-        <input
-          type="text"
-          id="title"
-          name="ancTitle"
-          class="form-control"
-          v-model="title"
-          maxlength="300"
-          minlength="1"
-        />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <label for="tags">키워드</label>
-      </div>
-      <div class="col-10">
-        <div id="hashtag" class="form-control">
-          <div id="tagItems"></div>
-          <div id="tagIpt">
-            <input
-              type="text"
-              id="tags"
-              @keydown="fnHashTag($event)"
-              placeholder="영문 대소문자, 한글, 숫자, _, -만 사용해주세요."
-            />
-            <input type="hidden" name="ancKw" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <textarea
-          class="form-control"
-          name="ancCotents"
-          rows="20"
-          maxlength="3000"
-          minlength="1"
-        ></textarea>
-      </div>
-    </div>
-
-    <div class="row">
-      <div id="btnRow" class="col-12 d-flex justify-content-end">
-        <a class="btn btn-sm btn-outline-success" @click="fnSave">
-          <font-awesome-icon :icon="['fas', 'floppy-disk']" />
-        </a>
-        <a class="btn btn-sm btn-outline-danger">
-          <font-awesome-icon :icon="['fas', 'eraser']" />
-        </a>
-        <a class="btn btn-sm btn-outline-secondary" href="/board/notice">
-          <font-awesome-icon :icon="['far', 'rectangle-list']" />
-        </a>
-      </div>
-    </div>
-  </form>
-  -->
 </template>
 
 <script>
 export default {
   data() {
     return {
+      mode: "d",
+      editable: false,
       ancTitle: "",
       ancContents: "",
       ancKw: [],
     };
+  },
+
+  mounted() {
+    this.getItemDetails();
   },
   computed: {
     titleRules() {
@@ -199,6 +138,24 @@ export default {
     },
   },
   methods: {
+    async getItemDetails() {
+      var url = location.href;
+      var query = url.substring(url.indexOf("?"));
+      var param = new URLSearchParams(query);
+
+      await this.axios
+        .get("/rest/board/item/d/" + param.get("itemId"))
+        .then((res) => {
+          let jsonData = res.data;
+          console.log(jsonData);
+          this.ancTitle = jsonData.ancTitle;
+          this.ancContents = jsonData.ancContents;
+          if (jsonData.ancKw != null) {
+            this.ancKw = jsonData.ancKw;
+          }
+        });
+    },
+
     async fnSave() {
       var chk = await this.validate();
 
