@@ -24,11 +24,11 @@ public class ContentComments {
 
     @Column(columnDefinition = "BINARY(16)")
     private String ancParentCommentUuid;
-
+/*
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "anbUuid")
     private AllNoticeBoard anbUuid;
-
+*/
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "ancUuid")
     private AllNoticeContents ancUuid;

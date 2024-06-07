@@ -3,8 +3,12 @@ package com.project.rmfr.board.service.impl;
 import com.project.rmfr.board.dto.BoardItemDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.repository.AllNoticeContentsRepository;
+import com.project.rmfr.board.repository.ContentHitsRepository;
+import com.project.rmfr.board.repository.ContentLikesRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.spec.BoardSpecification;
+import com.project.rmfr.entity.ContentHits;
+import com.project.rmfr.entity.ContentLikes;
 import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.service.MemberService;
 import jakarta.transaction.Transactional;
@@ -13,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -30,6 +35,8 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
     private final MemberService memberService;
     private final AllNoticeContentsRepository allNoticeContentsRepository;
+    private final ContentHitsRepository contentHitsRepository;
+    private final ContentLikesRepository contentLikesRepository;
     @Override
     public String createItem(Map<String, Object> param) {
         String rst = "";
@@ -62,6 +69,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     }
 
 
+    @Transactional
     public Page<BoardItemDto> getItems(String page) {
         Page<BoardItemDto> pageItems = null;
         try {
@@ -77,10 +85,9 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         return pageItems;
     }
 
+    @Transactional
     public BoardItemDto getItemDetails(String itemId, String mId) {
         BoardItemDto dto = new BoardItemDto();
-
-
         try {
             Optional<AllNoticeContents> ancOptional = allNoticeContentsRepository.findByAncUuid(itemId);
 
@@ -93,15 +100,20 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                 }
 
                 if (! "guest".equals(mId) ) {
-                    Members loginUser = memberService.getSimpleMemberInfo(mId);
+                    Members loginUser = memberService.loadUser(mId);
 
                     if ( loginUser.getMId().equals(dto.getAncRegId()) || loginUser.getMLevel() > 1 ) {
                         dto.setEditable(true);
                         dto.setDeletable(true);
                         dto.setVisible(true);
                     }
+
+                    if ( !mId.equals(dto.getAncRegId())) {
+                        hitsUp(anc, loginUser);
+                    }
+
+                    dto.setLikeItem(setLikeItem(anc, loginUser));
                 }
-                System.out.println(dto.getAncUuid());
 
             }
 
@@ -178,5 +190,64 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         }
 
         return rst;
+    }
+
+    public String chngLikeFlag(String ancUuid, boolean flag, String mId) {
+        String rst = "";
+        try {
+            ContentLikes like = ContentLikes.builder()
+                    .anc(allNoticeContentsRepository.findByAncUuid(ancUuid).get())
+                    .likeId(memberService.loadUser(mId))
+                    .build();
+            if (flag) {
+                rst = "ANC".equals(contentLikesRepository.save(like).getContentType()) ? "200" : "500";
+            } else {
+                contentLikesRepository.delete(like);
+                rst = "200";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rst = "500";
+        }
+
+        return rst;
+    }
+
+    public String hitsUp(AllNoticeContents anc, Members loginUser) {
+        String rst = "";
+        boolean chk = true;
+        try {
+
+            List<ContentHits> ch = contentHitsRepository.findAll(BoardSpecification.withAncHitsId(loginUser.getMEntrId())
+                                                                                    .and(BoardSpecification.withAncUuid(anc.getAncUuid())));
+
+
+            if ( ch.size() == 0 ) {
+                ContentHits hit = ContentHits.builder()
+                                            .anc(anc)
+                                            .hits(loginUser)
+                                            .build();
+                rst = !"".equals(contentHitsRepository.save(hit).getContentHitsCK().getAncUuid().getAncUuid()) ? "200" : "500";
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return rst;
+    }
+
+    public boolean setLikeItem(AllNoticeContents anc, Members loginUser) {
+        boolean chk = false;
+
+        try {
+            List<ContentLikes> ch = contentLikesRepository.findAll(BoardSpecification.withContentLikerId(loginUser.getMEntrId())
+                    .and(BoardSpecification.withContentId(anc.getAncUuid())));
+
+            chk = ch.size() > 0;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return chk;
     }
 }

@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "allNoticeBoard")
-@Getter
-@Setter
+//@Entity
+//@Table(name = "allNoticeBoard")
+//@Getter
+//@Setter
 public class AllNoticeBoard {
     // auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
+/*
     @Id
     @GeneratedValue(generator="uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
@@ -47,5 +48,5 @@ public class AllNoticeBoard {
 
     @OneToMany(mappedBy="anbUuid")
     List<AllNoticeContents> anc = new ArrayList<>();
-
+*/
 }

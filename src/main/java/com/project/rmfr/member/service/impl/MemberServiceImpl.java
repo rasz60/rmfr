@@ -4,6 +4,7 @@ import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.repository.MemberRepository;
 import com.project.rmfr.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
+    @Transactional
     public Members loadUser(String mId) {
         return (Members) loadUserByUsername(mId);
     }

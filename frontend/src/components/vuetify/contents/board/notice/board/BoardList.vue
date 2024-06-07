@@ -35,9 +35,10 @@ import boardListMethods from "@v-js/contents/board/methods.js";
           <v-row>
             <v-col cols="1" @click="fnSortOrder(0)">순번</v-col>
             <v-col cols="5" @click="fnSortOrder(1)">제목</v-col>
-            <v-col cols="3" @click="fnSortOrder(2)">작성자</v-col>
+            <v-col cols="2" @click="fnSortOrder(2)">작성자</v-col>
             <v-col cols="2" @click="fnSortOrder(3)">작성일</v-col>
             <v-col cols="1" @click="fnSortOrder(4)">조회수</v-col>
+            <v-col cols="1" @click="fnSortOrder(5)">좋아요</v-col>
           </v-row>
         </v-list-item>
         <v-list-item
@@ -49,9 +50,10 @@ import boardListMethods from "@v-js/contents/board/methods.js";
           <v-row>
             <v-col cols="1">{{ item.seq }}</v-col>
             <v-col cols="5" class="title">{{ item.ancTitle }}</v-col>
-            <v-col cols="3">{{ item.ancRegId }}</v-col>
+            <v-col cols="2">{{ item.ancRegId }}</v-col>
             <v-col cols="2">{{ item.ancRegDate }}</v-col>
             <v-col cols="1">{{ item.ancHits }}</v-col>
+            <v-col cols="1">{{ item.ancLikes }}</v-col>
           </v-row>
         </v-list-item>
       </v-list>

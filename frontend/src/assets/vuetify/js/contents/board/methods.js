@@ -23,6 +23,7 @@ export default {
           ancRegId: v.ancRegId,
           ancRegDate: v.ancRegDate.replace("T", " "),
           ancHits: v.hits,
+          ancLikes: v.likes,
         };
         this.items.push(content);
       });

@@ -8,6 +8,7 @@ import lombok.*;
 import java.io.Serializable;
 
 @Embeddable
+@AllArgsConstructor
 @Data
 public class ContentLikesCK implements Serializable {
 
@@ -16,6 +17,8 @@ public class ContentLikesCK implements Serializable {
     private AllNoticeContents contentId;
 
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "mId", name="contentLikerId")
+    @JoinColumn(referencedColumnName = "mEntrId", name="contentLikerId")
     private Members contentLikerId;
+
+    public ContentLikesCK() {}
 }

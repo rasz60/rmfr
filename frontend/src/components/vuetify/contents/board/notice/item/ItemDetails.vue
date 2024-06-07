@@ -22,8 +22,8 @@
           :prepend-icon="editmode ? 'fas fa-filter' : ''"
           :variant="editmode ? 'outlined' : 'solo'"
           chips
-          clearable
-          multiple
+          :clearable="editmode"
+          :multiple="editmode"
           :rules="keywordRules"
           name="ancKw"
           :readonly="!editmode"
@@ -57,6 +57,13 @@
         ></v-textarea>
       </v-row>
       <v-row id="btn-row" class="body-row">
+        <v-btn
+          :icon="likeItem ? 'fas fa-heart' : 'far fa-heart'"
+          class="board-item-btn"
+          @click="fnLikes"
+          v-show="!editmode"
+          :color="likeItem ? 'red' : ''"
+        ></v-btn>
         <v-btn
           icon="fas fa-save"
           class="board-item-btn"
@@ -92,6 +99,7 @@ export default {
       editmode: false,
       editable: false,
       deletable: false,
+      likeItem: false,
       ancUuid: "",
       ancTitle: "",
       ancContents: "",
@@ -174,6 +182,7 @@ export default {
           }
           this.editable = jsonData.editable;
           this.deletable = jsonData.deletable;
+          this.likeItem = jsonData.likeItem;
         });
     },
 
@@ -202,6 +211,15 @@ export default {
             }
           });
       }
+    },
+
+    async fnLikes() {
+      this.likeItem = !this.likeItem;
+      await this.axios
+        .get("/rest/board/item/likes/" + this.ancUuid + "/" + this.likeItem)
+        .then((res) => {
+          console.log(res.data);
+        });
     },
 
     async validate() {

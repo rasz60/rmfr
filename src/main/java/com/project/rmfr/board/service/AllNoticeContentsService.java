@@ -15,8 +15,6 @@ public interface AllNoticeContentsService {
     public Page<BoardItemDto> getItems(String page);
     public BoardItemDto getItemDetails(String itemId, String mId);
     public String updateItem(Map<String, Object> param);
-
-    public String deleteItem(String ancUuid, String userId);
-
-    //public String hitsUp(String ancUuid, String userId);
+    public String deleteItem(String ancUuid, String mId);
+    public String chngLikeFlag(String ancUuid, boolean flag, String mId);
 }

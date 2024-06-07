@@ -16,9 +16,11 @@ public class BoardItemDto {
     private LocalDateTime ancUpdateDate;
     private String ancKw;
     private int hits;
+    private int likes;
     private boolean visible = true;
     private boolean editable = false;
     private boolean deletable = false;
+    private boolean likeItem = false;
 
     public BoardItemDto() {}
 
@@ -32,5 +34,6 @@ public class BoardItemDto {
         this.ancUpdateDate = anc.getAncUpdateDate();
         this.ancKw = anc.getAncKw();
         this.hits = anc.getHits().size();
+        this.likes = anc.getLikes().size();
     }
 }

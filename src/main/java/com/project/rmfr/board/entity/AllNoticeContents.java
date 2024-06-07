@@ -29,11 +29,11 @@ public class AllNoticeContents {
     @GenericGenerator(name="uuid2", strategy = "uuid2")
     @Column(columnDefinition = "VARCHAR(100)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     private String ancUuid;
-
+/*
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "anbUuid")
     private AllNoticeBoard anbUuid;
-
+*/
     @Column(columnDefinition = "VARCHAR(1000)", nullable = false)
     private String ancTitle;
 
@@ -48,14 +48,14 @@ public class AllNoticeContents {
     private LocalDateTime ancRegDate;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(referencedColumnName="mId" ,name = "ancRegId")
+    @JoinColumn(referencedColumnName="mEntrId" ,name = "ancRegId")
     private Members ancRegId;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancUpdateDate;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(referencedColumnName="mId" ,name = "ancUpdaterId")
+    @JoinColumn(referencedColumnName="mEntrId" ,name = "ancUpdaterId")
     private Members ancUpdaterId;
 
     @Column(columnDefinition = "INT DEFAULT 1")

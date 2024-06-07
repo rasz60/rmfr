@@ -59,7 +59,6 @@
           class="board-item-btn"
           @click="fnSave"
         ></v-btn>
-        <v-btn icon="fas fa-eraser" class="board-item-btn"></v-btn>
         <v-btn
           icon="fas fa-list"
           class="board-item-btn"

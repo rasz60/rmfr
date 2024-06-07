@@ -29,7 +29,11 @@ public class BoardRestApiController {
 
     @GetMapping("/rest/board/item/d/{itemId}")
     public BoardItemDto getItemDetails(@PathVariable("itemId") String itemId, Principal principal) {
-        System.out.println(principal);
         return allNoticeContentsService.getItemDetails(itemId, principal == null ? "guest" : principal.getName());
     };
+
+    @GetMapping("/rest/board/item/likes/{ancUuid}/{flag}")
+    public String chngLikeFlag(@PathVariable("ancUuid") String ancUuid, @PathVariable("flag") boolean flag, Principal principal) {
+        return allNoticeContentsService.chngLikeFlag(ancUuid, flag, principal.getName());
+    }
 }
