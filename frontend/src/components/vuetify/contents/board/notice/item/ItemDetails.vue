@@ -5,12 +5,13 @@
     <v-form @submit.prevent id="editItemFrm" ref="form" method="post">
       <v-row class="body-row">
         <v-text-field
-          prepend-icon="fas fa-t"
-          variant="outlined"
+          :prepend-icon="editmode ? 'fas fa-t' : ''"
+          :variant="editmode ? 'outlined' : 'solo'"
           label="제목(title)"
           v-model="ancTitle"
           :rules="titleRules"
           name="ancTitle"
+          :readonly="!editmode"
         ></v-text-field>
       </v-row>
       <v-row class="body-row">
@@ -18,13 +19,14 @@
           v-model="ancKw"
           :items="ancKw"
           label="키워드(keywords)"
-          prepend-icon="fas fa-filter"
-          variant="outlined"
+          :prepend-icon="editmode ? 'fas fa-filter' : ''"
+          :variant="editmode ? 'outlined' : 'solo'"
           chips
           clearable
           multiple
           :rules="keywordRules"
           name="ancKw"
+          :readonly="!editmode"
         >
           <template v-slot:selection="{ attrs, item, select, selected }">
             <v-chip
@@ -43,14 +45,15 @@
       </v-row>
       <v-row class="body-row">
         <v-textarea
-          prepend-icon="fas fa-comments"
-          variant="outlined"
+          :prepend-icon="editmode ? 'fas fa-comments' : ''"
+          :variant="editmode ? 'outlined' : 'solo'"
           rows="15"
           label="내용(contents)"
           auto-grow
           :rules="contentsRules"
           name="ancContents"
           v-model="ancContents"
+          :readonly="!editmode"
         ></v-textarea>
       </v-row>
       <v-row id="btn-row" class="body-row">
@@ -58,8 +61,20 @@
           icon="fas fa-save"
           class="board-item-btn"
           @click="fnSave"
+          v-show="editmode"
         ></v-btn>
-        <v-btn icon="fas fa-eraser" class="board-item-btn"></v-btn>
+        <v-btn
+          icon="fas fa-wrench"
+          class="board-item-btn"
+          v-show="editable && !editmode"
+          @click.stop="editmode = !editmode"
+        ></v-btn>
+        <v-btn
+          icon="fas fa-eraser"
+          v-show="deletable"
+          class="board-item-btn"
+          @click="fnDeleteItem"
+        ></v-btn>
         <v-btn
           icon="fas fa-list"
           class="board-item-btn"
@@ -74,8 +89,10 @@
 export default {
   data() {
     return {
-      mode: "d",
+      editmode: false,
       editable: false,
+      deletable: false,
+      ancUuid: "",
       ancTitle: "",
       ancContents: "",
       ancKw: [],
@@ -147,12 +164,16 @@ export default {
         .get("/rest/board/item/d/" + param.get("itemId"))
         .then((res) => {
           let jsonData = res.data;
-          console.log(jsonData);
+          this.ancUuid = jsonData.ancUuid;
           this.ancTitle = jsonData.ancTitle;
           this.ancContents = jsonData.ancContents;
-          if (jsonData.ancKw != null) {
-            this.ancKw = jsonData.ancKw;
+          if (jsonData.ancKw != null || jsonData.ancKw != "") {
+            var kw = jsonData.ancKw.split("|");
+            kw.splice(kw.length - 1, 1);
+            this.ancKw = kw;
           }
+          this.editable = jsonData.editable;
+          this.deletable = jsonData.deletable;
         });
     },
 
@@ -161,18 +182,19 @@ export default {
 
       if (chk) {
         const content = {
+          ancUuid: this.ancUuid,
           ancTitle: this.ancTitle,
           ancContents: this.ancContents,
           ancKw: this.ancKw,
         };
 
         await this.axios
-          .post("/api/board/notice/item/create", JSON.stringify(content))
+          .post("/api/board/notice/item/update", JSON.stringify(content))
           .then((res) => {
             var rst = res.data;
 
             if (rst == "200") {
-              alert("게시글 저장이 완료되었습니다.");
+              alert("게시글 수정이 완료되었습니다.");
               location.href = "/board/notice";
             } else {
               alert("게시글 저장에 실패하였습니다. 관리자에게 문의해주세요.");
@@ -193,6 +215,23 @@ export default {
 
     remove(item) {
       this.chips.splice(this.chips.indexOf(item), 1);
+    },
+
+    async fnDeleteItem() {
+      if (confirm("게시물을 삭제할까요?")) {
+        await this.axios
+          .get("/api/board/notice/item/delete/" + this.ancUuid)
+          .then((res) => {
+            if (res.status == "200") {
+              alert("게시물 삭제가 완료되었습니다.");
+              location.href = "/board/notice";
+            } else {
+              alert("게시물 삭제에 실패했습니다. 관리자에게 문의해주세요.");
+            }
+          });
+      } else {
+        return false;
+      }
     },
   },
 };

@@ -14,7 +14,7 @@ public class BoardItemDto {
     private LocalDateTime ancRegDate;
     private String ancUpdaterId;
     private LocalDateTime ancUpdateDate;
-    private String[] ancKw;
+    private String ancKw;
     private int hits;
     private boolean visible = true;
     private boolean editable = false;
@@ -30,9 +30,7 @@ public class BoardItemDto {
         this.ancRegDate = anc.getAncRegDate();
         this.ancUpdaterId = anc.getAncUpdaterId().getMId();
         this.ancUpdateDate = anc.getAncUpdateDate();
-        if (! "".equals(anc.getAncKw()) ) {
-            this.ancKw = anc.getAncKw().split("|");
-        }
+        this.ancKw = anc.getAncKw();
         this.hits = anc.getHits().size();
     }
 }

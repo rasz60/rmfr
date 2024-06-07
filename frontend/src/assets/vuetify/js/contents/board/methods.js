@@ -28,20 +28,6 @@ export default {
       });
     });
   },
-  fnSetItmes() {
-    console.log("");
-  },
-  pageMove(idx) {
-    this.currPage = idx;
-    //this.selectPage(idx);
-    this.boardListInit();
-  },
-  selectPage() {},
-  fnSortOrder(order) {
-    var sort = this.sort[order].order;
-    this.sort[order].order =
-      sort == null ? "asc" : sort == "asc" ? "desc" : null;
-  },
   fnShowDetails(ancUuid) {
     location.href = "/board/notice/item/d?itemId=" + ancUuid;
   },

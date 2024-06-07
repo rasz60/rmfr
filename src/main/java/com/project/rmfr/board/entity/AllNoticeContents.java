@@ -79,5 +79,6 @@ public class AllNoticeContents {
         this.ancContents = ancContents;
         this.ancRegId = member;
         this.ancUpdaterId = member;
+        this.ancState = 2;
     }
 }

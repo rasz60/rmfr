@@ -29,6 +29,7 @@ public class BoardRestApiController {
 
     @GetMapping("/rest/board/item/d/{itemId}")
     public BoardItemDto getItemDetails(@PathVariable("itemId") String itemId, Principal principal) {
+        System.out.println(principal);
         return allNoticeContentsService.getItemDetails(itemId, principal == null ? "guest" : principal.getName());
     };
 }

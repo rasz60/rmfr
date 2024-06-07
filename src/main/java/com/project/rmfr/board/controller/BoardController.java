@@ -28,4 +28,5 @@ public class BoardController {
     public String DetailsNoticeForm() {
         return "/index";
     }
+
 }

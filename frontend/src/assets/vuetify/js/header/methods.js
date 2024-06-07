@@ -8,7 +8,6 @@ export default {
     if (param.size > 0 && param.has("loginError")) {
       alert("로그인 정보를 다시 확인해주세요.");
       this.fn_toggleInfo();
-      document.querySelector("input#mPw").focus();
     } else {
       await this.axios.get("/rest/member/loginchk").then((res) => {
         var jsonData = res.data.info;
@@ -65,17 +64,7 @@ export default {
   },
 
   fn_toggleInfo() {
-    var info = document.querySelector("div#loginInfo");
-    var curr = info.style.display;
-    var chk = curr == "" || curr == "none";
-
-    if (chk) {
-      info.style.display = "flex";
-    } else {
-      info.style.display = "none";
-      document.querySelector("input#mId").value = "";
-      document.querySelector("input#mPw").value = "";
-    }
+    this.loginDrawer = true;
   },
   fnFlagInit(type) {
     // 로그인 버튼 클릭 시 모든 데이터 초기화
