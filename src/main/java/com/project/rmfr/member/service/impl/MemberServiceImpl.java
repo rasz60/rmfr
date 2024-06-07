@@ -1,5 +1,6 @@
 package com.project.rmfr.member.service.impl;
 
+import com.project.rmfr.member.dto.MembersDto;
 import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.repository.MemberRepository;
 import com.project.rmfr.member.service.MemberService;
@@ -82,52 +83,38 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
 
     @Override
-    public Members getSimpleMemberInfo(String username) {
-        Members member = new Members();
+    public MembersDto getSimpleMemberInfo(String username) {
+        MembersDto memberDto = null;
 
         try {
             Optional<Members> memberOptional = memberRepository.findBymId(username);
 
             if (memberOptional.isPresent()) {
-                Members tmpMember = memberOptional.get();
-
-                member.setMId(tmpMember.getMId());
-                member.setThum(tmpMember.getThum());
-                member.setMLevel(tmpMember.getMLevel());
-                member.setMPwUpdateDate(tmpMember.getMPwUpdateDate());
+                memberDto = memberDto.of(memberOptional.get(), 0);
             }
         } catch (Exception e) {
             log.info("getMemberByUsername Throw Exception.");
             e.printStackTrace();
         }
 
-        return member;
+        return memberDto;
     }
 
-    public Members getDetailMemberInfo(String username) {
-        Members member = new Members();
+    public MembersDto getDetailMemberInfo(String username) {
+        MembersDto memberDto = null;
 
         try {
             Optional<Members> memberOptional = memberRepository.findBymId(username);
 
             if (memberOptional.isPresent()) {
-                Members tmpMember = memberOptional.get();
-
-                member.setMId(tmpMember.getMId());
-                member.setMEmail(tmpMember.getMEmail());
-                member.setMPhone(tmpMember.getMPhone());
-                member.setMAddr1(tmpMember.getMAddr1());
-                member.setMAddr2(tmpMember.getMAddr2());
-                member.setMAddr3(tmpMember.getMAddr3());
-                member.setThum(tmpMember.getThum());
-
+                memberDto = memberDto.of(memberOptional.get(), 1);
             }
         } catch (Exception e) {
             log.info("getMemberByUsername Throw Exception.");
             e.printStackTrace();
         }
 
-        return member;
+        return memberDto;
     }
 
     public boolean passwordChecked(String username, String password) {

@@ -55,7 +55,6 @@ public class Members implements UserDetails {
     @Column(columnDefinition = "VARCHAR(1000)")
     private String thum;
 
-
     public Members() {}
 
     @Builder

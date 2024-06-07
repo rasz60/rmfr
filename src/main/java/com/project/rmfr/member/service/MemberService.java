@@ -1,5 +1,6 @@
 package com.project.rmfr.member.service;
 
+import com.project.rmfr.member.dto.MembersDto;
 import com.project.rmfr.member.entity.Members;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,9 +12,9 @@ public interface MemberService {
     public String signupMember(Map<String, Object> param);
     public boolean usernameDuplicateChk(String username);
 
-    public Members getSimpleMemberInfo(String username);
+    public MembersDto getSimpleMemberInfo(String username);
 
-    public Members getDetailMemberInfo(String username);
+    public MembersDto getDetailMemberInfo(String username);
 
     public boolean passwordChecked(String username, String password);
 

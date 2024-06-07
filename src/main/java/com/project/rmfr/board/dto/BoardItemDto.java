@@ -1,9 +1,11 @@
 package com.project.rmfr.board.dto;
 
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.entity.ContentComments;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class BoardItemDto {
@@ -15,6 +17,7 @@ public class BoardItemDto {
     private String ancUpdaterId;
     private LocalDateTime ancUpdateDate;
     private String ancKw;
+    private List<ContentComments> ancComments;
     private int hits;
     private int likes;
     private boolean visible = true;
@@ -32,6 +35,7 @@ public class BoardItemDto {
         this.ancRegDate = anc.getAncRegDate();
         this.ancUpdaterId = anc.getAncUpdaterId().getMId();
         this.ancUpdateDate = anc.getAncUpdateDate();
+        this.ancComments = anc.getComments();
         this.ancKw = anc.getAncKw();
         this.hits = anc.getHits().size();
         this.likes = anc.getLikes().size();

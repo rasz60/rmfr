@@ -1,6 +1,7 @@
 package com.project.rmfr.board.entity;
 
 import com.project.rmfr.board.entity.AllNoticeBoard;
+import com.project.rmfr.entity.ContentComments;
 import com.project.rmfr.entity.ContentHits;
 import com.project.rmfr.entity.ContentLikes;
 import com.project.rmfr.member.entity.Members;
@@ -70,6 +71,8 @@ public class AllNoticeContents {
     @OneToMany(mappedBy = "contentLikesCK.contentId", fetch = FetchType.EAGER)
     List<ContentLikes> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ancUuid", fetch = FetchType.EAGER)
+    List<ContentComments> comments = new ArrayList<>();
     public AllNoticeContents() {}
 
     @Builder

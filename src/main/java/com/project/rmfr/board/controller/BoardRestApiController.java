@@ -7,13 +7,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +32,10 @@ public class BoardRestApiController {
     @GetMapping("/rest/board/item/likes/{ancUuid}/{flag}")
     public String chngLikeFlag(@PathVariable("ancUuid") String ancUuid, @PathVariable("flag") boolean flag, Principal principal) {
         return allNoticeContentsService.chngLikeFlag(ancUuid, flag, principal.getName());
+    }
+
+    @PostMapping("/rest/board/item/regComment")
+    public String regComment(@RequestBody Map<String, Object> param, Principal principal) {
+        return allNoticeContentsService.regComment(param, principal.getName());
     }
 }

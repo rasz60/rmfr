@@ -3,10 +3,12 @@ package com.project.rmfr.board.service.impl;
 import com.project.rmfr.board.dto.BoardItemDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.repository.AllNoticeContentsRepository;
+import com.project.rmfr.board.repository.ContentCommentsRepository;
 import com.project.rmfr.board.repository.ContentHitsRepository;
 import com.project.rmfr.board.repository.ContentLikesRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.spec.BoardSpecification;
+import com.project.rmfr.entity.ContentComments;
 import com.project.rmfr.entity.ContentHits;
 import com.project.rmfr.entity.ContentLikes;
 import com.project.rmfr.member.entity.Members;
@@ -37,6 +39,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     private final AllNoticeContentsRepository allNoticeContentsRepository;
     private final ContentHitsRepository contentHitsRepository;
     private final ContentLikesRepository contentLikesRepository;
+    private final ContentCommentsRepository contentCommentsRepository;
     @Override
     public String createItem(Map<String, Object> param) {
         String rst = "";
@@ -192,6 +195,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         return rst;
     }
 
+    @Override
     public String chngLikeFlag(String ancUuid, boolean flag, String mId) {
         String rst = "";
         try {
@@ -209,6 +213,28 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
             e.printStackTrace();
             rst = "500";
         }
+
+        return rst;
+    }
+
+    @Override
+    public String regComment(Map<String, Object> param, String mId) {
+        String rst = "";
+        String ancUuid = (String) param.get("ancUuid");
+        String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
+        String ancComment = (String) param.get("ancComment");
+        String ancDepth = (String) param.get("ancDepth");
+
+        if ( "".equals(ancParentCommentUuid) ) {
+            ContentComments comment = ContentComments.builder()
+                    .ancParentCommentUuid(ancParentCommentUuid)
+                    .comment(ancComment)
+                    .anc(allNoticeContentsRepository.findByAncUuid(ancUuid).get())
+                    .member(memberService.loadUser(mId))
+                    .build();
+            contentCommentsRepository.save(comment);
+        }
+
 
         return rst;
     }

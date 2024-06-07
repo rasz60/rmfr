@@ -1,5 +1,6 @@
 package com.project.rmfr.member.controller;
 
+import com.project.rmfr.member.dto.MembersDto;
 import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.service.MemberService;
 import com.project.rmfr.utils.MailUtils;
@@ -45,8 +46,8 @@ public class MemberRestApiController {
      * 2. userid로 간단한 유저 정보 return
      */
     @GetMapping("/rest/member/loginchk")
-    public Map<String, Members> loginChk(Principal principal) {
-        Map<String, Members> loginInfo = new HashMap<>();
+    public Map<String, MembersDto> loginChk(Principal principal) {
+        Map<String, MembersDto> loginInfo = new HashMap<>();
         try {
             String mId = principal.getName();
             loginInfo.put("info", memberService.getSimpleMemberInfo(mId));
@@ -60,8 +61,8 @@ public class MemberRestApiController {
      * 회원 정보 상세(회원 정보 수정 화면)
      */
     @GetMapping("/rest/member/loginUserDetails")
-    public Map<String, Members> loginUserDetails(Principal principal) {
-        Map<String, Members> loginInfo = new HashMap<>();
+    public Map<String, MembersDto> loginUserDetails(Principal principal) {
+        Map<String, MembersDto> loginInfo = new HashMap<>();
         try {
             String mId = principal.getName();
             loginInfo.put("info", memberService.getDetailMemberInfo(mId));

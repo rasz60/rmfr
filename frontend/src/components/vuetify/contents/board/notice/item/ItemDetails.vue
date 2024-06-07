@@ -3,6 +3,38 @@
 <template>
   <v-sheet class="boardBody">
     <v-form @submit.prevent id="editItemFrm" ref="form" method="post">
+      <v-row id="btn-row" class="body-row">
+        <v-btn
+          :icon="likeItem ? 'fas fa-heart' : 'far fa-heart'"
+          class="board-item-btn"
+          @click="fnLikes"
+          v-show="!editmode"
+          :color="likeItem ? 'red' : ''"
+        ></v-btn>
+        <v-btn
+          icon="fas fa-save"
+          class="board-item-btn"
+          @click="fnSave"
+          v-show="editmode"
+        ></v-btn>
+        <v-btn
+          icon="fas fa-wrench"
+          class="board-item-btn"
+          v-show="editable && !editmode"
+          @click.stop="editmode = !editmode"
+        ></v-btn>
+        <v-btn
+          icon="fas fa-eraser"
+          v-show="deletable"
+          class="board-item-btn"
+          @click="fnDeleteItem"
+        ></v-btn>
+        <v-btn
+          icon="fas fa-list"
+          class="board-item-btn"
+          href="/board/notice"
+        ></v-btn>
+      </v-row>
       <v-row class="body-row">
         <v-text-field
           :prepend-icon="editmode ? 'fas fa-t' : ''"
@@ -56,38 +88,37 @@
           :readonly="!editmode"
         ></v-textarea>
       </v-row>
-      <v-row id="btn-row" class="body-row">
-        <v-btn
-          :icon="likeItem ? 'fas fa-heart' : 'far fa-heart'"
-          class="board-item-btn"
-          @click="fnLikes"
-          v-show="!editmode"
-          :color="likeItem ? 'red' : ''"
-        ></v-btn>
-        <v-btn
-          icon="fas fa-save"
-          class="board-item-btn"
-          @click="fnSave"
-          v-show="editmode"
-        ></v-btn>
-        <v-btn
-          icon="fas fa-wrench"
-          class="board-item-btn"
-          v-show="editable && !editmode"
-          @click.stop="editmode = !editmode"
-        ></v-btn>
-        <v-btn
-          icon="fas fa-eraser"
-          v-show="deletable"
-          class="board-item-btn"
-          @click="fnDeleteItem"
-        ></v-btn>
-        <v-btn
-          icon="fas fa-list"
-          class="board-item-btn"
-          href="/board/notice"
-        ></v-btn>
-      </v-row>
+
+      <v-card>
+        <v-row class="body-row" :v-show="!editmode">
+          <v-col cols="1"></v-col>
+          <v-col cols="10">
+            <v-textarea
+              variant="underlined"
+              rows="1"
+              auto-grow
+              label="댓글"
+              name="ancContents"
+              v-model="comment"
+            ></v-textarea>
+          </v-col>
+          <v-col cols="1" id="commentBtnCol">
+            <v-btn icon="far fa-comment-dots" @click="fnRegComment"></v-btn>
+          </v-col>
+        </v-row>
+        <v-row
+          v-show="ancComments.length > 0"
+          v-for="comment in ancComments"
+          :key="comment"
+        >
+          <v-col cols="1"></v-col>
+          <v-col cols="10" class="comment">{{ comment.ancComment }}</v-col>
+          <v-col cols="1"></v-col>
+        </v-row>
+        <v-row v-show="ancComments.length == 0" id="not-comment">
+          아직 작성된 댓글이 없습니다.
+        </v-row>
+      </v-card>
     </v-form>
   </v-sheet>
 </template>
@@ -104,9 +135,11 @@ export default {
       ancTitle: "",
       ancContents: "",
       ancKw: [],
+      ancComments: [],
+      comment: "",
+      ancParentCommentUuid: "",
     };
   },
-
   mounted() {
     this.getItemDetails();
   },
@@ -183,6 +216,8 @@ export default {
           this.editable = jsonData.editable;
           this.deletable = jsonData.deletable;
           this.likeItem = jsonData.likeItem;
+          this.ancComments = jsonData.ancComments;
+          console.log(jsonData.ancComments);
         });
     },
 
@@ -219,6 +254,21 @@ export default {
         .get("/rest/board/item/likes/" + this.ancUuid + "/" + this.likeItem)
         .then((res) => {
           console.log(res.data);
+        });
+    },
+
+    async fnRegComment() {
+      const comment = {
+        ancUuid: this.ancUuid,
+        ancParentCommentUuid: this.ancParentCommentUuid,
+        ancCommentDepth: 0,
+        ancComment: this.comment,
+      };
+
+      await this.axios
+        .post("/rest/board/item/regComment", JSON.stringify(comment))
+        .then((res) => {
+          console.log(res.status);
         });
     },
 
@@ -274,5 +324,30 @@ export default {
     margin-left: 5px;
     margin-right: 5px;
   }
+}
+
+#commentBtnCol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    margin-top: -20px;
+  }
+}
+
+#not-comment {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  text-align: center;
+  font-style: italic;
+  color: #4e4e4e;
+}
+
+.comment {
+  text-align: left;
 }
 </style>
