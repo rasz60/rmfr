@@ -384,7 +384,6 @@ export default {
   },
   methods: headerMethods,
   mounted() {
-    console.log()
     this.fn_loginChk();
   },
 };

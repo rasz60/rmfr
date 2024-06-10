@@ -91,8 +91,8 @@
 
       <v-card>
         <v-row class="body-row" :v-show="!editmode">
-          <v-col cols="1"></v-col>
-          <v-col cols="10">
+          <v-col cols="2"></v-col>
+          <v-col cols="8">
             <v-textarea
               variant="underlined"
               rows="1"
@@ -100,9 +100,10 @@
               label="댓글"
               name="ancContents"
               v-model="comment"
+              :rules="commentsRules"
             ></v-textarea>
           </v-col>
-          <v-col cols="1" id="commentBtnCol">
+          <v-col cols="2" id="commentBtnCol">
             <v-btn icon="far fa-comment-dots" @click="fnRegComment"></v-btn>
           </v-col>
         </v-row>
@@ -111,21 +112,31 @@
           v-for="comment in ancComments"
           :key="comment"
         >
-          <v-col cols="1" class="register"
+          <v-col cols="2" class="register"
             >@{{ comment.ancCommenterId.mid }}</v-col
           >
-          <v-col cols="10" class="comment">{{ comment.ancComment }}</v-col>
-          <v-col cols="1">
+          <v-col
+            cols="8"
+            :class="comment.ancCommentState == 0 ? 'comment' : 'comment italic'"
+            >{{ fnCommentText(comment) }}</v-col
+          >
+          <v-col cols="2">
             <v-btn
               density="comfortable"
               icon="fas fa-reply"
               class="regSubReply"
-              @click="fnRegSubReply($event.target)"
+              v-show="comment.ancCommentState == 0"
+              @click="
+                fnRegSubReply(comment.ancCommentUuid, comment.ancCommentDepth)
+              "
             ></v-btn>
+            <!-- 로그인 유저와 같으면 보이지 않게 함 -->
             <v-btn
               density="comfortable"
               icon="fas fa-times"
               class="delSubReply"
+              v-show="comment.ancCommentState == 0"
+              @click="fnDelSubReply(comment.ancCommentUuid)"
             ></v-btn>
           </v-col>
         </v-row>
@@ -152,10 +163,12 @@ export default {
       ancComments: [],
       comment: "",
       ancParentCommentUuid: "",
+      commentRulesFlag: false,
     };
   },
   mounted() {
     this.getItemDetails();
+    console.log(this.$loginUser);
   },
   computed: {
     titleRules() {
@@ -168,9 +181,8 @@ export default {
       rules.push(nullChk);
 
       const lengthChk = (v) => {
-        console.log(v.length);
-        if (v.length <= 100) return true;
-        return "내용은 100자를 넘길 수 없습니다.";
+        if (v.length <= 1000) return true;
+        return "내용은 1000자를 넘길 수 없습니다.";
       };
       rules.push(lengthChk);
 
@@ -205,6 +217,24 @@ export default {
         }
       };
       rules.push(regExp);
+
+      return rules;
+    },
+    commentsRules() {
+      const rules = [];
+
+      const nullChk = (v) => {
+        if (v) return true;
+        return "댓글 내용을 입력해주세요.";
+      };
+
+      if (this.commentRulesFlag) rules.push(nullChk);
+
+      const lengthChk = (v) => {
+        if (v.length <= 200) return true;
+        return "댓글은 200자를 넘길 수 없습니다.";
+      };
+      if (this.commentRulesFlag) rules.push(lengthChk);
 
       return rules;
     },
@@ -264,11 +294,9 @@ export default {
 
     async fnLikes() {
       this.likeItem = !this.likeItem;
-      await this.axios
-        .get("/rest/board/item/likes/" + this.ancUuid + "/" + this.likeItem)
-        .then((res) => {
-          console.log(res.data);
-        });
+      await this.axios.get(
+        "/rest/board/item/likes/" + this.ancUuid + "/" + this.likeItem
+      );
     },
 
     async fnRegComment() {
@@ -279,11 +307,20 @@ export default {
         ancComment: this.comment,
       };
 
-      await this.axios
-        .post("/rest/board/item/regComment", JSON.stringify(comment))
-        .then((res) => {
-          console.log(res.status);
-        });
+      this.commentRulesFlag = true;
+
+      let chk = await this.$refs.form.validate();
+
+      if (chk) {
+        await this.axios
+          .post("/rest/board/item/regComment", JSON.stringify(comment))
+          .then((res) => {
+            if (res.status == 200) alert("댓글 등록이 완료되었습니다.");
+            else alert("댓글 등록이 일시적인 오류로 실패하였습니다.");
+
+            location.reload(true);
+          });
+      }
     },
 
     async validate() {
@@ -316,9 +353,38 @@ export default {
       }
     },
 
-    fnRegSubReply(ele) {
-      console.log(ele);
-      ele.color = "red";
+    fnRegSubReply(pId, depth) {
+      var nxDpth = depth + 1;
+
+      if (nxDpth > 5) {
+        alert("더이상 댓글을 달 수 없습니다.");
+        return false;
+      }
+
+      console.log("commentparentid = " + pId);
+    },
+
+    async fnDelSubReply(cId) {
+      await this.axios.get("/rest/board/item/delComment/" + cId).then((res) => {
+        if (res.data == "200") {
+          alert("댓글이 삭제되었습니다.");
+        } else {
+          alert("댓글 삭제에 실패했습니다.");
+        }
+
+        location.reload(true);
+      });
+    },
+
+    fnCommentText(comment) {
+      var state = comment.ancCommentState;
+      var commentTxt = "";
+      if (state == 0) {
+        commentTxt = comment.ancComment;
+      } else {
+        commentTxt = "삭제된 댓글입니다.";
+      }
+      return commentTxt;
     },
   },
 };
@@ -369,13 +435,18 @@ export default {
 .comment {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
+}
+
+.comment.italic {
+  font-style: italic;
+  color: darkgray;
 }
 
 .register {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: baseline;
   font-size: 13px;
   font-style: italic;
   cursor: pointer;

@@ -18,4 +18,5 @@ public interface AllNoticeContentsService {
     public String deleteItem(String ancUuid, String mId);
     public String chngLikeFlag(String ancUuid, boolean flag, String mId);
     public String regComment(Map<String, Object> param, String mId);
+    public String delComment(String ancCommentUuid);
 }

@@ -43,6 +43,8 @@ export default {
           this.info.mUd = diffDate;
 
           this.login = true;
+          this.$loginUser = this.info;
+          console.log(this.$loginUser);
         }
       });
     }

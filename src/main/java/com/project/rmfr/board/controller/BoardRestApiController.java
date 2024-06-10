@@ -38,4 +38,9 @@ public class BoardRestApiController {
     public String regComment(@RequestBody Map<String, Object> param, Principal principal) {
         return allNoticeContentsService.regComment(param, principal.getName());
     }
+
+    @GetMapping("/rest/board/item/delComment/{ancCommentUuid}")
+    public String delComment(@PathVariable("ancCommentUuid") String ancCommentUuid) {
+        return allNoticeContentsService.delComment(ancCommentUuid);
+    }
 }

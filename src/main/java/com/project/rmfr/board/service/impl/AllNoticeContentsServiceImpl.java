@@ -236,6 +236,23 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         return rst;
     }
 
+    @Override
+    public String delComment(String ancCommentUuid) {
+        String rst = "";
+        int commentStatus = 0;
+        if (! "".equals(ancCommentUuid) ) {
+            Optional<ContentComments> commentOption = contentCommentsRepository.findByAncCommentUuid(ancCommentUuid);
+
+            if ( commentOption.isPresent() ) {
+                ContentComments comment = commentOption.get();
+                comment.setAncCommentState(1);
+                commentStatus = contentCommentsRepository.save(comment).getAncCommentState();
+            }
+        }
+        rst = commentStatus == 1 ? "200" : "500";
+
+        return rst;
+    }
     public String hitsUp(AllNoticeContents anc, Members loginUser) {
         String rst = "";
         boolean chk = true;

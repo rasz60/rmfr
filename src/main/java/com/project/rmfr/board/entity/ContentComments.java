@@ -66,6 +66,9 @@ public class ContentComments {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int ancCommentState;
 
+    @Column(columnDefinition = "INT DEFAULT 1")
+    private int sortOrder;
+
     public ContentComments() {}
 
     @Builder

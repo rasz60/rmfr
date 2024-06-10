@@ -67,6 +67,7 @@ public class AllNoticeContents {
     List<ContentLikes> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "ancUuid", fetch = FetchType.EAGER)
+    @OrderBy("ANC_COMMENT_DEPTH ASC, ANC_COMMENT_REG_DATE ASC")
     List<ContentComments> comments = new ArrayList<>();
     public AllNoticeContents() {}
 

@@ -1,6 +1,5 @@
 package com.project.rmfr.config;
 
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
