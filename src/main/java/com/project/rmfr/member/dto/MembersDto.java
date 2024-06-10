@@ -23,13 +23,15 @@ public class MembersDto {
         MembersDto dto = null;
 
         if ( type == 0 ) {
-            dto = new MembersDto(member.getMId()
+            dto = new MembersDto(member.getMEntrId()
+                                ,member.getMId()
                                 ,member.getThum()
                                 ,member.getMLevel()
                                 ,member.getMPwUpdateDate()
             );
         } else {
-            dto = new MembersDto(member.getMId()
+            dto = new MembersDto(member.getMEntrId()
+                              , member.getMId()
                               , member.getMEmail()
                               , member.getMLevel()
                               , member.getMPhone()
@@ -43,14 +45,18 @@ public class MembersDto {
         return dto;
     }
 
-    public MembersDto(String mId, String thum, Integer mLevel, LocalDateTime mPwUpdateDate) {
+    public MembersDto() {}
+
+    public MembersDto(String mEntrId, String mId, String thum, Integer mLevel, LocalDateTime mPwUpdateDate) {
+        this.mEntrId = mEntrId;
         this.mId = mId;
         this.thum = thum;
         this.mLevel = mLevel;
         this.mPwUpdateDate = mPwUpdateDate;
     }
 
-    public MembersDto(String mId, String mEmail, Integer mLevel, String mPhone, String mAddr1, String mAddr2, String mAddr3, String thum, LocalDateTime mPwUpdateDate) {
+    public MembersDto(String mEntrId, String mId, String mEmail, Integer mLevel, String mPhone, String mAddr1, String mAddr2, String mAddr3, String thum, LocalDateTime mPwUpdateDate) {
+        this.mEntrId = mEntrId;
         this.mId = mId;
         this.mEmail = mEmail;
         this.mLevel = mLevel;

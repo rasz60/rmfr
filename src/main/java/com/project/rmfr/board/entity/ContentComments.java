@@ -1,4 +1,4 @@
-package com.project.rmfr.entity;
+package com.project.rmfr.board.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.rmfr.board.entity.AllNoticeBoard;
@@ -39,6 +39,7 @@ public class ContentComments {
     @Column(columnDefinition = "LONGTEXT")
     private String ancComment;
 
+    @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(referencedColumnName="ancUuid" ,name = "ancUuid")
     private AllNoticeContents ancUuid;
@@ -46,6 +47,7 @@ public class ContentComments {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancCommentRegDate;
 
+    @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancCommenterId")
     private Members ancCommenterId;
@@ -53,6 +55,7 @@ public class ContentComments {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancCommentUpdateDate;
 
+    @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancCommentUpdaterId")
     private Members ancCommentUpdaterId;

@@ -1,19 +1,14 @@
 package com.project.rmfr.board.entity;
 
-import com.project.rmfr.board.entity.AllNoticeBoard;
-import com.project.rmfr.entity.ContentComments;
-import com.project.rmfr.entity.ContentHits;
-import com.project.rmfr.entity.ContentLikes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.rmfr.member.entity.Members;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Clob;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

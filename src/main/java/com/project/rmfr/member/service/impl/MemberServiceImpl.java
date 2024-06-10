@@ -84,7 +84,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
     @Override
     public MembersDto getSimpleMemberInfo(String username) {
-        MembersDto memberDto = null;
+        MembersDto memberDto = new MembersDto();
 
         try {
             Optional<Members> memberOptional = memberRepository.findBymId(username);
@@ -101,7 +101,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     }
 
     public MembersDto getDetailMemberInfo(String username) {
-        MembersDto memberDto = null;
+        MembersDto memberDto = new MembersDto();
 
         try {
             Optional<Members> memberOptional = memberRepository.findBymId(username);

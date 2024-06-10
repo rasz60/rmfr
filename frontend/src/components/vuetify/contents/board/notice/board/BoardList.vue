@@ -49,7 +49,9 @@ import boardListMethods from "@v-js/contents/board/methods.js";
         >
           <v-row>
             <v-col cols="1">{{ item.seq }}</v-col>
-            <v-col cols="5" class="title">{{ item.ancTitle }}</v-col>
+            <v-col cols="5" class="title"
+              >{{ item.ancTitle }}&nbsp;[{{ item.ancComments }}]</v-col
+            >
             <v-col cols="2">{{ item.ancRegId }}</v-col>
             <v-col cols="2">{{ item.ancRegDate }}</v-col>
             <v-col cols="1">{{ item.ancHits }}</v-col>

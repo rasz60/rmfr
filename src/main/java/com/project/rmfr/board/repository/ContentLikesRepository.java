@@ -1,7 +1,7 @@
 package com.project.rmfr.board.repository;
 
 
-import com.project.rmfr.entity.ContentLikes;
+import com.project.rmfr.board.entity.ContentLikes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

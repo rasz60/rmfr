@@ -1,7 +1,7 @@
 package com.project.rmfr.board.repository;
 
 
-import com.project.rmfr.entity.ContentComments;
+import com.project.rmfr.board.entity.ContentComments;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

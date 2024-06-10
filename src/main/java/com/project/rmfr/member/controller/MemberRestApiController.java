@@ -96,11 +96,11 @@ public class MemberRestApiController {
             if ( "0".equals(mId) ) {
                 chk = memberService.mailChkExists(mEmail);
             } else {
-                Members member = memberService.getDetailMemberInfo(mId);
-                if ( member.getMId() == null ) {
+                MembersDto dto = memberService.getDetailMemberInfo(mId);
+                if ( dto.getMId() == null ) {
                     chk.add("501");
                 } else {
-                    String rst = mEmail.equals(member.getMEmail()) ? "200" : "502";
+                    String rst = mEmail.equals(dto.getMEmail()) ? "200" : "502";
                     chk.add(rst);
                 }
             }

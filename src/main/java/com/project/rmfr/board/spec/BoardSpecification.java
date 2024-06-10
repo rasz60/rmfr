@@ -1,8 +1,8 @@
 package com.project.rmfr.board.spec;
 
 import com.project.rmfr.board.entity.AllNoticeContents;
-import com.project.rmfr.entity.ContentHits;
-import com.project.rmfr.entity.ContentLikes;
+import com.project.rmfr.board.entity.ContentHits;
+import com.project.rmfr.board.entity.ContentLikes;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 

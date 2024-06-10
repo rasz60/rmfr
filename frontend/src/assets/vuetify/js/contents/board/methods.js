@@ -24,6 +24,7 @@ export default {
           ancRegDate: v.ancRegDate.replace("T", " "),
           ancHits: v.hits,
           ancLikes: v.likes,
+          ancComments: v.ancComments.length,
         };
         this.items.push(content);
       });

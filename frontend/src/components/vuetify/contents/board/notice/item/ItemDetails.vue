@@ -111,9 +111,23 @@
           v-for="comment in ancComments"
           :key="comment"
         >
-          <v-col cols="1"></v-col>
+          <v-col cols="1" class="register"
+            >@{{ comment.ancCommenterId.mid }}</v-col
+          >
           <v-col cols="10" class="comment">{{ comment.ancComment }}</v-col>
-          <v-col cols="1"></v-col>
+          <v-col cols="1">
+            <v-btn
+              density="comfortable"
+              icon="fas fa-reply"
+              class="regSubReply"
+              @click="fnRegSubReply($event.target)"
+            ></v-btn>
+            <v-btn
+              density="comfortable"
+              icon="fas fa-times"
+              class="delSubReply"
+            ></v-btn>
+          </v-col>
         </v-row>
         <v-row v-show="ancComments.length == 0" id="not-comment">
           아직 작성된 댓글이 없습니다.
@@ -301,6 +315,11 @@ export default {
         return false;
       }
     },
+
+    fnRegSubReply(ele) {
+      console.log(ele);
+      ele.color = "red";
+    },
   },
 };
 </script>
@@ -348,6 +367,36 @@ export default {
 }
 
 .comment {
-  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.register:hover {
+  color: darkblue;
+  text-decoration: underline;
+}
+
+.regSubReply {
+  margin-right: 10px;
+}
+
+.regSubReply i {
+  transform-origin: center;
+  transform: rotate(180deg);
+}
+
+.regSubReply,
+.delSubReply {
+  font-size: 0.7em !important;
 }
 </style>
