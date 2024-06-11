@@ -62,7 +62,7 @@
         <v-btn
           icon="fas fa-list"
           class="board-item-btn"
-          href="/board/notice"
+          @click="$router.push('/board/notice')"
         ></v-btn>
       </v-row>
     </v-form>
@@ -148,7 +148,7 @@ export default {
 
             if (rst == "200") {
               alert("게시글 저장이 완료되었습니다.");
-              location.href = "/board/notice";
+              this.$router.push("/board/notice");
             } else {
               alert("게시글 저장에 실패하였습니다. 관리자에게 문의해주세요.");
               return false;

@@ -50,7 +50,11 @@ section#contents {
     border-left: 1px solid #ececec;
 
     .menuItem {
+      display: flex;
+      justify-content: space-evenly;
+
       .menuIcon {
+        color: black;
         font-size: 16px;
         padding-left: 10px;
         padding-right: 10px;

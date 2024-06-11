@@ -43,8 +43,7 @@ export default {
           this.info.mUd = diffDate;
 
           this.login = true;
-          this.$loginUser = this.info;
-          console.log(this.$loginUser);
+          this.$loginInfo.mId = this.info.mId;
         }
       });
     }
@@ -60,9 +59,7 @@ export default {
   },
 
   fn_toggleMenu() {
-    console.log("fn_toggleMenu : " + this.$menuDrawer.value);
     this.$menuDrawer.value = !this.$menuDrawer.value;
-    console.log("fn_toggleMenu : " + this.$menuDrawer.value);
   },
 
   fn_toggleInfo() {

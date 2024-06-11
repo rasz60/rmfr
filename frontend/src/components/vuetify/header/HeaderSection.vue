@@ -12,13 +12,13 @@ import headerMethods from "@v-js/header/methods.js";
           @click="fn_toggleMenu"
         ></v-app-bar-nav-icon>
         <v-app-bar-title id="logo">
-          <a href="/">
+          <router-link to="/">
             <v-icon icon="fas fa-r" class="logo-icons" />
             <v-icon icon="fas fa-m" class="logo-icons" />
             <v-icon icon="fas fa-f" class="logo-icons" />
             <v-icon icon="fas fa-r" class="logo-icons" />
             <v-icon icon="fas fa-question" class="logo-icons" />
-          </a>
+          </router-link>
         </v-app-bar-title>
       </template>
 
@@ -38,13 +38,16 @@ import headerMethods from "@v-js/header/methods.js";
 
       <template v-slot:append>
         <div id="buttonBox">
-          <v-btn class="headerBtn" href="/member/signup" v-show="!login">
+          <v-btn
+            class="headerBtn"
+            v-show="!login"
+            @click="$router.push('/member/signup')"
+          >
             <v-icon icon="fas fa-user-plus"></v-icon>
             <v-tooltip location="bottom center" activator="parent">
               Signup
             </v-tooltip>
           </v-btn>
-
           <v-btn class="headerBtn" v-show="!login" @click="fnFlagInit(0)">
             <v-icon icon="fas fa-right-to-bracket"></v-icon>
             <v-tooltip location="bottom center" activator="parent">
@@ -108,13 +111,13 @@ import headerMethods from "@v-js/header/methods.js";
           로그인
         </v-btn>
 
-        <a
+        <router-link
           class="text-blue text-decoration-none"
-          href="/member/signup"
+          to="/member/signup"
           target="_self"
         >
           가입하기&nbsp;<v-icon icon="fas fa-chevron-right"></v-icon>
-        </a>
+        </router-link>
         &nbsp;
         <a
           class="text-blue text-decoration-none"
@@ -252,28 +255,28 @@ import headerMethods from "@v-js/header/methods.js";
       <div id="info" v-show="login">
         <v-row id="basicInfo">
           <v-col id="thumImg" cols="3">
-            <a
+            <router-link
               id="tmpImg"
               class="display-6"
               v-show="info.tmpImg != ''"
-              href="/member/settings"
+              to="/member/settings"
             >
               {{ info.tmpImg }}
-            </a>
+            </router-link>
           </v-col>
           <v-col cols="9" id="basic">
-            <a id="mId" class="display-6" href="/member/settings">
+            <router-link id="mId" class="display-6" to="/member/settings">
               @{{ info.mId }}
-            </a>
-            <a id="mUd" class="display-6" href="/member/settings">
+            </router-link>
+            <router-link id="mUd" class="display-6" to="/member/settings">
               패스워드 변경까지 D-{{ info.mUd }}
-            </a>
+            </router-link>
           </v-col>
         </v-row>
         <v-row
           id="setting"
           class="infoMenu"
-          @click="fn_infoMenu('/member/settings')"
+          @click="$router.push('/member/settings')"
         >
           <v-col cols="9" class="infoTxt">계정설정</v-col>
           <v-col cols="3" class="infoIcon">

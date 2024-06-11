@@ -254,7 +254,7 @@ export default {
         .post("/api/member/settings/update", editInfo)
         .then(() => {
           alert("정보 저장이 완료되었습니다.");
-          location.href = "/";
+          this.$router.push("/");
         });
     }
   },
@@ -291,7 +291,7 @@ export default {
             location.href = "/logout";
           } else {
             alert("탈퇴에 실패하였습니다.");
-            location.href = "/";
+            this.$router.push("/");
           }
         });
     }

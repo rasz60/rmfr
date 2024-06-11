@@ -31,6 +31,6 @@ export default {
     });
   },
   fnShowDetails(ancUuid) {
-    location.href = "/board/notice/item/d?itemId=" + ancUuid;
+    this.$router.push("/board/notice/item/d?itemId=" + ancUuid);
   },
 };

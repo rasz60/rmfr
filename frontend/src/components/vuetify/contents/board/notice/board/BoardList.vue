@@ -66,7 +66,10 @@ import boardListMethods from "@v-js/contents/board/methods.js";
         <v-pagination :length="pageLength" v-model="page"></v-pagination>
       </v-col>
       <v-col cols="1">
-        <v-btn icon="far fa-pen-to-square" href="/board/notice/item/c"></v-btn>
+        <v-btn
+          icon="far fa-pen-to-square"
+          @click="$router.push('/board/notice/item/c')"
+        ></v-btn>
       </v-col>
     </v-row>
   </v-sheet>

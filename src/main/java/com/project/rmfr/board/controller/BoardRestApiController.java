@@ -36,7 +36,14 @@ public class BoardRestApiController {
 
     @PostMapping("/rest/board/item/regComment")
     public String regComment(@RequestBody Map<String, Object> param, Principal principal) {
-        return allNoticeContentsService.regComment(param, principal.getName());
+        String rst = "";
+        try {
+            rst = allNoticeContentsService.regComment(param, principal.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            rst = "500";
+        }
+        return rst;
     }
 
     @GetMapping("/rest/board/item/delComment/{ancCommentUuid}")

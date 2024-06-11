@@ -200,7 +200,7 @@ export default {
       .then((res) => {
         if (res.status == 200) {
           alert("rmfr 가입이 완료되었습니다.");
-          location.href = "/";
+          this.$router.push("/");
         }
       });
   },

@@ -1,6 +1,7 @@
 package com.project.rmfr.board.service.impl;
 
 import com.project.rmfr.board.dto.BoardItemDto;
+import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.repository.AllNoticeContentsRepository;
 import com.project.rmfr.board.repository.ContentCommentsRepository;
@@ -93,7 +94,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
             if ( ancOptional.isPresent() ) {
                 AllNoticeContents anc = ancOptional.get();
-                dto = new BoardItemDto(ancOptional.get());
+                dto = BoardItemDto.of(anc);
 
                 if (anc.getAncAuth() > 0 ) {
                     dto.setVisible(false);
@@ -101,6 +102,14 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
                 if (! "guest".equals(mId) ) {
                     Members loginUser = memberService.loadUser(mId);
+                    dto.setCommentable(true);
+                    List<ContentCommentsDto> ancComments = dto.getAncComments();
+
+                    for ( ContentCommentsDto commentDto : ancComments ) {
+                        commentDto.setCommentEditable(mId);
+                    }
+
+                    dto.setAncComments(ancComments);
 
                     if ( loginUser.getMId().equals(dto.getAncRegId()) || loginUser.getMLevel() > 1 ) {
                         dto.setEditable(true);
@@ -220,18 +229,25 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         String ancUuid = (String) param.get("ancUuid");
         String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
         String ancComment = (String) param.get("ancComment");
-        String ancDepth = (String) param.get("ancDepth");
+        String ancDepth = (String) param.get("ancCommentDepth");
+        String sortOrder = (String) param.get("sortOrder");
 
         if ( "".equals(ancParentCommentUuid) ) {
+            //댓글일 때 (ancDepth = "")
             ContentComments comment = ContentComments.builder()
                     .ancParentCommentUuid(ancParentCommentUuid)
                     .comment(ancComment)
                     .anc(allNoticeContentsRepository.findByAncUuid(ancUuid).get())
                     .member(memberService.loadUser(mId))
                     .build();
-            contentCommentsRepository.save(comment);
+            rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
+        } else {
+            //대댓글일 때 (ancDepth > 1)
         }
 
+        if ( "".equals(rst) ) {
+            rst = "500";
+        }
 
         return rst;
     }

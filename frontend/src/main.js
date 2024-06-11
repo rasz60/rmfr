@@ -35,8 +35,10 @@ axios.defaults.headers.delete["Content-Type"] = "application/json";
 // 전역변수 선언
 import { ref } from "vue";
 const menuDrawer = ref(false);
+const loginInfo = ref({ mId: "", mEntrId: "" });
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.$menuDrawer = menuDrawer;
+app.config.globalProperties.$loginInfo = loginInfo;
 
 // fontawesome library : solid, brands, regular 타입 사용
 library.add(fas, fab, far);

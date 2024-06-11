@@ -48,9 +48,6 @@ export default {
       });
     }
   },
-  fn_infoMenu(url) {
-    location.href = url;
-  },
   fn_focusSearch() {
     document.querySelector("div#preIcon").style.visibility = "visible";
   },

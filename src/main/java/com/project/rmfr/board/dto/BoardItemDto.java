@@ -24,8 +24,13 @@ public class BoardItemDto {
     private boolean editable = false;
     private boolean deletable = false;
     private boolean likeItem = false;
+    private boolean commentable = false;
 
     public BoardItemDto() {}
+
+    public static BoardItemDto of(AllNoticeContents anc) {
+        return new BoardItemDto(anc);
+    }
 
     public BoardItemDto(AllNoticeContents anc) {
         this.ancUuid = anc.getAncUuid();

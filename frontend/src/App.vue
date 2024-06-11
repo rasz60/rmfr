@@ -1,6 +1,4 @@
 <script setup>
-// b-components : bootstrap, v-components : vuetify
-//import HelloWorld from "@b-components/HelloWorld.vue";
 import HelloWorld from "@v-components/HelloWorld.vue";
 </script>
 
@@ -10,8 +8,6 @@ import HelloWorld from "@v-components/HelloWorld.vue";
 
 <script>
 // cookie menuDrawer 저장
-
-export default {};
 </script>
 
 <style>

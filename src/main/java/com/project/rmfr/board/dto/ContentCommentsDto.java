@@ -23,6 +23,8 @@ public class ContentCommentsDto {
     private int ancCommentDepth;
     private int ancCommentState;
 
+    private boolean commentEditable = false;
+
     public ContentCommentsDto() {}
 
     public static ContentCommentsDto of(ContentComments comments) {
@@ -31,11 +33,9 @@ public class ContentCommentsDto {
 
     public static List<ContentCommentsDto> of(List<ContentComments> commentsList) {
         List<ContentCommentsDto> dtos = new ArrayList<ContentCommentsDto>();
-
         for ( ContentComments comment : commentsList ) {
             dtos.add(new ContentCommentsDto(comment));
         }
-
         return dtos;
     }
 
@@ -52,4 +52,7 @@ public class ContentCommentsDto {
         this.ancCommentState = comments.getAncCommentState();
     }
 
+    public void setCommentEditable(String mId) {
+        this.commentEditable = mId.equals(this.ancCommenterId.getMId());
+    }
 }

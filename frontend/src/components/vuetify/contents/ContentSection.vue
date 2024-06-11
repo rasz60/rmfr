@@ -11,11 +11,10 @@ import contentMethods from "@v-js/contents/methods.js";
         <v-list density="compact" nav>
           <v-list-item
             class="menuItem"
-            link
             v-for="item in menus"
             :key="item"
             :prepend-icon="item.icon"
-            href="/board/notice"
+            @click="fn_go_href('/board/notice')"
           >
             <v-icon
               class="menuIcon"
