@@ -8,7 +8,7 @@
           :icon="likeItem ? 'fas fa-heart' : 'far fa-heart'"
           class="board-item-btn"
           @click="fnLikes"
-          v-show="!editmode"
+          v-show="commentable"
           :color="likeItem ? 'red' : ''"
         ></v-btn>
         <v-btn
@@ -109,7 +109,10 @@
               variant="outlined"
               rows="1"
               auto-grow
-              label="댓글쓰기"
+              :label="
+                commentable ? '댓글쓰기' : '로그인하여 댓글을 남겨주세요.'
+              "
+              :readonly="!commentable"
               name="ancContents"
               v-model="newComment.comment"
               :rules="commentsRules"
@@ -117,7 +120,11 @@
             ></v-textarea>
           </v-col>
           <v-col cols="1" class="commentBtnRow mainComment">
-            <v-btn icon="far fa-comment-dots" @click="fnRegComment"></v-btn>
+            <v-btn
+              icon="far fa-comment-dots"
+              @click="fnRegComment"
+              v-show="commentable"
+            ></v-btn>
           </v-col>
         </v-row>
         <v-divider></v-divider>
@@ -139,9 +146,8 @@
               density="comfortable"
               icon="fas fa-reply"
               class="regSubReply"
-              v-show="comment.ancCommentState == 0"
+              v-show="comment.ancCommentState == 0 && commentable"
               @click="fnRegSubReply(comment)"
-              :disabled="!commentable"
             ></v-btn>
             <!-- 로그인 유저와 같으면 보이지 않게 함 -->
             <v-btn
@@ -337,11 +343,8 @@ export default {
             console.log(res);
             if (res.data != "500") {
               alert("댓글 등록이 완료되었습니다.");
-              this.$router.push("./d?itemId=" + res.data);
+              this.$router.go(0);
             } else alert("댓글 등록이 일시적인 오류로 실패하였습니다.");
-          })
-          .error((err) => {
-            console.log(err);
           });
       }
     },

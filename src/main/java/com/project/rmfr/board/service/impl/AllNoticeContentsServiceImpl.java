@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -226,23 +227,34 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     @Override
     public String regComment(Map<String, Object> param, String mId) {
         String rst = "";
-        String ancUuid = (String) param.get("ancUuid");
-        String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
-        String ancComment = (String) param.get("ancComment");
-        String ancDepth = (String) param.get("ancCommentDepth");
-        String sortOrder = (String) param.get("sortOrder");
 
-        if ( "".equals(ancParentCommentUuid) ) {
-            //댓글일 때 (ancDepth = "")
-            ContentComments comment = ContentComments.builder()
-                    .ancParentCommentUuid(ancParentCommentUuid)
-                    .comment(ancComment)
-                    .anc(allNoticeContentsRepository.findByAncUuid(ancUuid).get())
-                    .member(memberService.loadUser(mId))
-                    .build();
-            rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
-        } else {
-            //대댓글일 때 (ancDepth > 1)
+        String ancUuid = (String) param.get("ancUuid");
+        Optional<AllNoticeContents> optionAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
+
+        if ( optionAnc.isPresent() ) {
+            AllNoticeContents anc = optionAnc.get();
+            String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
+            String ancComment = (String) param.get("ancComment");
+            int ancDepth = (int) param.get("ancCommentDepth");
+            int sortOrder = (int) param.get("sortOrder");
+
+            if ("".equals(ancParentCommentUuid)) {
+                //댓글일 때 (ancDepth = "")
+                ContentComments comment = ContentComments.builder()
+                        .ancParentCommentUuid(ancParentCommentUuid)
+                        .comment(ancComment)
+                        .sortOrder(contentCommentsRepository.countByAncUuid(anc).intValue())
+                        .anc(anc)
+                        .member(memberService.loadUser(mId))
+                        .build();
+                rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
+            } else {
+                //대댓글일 때 (ancDepth > 1)
+                Specification<ContentComments> commSpec = BoardSpecification
+                        .findRecursiveByParent(contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid).get());
+
+
+            }
         }
 
         if ( "".equals(rst) ) {

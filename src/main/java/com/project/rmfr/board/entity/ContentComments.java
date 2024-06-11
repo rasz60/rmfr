@@ -13,6 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "contentComments")
@@ -69,10 +70,18 @@ public class ContentComments {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int sortOrder;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private ContentComments parent;
+
+
+    @OneToMany(mappedBy = "parent")
+    private List<ContentComments> children;
+
     public ContentComments() {}
 
     @Builder
-    public ContentComments(String ancParentCommentUuid, String comment, AllNoticeContents anc, Members member) {
+    public ContentComments(String ancParentCommentUuid, String comment, int sortOrder, AllNoticeContents anc, Members member) {
         this.ancParentCommentUuid = ancParentCommentUuid;
         this.ancComment = comment;
         this.ancUuid = anc;
@@ -80,10 +89,11 @@ public class ContentComments {
         this.ancCommentUpdateDate = LocalDateTime.now();
         this.ancCommenterId = member;
         this.ancCommentUpdaterId = member;
+        this.sortOrder = sortOrder;
     }
 
     @Builder
-    public ContentComments(String ancParentCommentUuid, String comment, String depth, AllNoticeContents anc, Members member) {
+    public ContentComments(String ancParentCommentUuid, String comment, String depth, int sortOrder, AllNoticeContents anc, Members member) {
         this.ancParentCommentUuid = ancParentCommentUuid;
         this.ancComment = comment;
         this.ancUuid = anc;
@@ -92,5 +102,10 @@ public class ContentComments {
         this.ancCommenterId = member;
         this.ancCommentUpdaterId = member;
         this.ancCommentDepth = Integer.parseInt(depth);
+        this.sortOrder = sortOrder;
+    }
+
+    public List<ContentComments> getChildren() {
+        return children;
     }
 }

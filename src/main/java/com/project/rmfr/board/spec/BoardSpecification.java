@@ -1,8 +1,10 @@
 package com.project.rmfr.board.spec;
 
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentHits;
 import com.project.rmfr.board.entity.ContentLikes;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -40,4 +42,24 @@ public class BoardSpecification {
         );
     }
 
+    public static Specification<ContentComments> findByParent(ContentComments parent) {
+        return (Specification<ContentComments>) ((root, query, builder) -> {
+            if (parent == null) {
+                return builder.isNull(root.get("ancCommentUuid"));
+            } else {
+                return builder.equal(root.get("ancParentCommentUuid"), parent.getAncCommentUuid());
+            }
+        });
+    }
+
+    public static Specification<ContentComments> findRecursiveByParent(ContentComments parent) {
+        return (Specification<ContentComments>) ((root, query, builder) -> {
+            Predicate predicate = findByParent(parent).toPredicate(root, query, builder);
+            // 재귀적으로 하위 부서를 검색합니다.
+            for (ContentComments child : parent.getChildren()) {
+                predicate = builder.or(findRecursiveByParent(child).toPredicate(root, query, builder));
+            }
+            return predicate;
+        });
+    }
 }
