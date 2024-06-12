@@ -8,9 +8,6 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class BoardSpecification {
 
@@ -50,7 +47,7 @@ public class BoardSpecification {
             if (parent == null) {
                 return builder.isNull(root.get("ancCommentUuid"));
             } else {
-                return builder.equal(root.get("ancParentCommentUuid"), parent.getAncCommentUuid());
+                return builder.equal(root.get("ancParentComment"), parent);
             }
         });
     }
@@ -59,6 +56,9 @@ public class BoardSpecification {
         // parentUuid 하위 모든 댓글 중 sortOrder Max
         return (Specification<ContentComments>) ((root, query, builder) -> {
             Predicate predicate = findByParent(parent).toPredicate(root, query, builder);
+
+            int count = 0;
+
             // 재귀적으로 하위 부서를 검색합니다.
             for (ContentComments child : parent.getChildren()) {
                 predicate = builder.or(findRecursiveByParent(child).toPredicate(root, query, builder));
@@ -67,14 +67,4 @@ public class BoardSpecification {
         });
     }
 
-    public static Specification<ContentComments> withAncCommentDepth(ContentComments parent) {
-        return (root, query, builder) -> {
-                List<Predicate> predicates = new ArrayList<>();
-                query.orderBy(builder.desc(root.get("sortOrder")));
-
-                //List<ContentComments> childComment= parent.getChildren();
-
-                return builder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
 }

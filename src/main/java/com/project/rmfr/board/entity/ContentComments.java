@@ -1,6 +1,7 @@
 package com.project.rmfr.board.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.rmfr.board.entity.AllNoticeBoard;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.member.entity.Members;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,8 +31,10 @@ public class ContentComments {
     @Column(columnDefinition = "VARCHAR(100)")// auto-generator를 사용하면 int, float 자료형만 사용 가능, uuid 형식은 binary(16) 사용해야함.
     private String ancCommentUuid;
 
-    @Column(columnDefinition = "VARCHAR(100)")
-    private String ancParentCommentUuid;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName="ancCommentUuid", name ="ancParentComment")
+    private ContentComments ancParentComment;
 /*
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "anbUuid")
@@ -70,19 +74,15 @@ public class ContentComments {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int sortOrder;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private ContentComments parent;
-
-
-    @OneToMany(mappedBy = "parent")
-    private List<ContentComments> children;
+    @JsonProperty("nodes")
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ancParentComment")
+    @OrderBy("sortOrder asc")
+    private List<ContentComments> children = new ArrayList<>();
 
     public ContentComments() {}
 
-    @Builder
-    public ContentComments(String ancParentCommentUuid, String comment, int sortOrder, AllNoticeContents anc, Members member) {
-        this.ancParentCommentUuid = ancParentCommentUuid;
+    public ContentComments(String comment, int sortOrder, AllNoticeContents anc, Members member) {
         this.ancComment = comment;
         this.ancUuid = anc;
         this.ancCommentRegDate = LocalDateTime.now();
@@ -92,9 +92,8 @@ public class ContentComments {
         this.sortOrder = sortOrder;
     }
 
-    @Builder
-    public ContentComments(String ancParentCommentUuid, String comment, int depth, int sortOrder, AllNoticeContents anc, Members member) {
-        this.ancParentCommentUuid = ancParentCommentUuid;
+    public ContentComments(ContentComments ancParentComment, String comment, int depth, int sortOrder, AllNoticeContents anc, Members member) {
+        this.ancParentComment = ancParentComment;
         this.ancComment = comment;
         this.ancUuid = anc;
         this.ancCommentRegDate = LocalDateTime.now();

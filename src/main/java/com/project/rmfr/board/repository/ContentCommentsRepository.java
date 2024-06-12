@@ -1,8 +1,11 @@
 package com.project.rmfr.board.repository;
 
 
+import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.entity.ContentComments;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -17,4 +20,6 @@ public interface ContentCommentsRepository extends JpaRepository<ContentComments
     Long countByAncUuid(AllNoticeContents anc);
 
     List<ContentComments> findBySortOrderGreaterThanEqual(int newSortOrder);
+
+    public List<ContentCommentsDto> findContentCommentsByAllNoticeContents(AllNoticeContents allNoticeContents);
 }

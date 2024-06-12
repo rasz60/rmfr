@@ -24,6 +24,7 @@ public class ContentCommentsDto {
     private int ancCommentState;
     private int sortOrder;
     private boolean commentEditable = false;
+    private List<ContentCommentsDto> children = new ArrayList<>();
 
     public ContentCommentsDto() {}
 
@@ -41,7 +42,6 @@ public class ContentCommentsDto {
 
     public ContentCommentsDto(ContentComments comments) {
         this.ancCommentUuid = comments.getAncCommentUuid();
-        this.ancParentCommentUuid = comments.getAncParentCommentUuid();
         this.ancComment = comments.getAncComment();
         this.ancUuid = comments.getAncUuid().getAncUuid();
         this.ancCommentRegDate = comments.getAncCommentRegDate();
@@ -50,6 +50,9 @@ public class ContentCommentsDto {
         this.ancCommentUpdaterId = MembersDto.of(comments.getAncCommenterId(), 1);
         this.ancCommentDepth = comments.getAncCommentDepth();
         this.ancCommentState = comments.getAncCommentState();
+        comments.getChildren().forEach(c -> {
+            this.children.add(ContentCommentsDto.of(c));
+        });
         this.sortOrder = comments.getSortOrder();
     }
 
