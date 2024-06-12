@@ -225,6 +225,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     }
 
     @Override
+    @Transactional
     public String regComment(Map<String, Object> param, String mId) {
         String rst = "";
 
@@ -236,7 +237,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
             String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
             String ancComment = (String) param.get("ancComment");
             int ancDepth = (int) param.get("ancCommentDepth");
-            int sortOrder = (int) param.get("sortOrder");
 
             if ("".equals(ancParentCommentUuid)) {
                 //댓글일 때 (ancDepth = "")
@@ -250,10 +250,37 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                 rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
             } else {
                 //대댓글일 때 (ancDepth > 1)
-                Specification<ContentComments> commSpec = BoardSpecification
-                        .findRecursiveByParent(contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid).get());
+                ContentComments pComment = contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid).get();
+
+                // 모댓글의 전체 child 조회, 계층형 쿼리 필요
+                List<ContentComments> childComments = contentCommentsRepository.findAll(BoardSpecification.findRecursiveByParent(contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid).get()));
 
 
+
+
+
+
+
+
+
+
+
+                log.info("childComments.size() : " + childComments.size());
+
+                int newSortOrder = pComment.getSortOrder() + childComments.size() + 1;
+
+                // newSortOrder와 같거나 큰 댓글은 update = sortOrder + 1
+                List<ContentComments> lastComments = contentCommentsRepository.findBySortOrderGreaterThanEqual(newSortOrder);
+
+                for ( ContentComments cmm : lastComments ) {
+                    cmm.setSortOrder(cmm.getSortOrder()+1);
+                    contentCommentsRepository.save(cmm);
+                }
+
+
+                // newSortOrder를 가진 comment 신규 insert
+                ContentComments comment = new ContentComments(ancParentCommentUuid,ancComment,ancDepth,newSortOrder,anc,memberService.loadUser(mId));
+                rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
             }
         }
 

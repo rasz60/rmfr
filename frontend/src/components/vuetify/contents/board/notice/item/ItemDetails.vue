@@ -138,9 +138,21 @@
           >
           <v-col
             cols="9"
-            :class="comment.ancCommentState == 0 ? 'comment' : 'comment italic'"
-            >{{ fnCommentText(comment) }}</v-col
+            :class="
+              'comment pad_' +
+              comment.ancCommentDepth +
+              (comment.ancCommentState != 0 ? ' italic' : '')
+            "
           >
+            <v-icon
+              icon="fas fa-reply"
+              class="replyIcon"
+              size="12px"
+              v-show="comment.ancCommentDepth > 0"
+            ></v-icon
+            >&nbsp;
+            {{ fnCommentText(comment) }}
+          </v-col>
           <v-col cols="1" class="commentBtnRow">
             <v-btn
               density="comfortable"
@@ -187,7 +199,6 @@ export default {
         commentTarget: "",
         ancParentCommentUuid: "",
         depth: 0,
-        sortOrder: 0,
       },
     };
   },
@@ -329,7 +340,6 @@ export default {
         ancParentCommentUuid: this.newComment.ancParentCommentUuid,
         ancCommentDepth: this.newComment.depth,
         ancComment: this.newComment.comment,
-        sortOrder: this.newComment.sortOrder,
       };
 
       this.commentRulesFlag = true;
@@ -380,8 +390,7 @@ export default {
     },
 
     fnRegSubReply(cmmt) {
-      var nxDpth = cmmt.depth + 1;
-      var nxSortOrder = cmmt.sortOrder + 1;
+      var nxDpth = cmmt.ancCommentDepth + 1;
 
       if (nxDpth > 5) {
         alert("더이상 댓글을 달 수 없습니다.");
@@ -390,7 +399,6 @@ export default {
       this.newComment.commentTarget = "@" + cmmt.ancCommenterId.mid;
       this.newComment.ancParentCommentUuid = cmmt.ancCommentUuid;
       this.newComment.depth = nxDpth;
-      this.newComment.sortOrder = nxSortOrder;
       document.querySelector("#commentEditor").scrollIntoView();
       document.querySelector("textarea#comment").focus();
     },
@@ -421,7 +429,6 @@ export default {
       this.newComment.commentTarget = "";
       this.newComment.ancParentCommentUuid = "";
       this.newComment.depth = 0;
-      this.newComment.sortOrder = 0;
     },
   },
 };
@@ -506,7 +513,8 @@ export default {
   margin-right: 10px;
 }
 
-.regSubReply i {
+.regSubReply i,
+.replyIcon {
   transform-origin: center;
   transform: rotate(180deg);
 }
@@ -518,5 +526,21 @@ export default {
 
 .delSubReply i {
   color: #ff5252;
+}
+
+.pad_1 {
+  padding-left: 1.8em !important;
+}
+.pad_2 {
+  padding-left: 2.6em !important;
+}
+.pad_3 {
+  padding-left: 3.4em !important;
+}
+.pad_4 {
+  padding-left: 4.2em !important;
+}
+.pad_5 {
+  padding-left: 5em !important;
 }
 </style>

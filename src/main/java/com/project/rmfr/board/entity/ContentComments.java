@@ -93,7 +93,7 @@ public class ContentComments {
     }
 
     @Builder
-    public ContentComments(String ancParentCommentUuid, String comment, String depth, int sortOrder, AllNoticeContents anc, Members member) {
+    public ContentComments(String ancParentCommentUuid, String comment, int depth, int sortOrder, AllNoticeContents anc, Members member) {
         this.ancParentCommentUuid = ancParentCommentUuid;
         this.ancComment = comment;
         this.ancUuid = anc;
@@ -101,7 +101,7 @@ public class ContentComments {
         this.ancCommentUpdateDate = LocalDateTime.now();
         this.ancCommenterId = member;
         this.ancCommentUpdaterId = member;
-        this.ancCommentDepth = Integer.parseInt(depth);
+        this.ancCommentDepth = depth;
         this.sortOrder = sortOrder;
     }
 

@@ -22,7 +22,7 @@ public class ContentCommentsDto {
     private MembersDto ancCommentUpdaterId;
     private int ancCommentDepth;
     private int ancCommentState;
-
+    private int sortOrder;
     private boolean commentEditable = false;
 
     public ContentCommentsDto() {}
@@ -50,6 +50,7 @@ public class ContentCommentsDto {
         this.ancCommentUpdaterId = MembersDto.of(comments.getAncCommenterId(), 1);
         this.ancCommentDepth = comments.getAncCommentDepth();
         this.ancCommentState = comments.getAncCommentState();
+        this.sortOrder = comments.getSortOrder();
     }
 
     public void setCommentEditable(String mId) {
