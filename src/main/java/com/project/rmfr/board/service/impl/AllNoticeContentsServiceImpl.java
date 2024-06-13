@@ -21,10 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -42,7 +39,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         String rst = "";
 
         try {
-
             ArrayList<String> ancKw = (ArrayList<String>) param.get("ancKw");
             String keywordStr = "";
 
@@ -68,7 +64,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         return rst;
     }
 
-
+    @Override
     @Transactional
     public Page<BoardItemDto> getItems(String page) {
         Page<BoardItemDto> pageItems = null;
@@ -85,6 +81,25 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         return pageItems;
     }
 
+    @Override
+    public Page<BoardItemDto> findItems(String page, String searchType, String searchKeywords) {
+        Page<BoardItemDto> pageItems = null;
+        try {
+            int pg = Integer.parseInt(page) -1;
+            int pglmt = 10;
+
+            Page<AllNoticeContents> tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2)
+                                                                                 , PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+
+            pageItems = tmpItems.map(tmpItem -> new BoardItemDto(tmpItem));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pageItems;
+    }
+
+
+    @Override
     @Transactional
     public BoardItemDto getItemDetails(String itemId, String mId) {
         BoardItemDto dto = new BoardItemDto();
@@ -227,63 +242,74 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     public String regComment(Map<String, Object> param, String mId) {
         String rst = "";
 
-        String ancUuid = (String) param.get("ancUuid");
-        Optional<AllNoticeContents> optionAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
+        try {
+            String ancUuid = (String) param.get("ancUuid");
+            Optional<AllNoticeContents> optionAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
 
-        if ( optionAnc.isPresent() ) {
-            AllNoticeContents anc = optionAnc.get();
-            String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
-            String ancComment = (String) param.get("ancComment");
-            int ancDepth = (int) param.get("ancCommentDepth");
+            if (optionAnc.isPresent()) {
+                AllNoticeContents anc = optionAnc.get();
+                String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
+                String ancComment = (String) param.get("ancComment");
+                int ancDepth = (int) param.get("ancCommentDepth");
 
-            if ("".equals(ancParentCommentUuid)) {
                 //댓글일 때 (ancDepth = "")
-                ContentComments comment = new ContentComments(
-                          ancComment
-                        , contentCommentsRepository.countByAncUuid(anc).intValue()
-                        , anc
-                        , memberService.loadUser(mId)
-                );
-
-                rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
-            } else {
-                //대댓글일 때 (ancDepth > 1)
-                Optional<ContentComments> pComment = contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid);
-
-
-                if ( pComment.isPresent() ) {
-
-                    // 모댓글의 전체 child 조회, 계층형 쿼리 필요
-                    List<ContentCommentsDto> child = contentCommentsCustomRepository.findContentCommentsByAllNoticeContents(pComment.get());
-                    log.info("childComments.size() : " + child.size());
-
-                    int newSortOrder = pComment.get().getSortOrder() + pComment.get().getChildren().size() + 1;
-
-                    // newSortOrder와 같거나 큰 댓글은 update = sortOrder + 1
-                    List<ContentComments> lastComments = contentCommentsRepository.findBySortOrderGreaterThanEqual(newSortOrder);
-
-                    for (ContentComments cmm : lastComments) {
-                        cmm.setSortOrder(cmm.getSortOrder() + 1);
-                        contentCommentsRepository.save(cmm);
-                    }
-
-
-                    // newSortOrder를 가진 comment 신규 insert
+                if ("".equals(ancParentCommentUuid)) {
+                    // 전체 댓글의 마지막 순서로 댓글 입력
                     ContentComments comment = new ContentComments(
-                            pComment.get()
-                            , ancComment
-                            , ancDepth
-                            , newSortOrder
+                            ancComment
+                            , contentCommentsRepository.countByAncUuid(anc).intValue()
                             , anc
                             , memberService.loadUser(mId)
                     );
                     rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
                 }
-            }
-        }
+                //대댓글일 때 (ancDepth > 1)
+                else {
+                    // 부모 댓글 객체 조회
+                    Optional<ContentComments> pComment = contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid);
 
-        if ( "".equals(rst) ) {
-            rst = "500";
+                    // 부모 댓글이 존재할 때
+                    if (pComment.isPresent()) {
+                        // 부모 댓글
+                        ContentComments parentComment = pComment.get();
+
+                        // 부모 댓글의 모든 자식 댓글 조회
+                        List<ContentComments> childList = contentCommentsCustomRepository.findContentCommentsByAllNoticeContents(pComment.get());
+
+                        // 자식 댓글 중 sortOrder가 가장 높은 값 조회
+                        int maxSortOrder = getMaxSortOrder(childList, parentComment.getSortOrder());
+                        int newSortOrder = maxSortOrder + 1; // 자식 댓글 중 가장 마지막 순서의 다음으로 설정
+
+                        // 새로 작성된 댓글이 들어갈 차례 이 후의 기존 댓글 전체 조회
+                        List<ContentComments> lastComments = contentCommentsRepository.findBySortOrderGreaterThanEqual(newSortOrder);
+
+                        // 기존 댓글의 순서를 모두 + 1
+                        for (ContentComments cmm : lastComments) {
+                            cmm.setSortOrder(cmm.getSortOrder() + 1);
+                            contentCommentsRepository.save(cmm);
+                        }
+
+                        // newSortOrder를 가진 comment 신규 insert
+                        ContentComments comment = new ContentComments(
+                                parentComment
+                                , ancComment
+                                , ancDepth
+                                , newSortOrder
+                                , anc
+                                , memberService.loadUser(mId)
+                        );
+                        rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("regComment throw exceptions.");
+            e.printStackTrace();
+        } finally {
+            // 댓글 작성이 실패한 경우
+            if ( "".equals(rst) ) {
+                rst = "500";
+            }
         }
 
         return rst;
@@ -342,5 +368,16 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         }
 
         return chk;
+    }
+
+    public int getMaxSortOrder(List<ContentComments> commentsList, int pSortOrder) {
+        // 부모 댓글의 sortOrder에서부터 시작
+        int maxSortOrder = pSortOrder;
+
+        // commentsList에 있는 댓글 중 sortOrder가 가장 큰 값을 찾음
+        for( ContentComments c : commentsList )
+            maxSortOrder = Math.max(c.getSortOrder(), maxSortOrder);
+
+        return maxSortOrder;
     }
 }

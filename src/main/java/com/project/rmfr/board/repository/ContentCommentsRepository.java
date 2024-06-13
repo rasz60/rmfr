@@ -21,5 +21,4 @@ public interface ContentCommentsRepository extends JpaRepository<ContentComments
 
     List<ContentComments> findBySortOrderGreaterThanEqual(int newSortOrder);
 
-    public List<ContentCommentsDto> findContentCommentsByAllNoticeContents(AllNoticeContents allNoticeContents);
 }

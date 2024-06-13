@@ -75,7 +75,7 @@
           </template>
         </v-combobox>
       </v-row>
-      <v-row class="body-row">
+      <v-row class="body-row" id="scrollPoint">
         <v-textarea
           :prepend-icon="editmode ? 'fas fa-comments' : ''"
           :variant="editmode ? 'outlined' : 'solo'"
@@ -91,20 +91,40 @@
 
       <v-card>
         <v-row
-          id="commentEditor"
+          id="selectComment"
           class="body-row"
-          :v-show="!editmode && commentable"
+          v-show="selectComment != ''"
+          ref="scrollBox"
         >
           <v-col cols="2" class="mainRegister">
-            <v-chip
-              v-show="newComment.commentTarget != ''"
-              @click.stop="newComment.commentTarget = ''"
-              color="teal"
-            >
+            <v-chip @click="fnCmmtTargetDel" color="teal">
               {{ newComment.commentTarget }}님에게
             </v-chip>
           </v-col>
           <v-col cols="9">
+            <v-textarea
+              rows="1"
+              auto-grow
+              readonly
+              v-model="selectComment"
+            ></v-textarea>
+          </v-col>
+          <v-divider></v-divider>
+        </v-row>
+        <v-row
+          id="commentEditor"
+          class="body-row"
+          :v-show="!editmode && commentable"
+        >
+          <v-col cols="1">
+            <v-icon
+              icon="fas fa-reply"
+              class="replyIcon"
+              size="20px"
+              v-show="selectComment != ''"
+            ></v-icon>
+          </v-col>
+          <v-col cols="10">
             <v-textarea
               variant="outlined"
               rows="1"
@@ -119,7 +139,7 @@
               id="comment"
             ></v-textarea>
           </v-col>
-          <v-col cols="1" class="commentBtnRow mainComment">
+          <v-col cols="1" class="mainCommentBtn">
             <v-btn
               icon="far fa-comment-dots"
               @click="fnRegComment"
@@ -127,6 +147,7 @@
             ></v-btn>
           </v-col>
         </v-row>
+        <v-divider></v-divider>
         <v-divider></v-divider>
         <v-row
           v-show="ancComments.length > 0"
@@ -137,7 +158,7 @@
             >@{{ comment.ancCommenterId.mid }}</v-col
           >
           <v-col
-            cols="9"
+            cols="8"
             :class="
               'comment pad_' +
               comment.ancCommentDepth +
@@ -153,7 +174,13 @@
             >&nbsp;
             {{ fnCommentText(comment) }}
           </v-col>
-          <v-col cols="1" class="commentBtnRow">
+          <v-col cols="2" class="commentBtnRow">
+            <v-btn
+              density="comfortable"
+              icon="fas fa-heart"
+              v-show="comment.ancCommentState == 0 && commentable"
+              @click="fnReplyLike(comment.ancCommentUuid)"
+            ></v-btn>
             <v-btn
               density="comfortable"
               icon="fas fa-reply"
@@ -170,6 +197,7 @@
               @click="fnDelSubReply(comment.ancCommentUuid)"
             ></v-btn>
           </v-col>
+          <v-divider></v-divider>
         </v-row>
         <v-row v-show="ancComments.length == 0" id="not-comment">
           아직 작성된 댓글이 없습니다.
@@ -194,6 +222,7 @@ export default {
       ancKw: [],
       ancComments: [],
       commentRulesFlag: false,
+      selectComment: "",
       newComment: {
         comment: "",
         commentTarget: "",
@@ -399,8 +428,10 @@ export default {
       this.newComment.commentTarget = "@" + cmmt.ancCommenterId.mid;
       this.newComment.ancParentCommentUuid = cmmt.ancCommentUuid;
       this.newComment.depth = nxDpth;
-      document.querySelector("#commentEditor").scrollIntoView();
-      document.querySelector("textarea#comment").focus();
+      this.selectComment = cmmt.ancComment;
+      document
+        .querySelector("#scrollPoint")
+        .scrollIntoView({ behavior: "smooth" });
     },
 
     async fnDelSubReply(cId) {
@@ -429,6 +460,7 @@ export default {
       this.newComment.commentTarget = "";
       this.newComment.ancParentCommentUuid = "";
       this.newComment.depth = 0;
+      this.selectComment = "";
     },
   },
 };
@@ -465,11 +497,20 @@ export default {
 
 .commentBtnRow {
   display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.commentBtnRow button {
+  margin-left: 12px;
+}
+
+.mainCommentBtn {
+  display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-.mainComment button,
+.mainCommentBtn button,
 .mainRegister {
   margin-top: -20px;
 }
@@ -507,10 +548,6 @@ export default {
 .subReplyBtnRow {
   display: flex;
   justify-content: flex-start;
-}
-
-.regSubReply {
-  margin-right: 10px;
 }
 
 .regSubReply i,

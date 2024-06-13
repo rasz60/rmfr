@@ -1,22 +1,13 @@
 package com.project.rmfr.board.repository.impl;
 
 import com.project.rmfr.board.dto.ContentCommentsDto;
-import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.repository.ContentCommentsCustomRepository;
-import com.project.rmfr.board.repository.ContentCommentsRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
-import java.util.function.Function;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Repository;
 
 import static com.project.rmfr.board.entity.QContentComments.contentComments;
@@ -27,32 +18,49 @@ import static com.project.rmfr.board.entity.QContentComments.contentComments;
 public class ContentCommentsRepositoryImpl implements ContentCommentsCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-
     @Override
-    public List<ContentCommentsDto> findContentCommentsByAllNoticeContents(ContentComments comments) {
-        List<ContentComments> comment = jpaQueryFactory.selectFrom(contentComments)
-                .leftJoin(contentComments.ancParentComment)
-                .fetchJoin()
-                .where(contentComments.ancUuid.eq(comments.getAncUuid()))
-                .orderBy(
-                        contentComments.sortOrder.asc().nullsFirst()
-                ).fetch();
-        return convertDtoList(comment);
+    public List<ContentComments> findContentCommentsByAllNoticeContents(ContentComments comment) {
+        // 부모 댓글보다 depth가 높은 전체 댓글을 depth 순으로 조회
+        List<ContentComments> commentsList =
+                jpaQueryFactory
+                    .selectFrom(contentComments)
+                    .where(contentComments.ancUuid.eq(comment.getAncUuid()).and(contentComments.ancCommentDepth.gt(comment.getAncCommentDepth())))
+                    .orderBy(
+                            contentComments.ancCommentDepth.asc().nullsFirst()
+                    )
+                        .fetch();
 
+        return getChildList(commentsList, comment);
     }
 
-    public List<ContentCommentsDto> convertDtoList(List<ContentComments> comments) {
-        List<ContentCommentsDto> result = new ArrayList<>();
-        Map<String, ContentCommentsDto> map = new HashMap<>();
-        comments.forEach(c -> {
-            ContentCommentsDto dto = ContentCommentsDto.of(c);
-            map.put(dto.getAncCommentUuid(), dto);
-            if(c.getAncParentComment() != null)
-                map.get(c.getAncCommentUuid()).getChildren().add(dto);
-            else
-                result.add(dto);
+    public List<ContentComments> getChildList(List<ContentComments> commentList, ContentComments comment) {
+        List<ContentComments> result = new ArrayList<>();
+
+        // 사용자가 선택한 부모 댓글의 모든 자식 댓글 uuid를 담을 list
+        List<String> parentList = new ArrayList<>();
+
+        // 사용자가 선택한 부모 댓글의 uuid를 먼저 add
+        parentList.add(comment.getAncCommentUuid());
+
+        // findContentCommentsByAllNoticeContents() 결과 리스트 전체 반복
+        commentList.forEach(c -> {
+            // 반복문으로 한 건씩 조회하여 해당 댓글 객체의 부모 댓글 uuid
+            String cpId = c.getAncParentComment().getAncCommentUuid();
+            boolean match = false;
+            // 부모 댓글 uuid 리스트 전체 반복
+            for ( String pId : parentList ) {
+                match = cpId.equals(pId);
+                // 리스트에 현재 객체의 부모 uuid가 있는 경우 result에 add
+                if ( match ) {
+                    result.add(c);
+                    break;
+                }
+            }
+
+            // 다음 depth의 댓글 중 자식 댓글을 찾을 수 있도록 해당 uuid를 부모 객체 리스트에 추가
+            if ( match ) parentList.add(c.getAncCommentUuid());
         });
+
         return result;
     }
-
 }

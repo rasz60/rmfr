@@ -13,5 +13,5 @@ import java.util.Optional;
 
 @Repository
 public interface ContentCommentsCustomRepository {
-    public List<ContentCommentsDto> findContentCommentsByAllNoticeContents(ContentComments contentComments);
+    public List<ContentComments> findContentCommentsByAllNoticeContents(ContentComments contentComments);
 }
