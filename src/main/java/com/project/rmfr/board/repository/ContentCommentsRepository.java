@@ -20,5 +20,4 @@ public interface ContentCommentsRepository extends JpaRepository<ContentComments
     Long countByAncUuid(AllNoticeContents anc);
 
     List<ContentComments> findBySortOrderGreaterThanEqual(int newSortOrder);
-
 }

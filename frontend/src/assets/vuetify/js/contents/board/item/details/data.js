@@ -1,0 +1,20 @@
+export default {
+  editmode: false,
+  editable: false,
+  deletable: false,
+  likeItem: false,
+  commentable: false,
+  ancUuid: "",
+  ancTitle: "",
+  ancContents: "",
+  ancKw: [],
+  ancComments: [],
+  commentRulesFlag: false,
+  selectComment: "",
+  newComment: {
+    comment: "",
+    commentTarget: "",
+    ancParentCommentUuid: "",
+    depth: 0,
+  },
+};

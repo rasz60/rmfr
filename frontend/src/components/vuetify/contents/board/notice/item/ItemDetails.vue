@@ -1,4 +1,7 @@
-<script setup></script>
+<script setup>
+import boardItemDetailsData from "@v-js/contents/board/item/details/data.js";
+import boardItemDetailsMethods from "@v-js/contents/board/item/details/methods.js";
+</script>
 
 <template>
   <v-sheet class="boardBody">
@@ -165,37 +168,45 @@
               (comment.ancCommentState != 0 ? ' italic' : '')
             "
           >
-            <v-icon
-              icon="fas fa-reply"
-              class="replyIcon"
-              size="12px"
-              v-show="comment.ancCommentDepth > 0"
-            ></v-icon
-            >&nbsp;
-            {{ fnCommentText(comment) }}
-          </v-col>
-          <v-col cols="2" class="commentBtnRow">
-            <v-btn
-              density="comfortable"
-              icon="fas fa-heart"
-              v-show="comment.ancCommentState == 0 && commentable"
-              @click="fnReplyLike(comment.ancCommentUuid)"
-            ></v-btn>
-            <v-btn
-              density="comfortable"
-              icon="fas fa-reply"
+            <p class="commentText">
+              <v-icon
+                icon="fas fa-reply"
+                class="replyIcon"
+                size="12px"
+                v-show="comment.ancCommentDepth > 0"
+              ></v-icon
+              >&nbsp;
+              {{ fnCommentText(comment) }}
+            </p>
+            <span
               class="regSubReply"
               v-show="comment.ancCommentState == 0 && commentable"
               @click="fnRegSubReply(comment)"
-            ></v-btn>
-            <!-- 로그인 유저와 같으면 보이지 않게 함 -->
-            <v-btn
-              density="comfortable"
-              icon="fas fa-times"
+            >
+              답글쓰기
+            </span>
+            &nbsp;&nbsp;
+            <span
               class="delSubReply"
               v-show="comment.ancCommentState == 0 && comment.commentEditable"
-              @click="fnDelSubReply(comment.ancCommentUuid)"
-            ></v-btn>
+            >
+              댓글삭제
+            </span>
+          </v-col>
+          <v-col cols="2" class="commentBtnRow">
+            <v-icon
+              density="comfortable"
+              :icon="comment.commentLikeFlag ? 'fas fa-heart' : 'far fa-heart'"
+              :color="comment.commentLikeFlag ? 'red' : ''"
+              v-show="comment.ancCommentState == 0 && commentable"
+              @click="fnReplyLike(comment.ancCommentUuid, $event)"
+            ></v-icon>
+            &nbsp;
+            <v-icon
+              size="1em"
+              v-show="comment.ancCommentState == 0 && commentable"
+              :icon="'fas fa-' + comment.likesCount"
+            ></v-icon>
           </v-col>
           <v-divider></v-divider>
         </v-row>
@@ -210,26 +221,7 @@
 <script>
 export default {
   data() {
-    return {
-      editmode: false,
-      editable: false,
-      deletable: false,
-      likeItem: false,
-      commentable: false,
-      ancUuid: "",
-      ancTitle: "",
-      ancContents: "",
-      ancKw: [],
-      ancComments: [],
-      commentRulesFlag: false,
-      selectComment: "",
-      newComment: {
-        comment: "",
-        commentTarget: "",
-        ancParentCommentUuid: "",
-        depth: 0,
-      },
-    };
+    return boardItemDetailsData;
   },
   mounted() {
     this.getItemDetails();
@@ -303,281 +295,10 @@ export default {
       return rules;
     },
   },
-  methods: {
-    async getItemDetails() {
-      var url = location.href;
-      var query = url.substring(url.indexOf("?"));
-      var param = new URLSearchParams(query);
-
-      await this.axios
-        .get("/rest/board/item/d/" + param.get("itemId"))
-        .then((res) => {
-          let jsonData = res.data;
-          this.ancUuid = jsonData.ancUuid;
-          this.ancTitle = jsonData.ancTitle;
-          this.ancContents = jsonData.ancContents;
-          if (jsonData.ancKw != null || jsonData.ancKw != "") {
-            var kw = jsonData.ancKw.split("|");
-            kw.splice(kw.length - 1, 1);
-            this.ancKw = kw;
-          }
-          this.editable = jsonData.editable;
-          this.deletable = jsonData.deletable;
-          this.likeItem = jsonData.likeItem;
-          this.ancComments = jsonData.ancComments;
-          this.commentable = jsonData.commentable;
-        });
-    },
-
-    async fnSave() {
-      var chk = await this.validate();
-
-      if (chk) {
-        const content = {
-          ancUuid: this.ancUuid,
-          ancTitle: this.ancTitle,
-          ancContents: this.ancContents,
-          ancKw: this.ancKw,
-        };
-
-        await this.axios
-          .post("/api/board/notice/item/update", JSON.stringify(content))
-          .then((res) => {
-            var rst = res.data;
-
-            if (rst == "200") {
-              alert("게시글 수정이 완료되었습니다.");
-              this.$router.push("/board/notice");
-            } else {
-              alert("게시글 저장에 실패하였습니다. 관리자에게 문의해주세요.");
-              return false;
-            }
-          });
-      }
-    },
-
-    async fnLikes() {
-      this.likeItem = !this.likeItem;
-      await this.axios.get(
-        "/rest/board/item/likes/" + this.ancUuid + "/" + this.likeItem
-      );
-    },
-
-    async fnRegComment() {
-      const comment = {
-        ancUuid: this.ancUuid,
-        ancParentCommentUuid: this.newComment.ancParentCommentUuid,
-        ancCommentDepth: this.newComment.depth,
-        ancComment: this.newComment.comment,
-      };
-
-      this.commentRulesFlag = true;
-
-      let chk = await this.$refs.form.validate();
-
-      if (chk) {
-        await this.axios
-          .post("/rest/board/item/regComment", JSON.stringify(comment))
-          .then((res) => {
-            console.log(res);
-            if (res.data != "500") {
-              alert("댓글 등록이 완료되었습니다.");
-              this.$router.go(0);
-            } else alert("댓글 등록이 일시적인 오류로 실패하였습니다.");
-          });
-      }
-    },
-
-    async validate() {
-      let chk = await this.$refs.form.validate();
-
-      if (!chk.valid) {
-        alert("입력한 값을 다시 확인해주세요.");
-      }
-      return chk.valid;
-    },
-
-    remove(item) {
-      this.chips.splice(this.chips.indexOf(item), 1);
-    },
-
-    async fnDeleteItem() {
-      if (confirm("게시물을 삭제할까요?")) {
-        await this.axios
-          .get("/api/board/notice/item/delete/" + this.ancUuid)
-          .then((res) => {
-            if (res.status == "200") {
-              alert("게시물 삭제가 완료되었습니다.");
-              this.$router.push("/board/notice");
-            } else {
-              alert("게시물 삭제에 실패했습니다. 관리자에게 문의해주세요.");
-            }
-          });
-      } else {
-        return false;
-      }
-    },
-
-    fnRegSubReply(cmmt) {
-      var nxDpth = cmmt.ancCommentDepth + 1;
-
-      if (nxDpth > 5) {
-        alert("더이상 댓글을 달 수 없습니다.");
-        return false;
-      }
-      this.newComment.commentTarget = "@" + cmmt.ancCommenterId.mid;
-      this.newComment.ancParentCommentUuid = cmmt.ancCommentUuid;
-      this.newComment.depth = nxDpth;
-      this.selectComment = cmmt.ancComment;
-      document
-        .querySelector("#scrollPoint")
-        .scrollIntoView({ behavior: "smooth" });
-    },
-
-    async fnDelSubReply(cId) {
-      await this.axios.get("/rest/board/item/delComment/" + cId).then((res) => {
-        if (res.data == "200") {
-          alert("댓글이 삭제되었습니다.");
-          this.$router.go(0);
-        } else {
-          alert("댓글 삭제에 실패했습니다.");
-        }
-      });
-    },
-
-    fnCommentText(comment) {
-      var state = comment.ancCommentState;
-      var commentTxt = "";
-      if (state == 0) {
-        commentTxt = comment.ancComment;
-      } else {
-        commentTxt = "삭제된 댓글입니다.";
-      }
-      return commentTxt;
-    },
-
-    fnCmmtTargetDel() {
-      this.newComment.commentTarget = "";
-      this.newComment.ancParentCommentUuid = "";
-      this.newComment.depth = 0;
-      this.selectComment = "";
-    },
-  },
+  methods: boardItemDetailsMethods,
 };
 </script>
 
 <style>
-.boardBody {
-  margin-top: 50px !important;
-  margin: 0 auto;
-}
-
-.body-row {
-  margin-top: 20px !important;
-}
-
-#btn-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  .board-item-btn {
-    margin-left: 5px;
-    margin-right: 5px;
-  }
-}
-
-.mainRegister {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  font-style: italic;
-}
-
-.commentBtnRow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.commentBtnRow button {
-  margin-left: 12px;
-}
-
-.mainCommentBtn {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.mainCommentBtn button,
-.mainRegister {
-  margin-top: -20px;
-}
-
-#not-comment {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  text-align: center;
-  font-style: italic;
-  color: #4e4e4e;
-}
-
-.comment {
-  display: flex;
-  justify-content: flex-start;
-  align-items: baseline;
-}
-
-.comment.italic {
-  font-style: italic;
-  color: darkgray;
-}
-
-.register {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  font-size: 14px;
-  font-style: italic;
-}
-
-.subReplyBtnRow {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.regSubReply i,
-.replyIcon {
-  transform-origin: center;
-  transform: rotate(180deg);
-}
-
-.regSubReply,
-.delSubReply {
-  font-size: 0.7em !important;
-}
-
-.delSubReply i {
-  color: #ff5252;
-}
-
-.pad_1 {
-  padding-left: 1.8em !important;
-}
-.pad_2 {
-  padding-left: 2.6em !important;
-}
-.pad_3 {
-  padding-left: 3.4em !important;
-}
-.pad_4 {
-  padding-left: 4.2em !important;
-}
-.pad_5 {
-  padding-left: 5em !important;
-}
+@import "@v-css/contents/board/notice/item/itemDetails.css";
 </style>

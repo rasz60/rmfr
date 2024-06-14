@@ -3,6 +3,7 @@ package com.project.rmfr.board.service.impl;
 import com.project.rmfr.board.dto.BoardItemDto;
 import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.board.entity.ck.ContentLikesCK;
 import com.project.rmfr.board.repository.*;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.spec.BoardSpecification;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -32,6 +34,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     private final AllNoticeContentsRepository allNoticeContentsRepository;
     private final ContentHitsRepository contentHitsRepository;
     private final ContentLikesRepository contentLikesRepository;
+    private final ContentLikesCustomRepository contentLikesCustomRepository;
     private final ContentCommentsRepository contentCommentsRepository;
     private final ContentCommentsCustomRepository contentCommentsCustomRepository;
     @Override
@@ -120,7 +123,18 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                     List<ContentCommentsDto> ancComments = dto.getAncComments();
 
                     for ( ContentCommentsDto commentDto : ancComments ) {
-                        commentDto.setCommentEditable(mId);
+                        // 댓글 삭제 가능 여부
+                        boolean editable = mId.equals(commentDto.getAncCommenterId().getMId());
+                        commentDto.setCommentEditable(editable);
+
+                        // 로그인 유저의 좋아요 클릭 여부
+                        ContentLikesCK ck = new ContentLikesCK(commentDto.getAncCommentUuid(), loginUser);
+                        Long cnt = contentLikesRepository.countByContentLikesCKAndContentType(ck, "COM");
+                        commentDto.setCommentLikeFlag(cnt > 0);
+
+                        // 댓글의 좋아요 수
+                        int cnt2 = contentLikesCustomRepository.countByContentId(commentDto.getAncCommentUuid());
+                        commentDto.setLikesCount(cnt2);
                     }
 
                     dto.setAncComments(ancComments);
@@ -220,8 +234,9 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         String rst = "";
         try {
             ContentLikes like = ContentLikes.builder()
-                    .anc(allNoticeContentsRepository.findByAncUuid(ancUuid).get())
+                    .contentId(ancUuid)
                     .likeId(memberService.loadUser(mId))
+                    .contentType("ANC")
                     .build();
             if (flag) {
                 rst = "ANC".equals(contentLikesRepository.save(like).getContentType()) ? "200" : "500";
@@ -332,6 +347,33 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
         return rst;
     }
+
+    public String likeComment(String ancCommentUuid, Principal principal) {
+        String rst = "";
+
+        try {
+            String mId = "";
+            if ( principal != null ) mId = principal.getName();
+            ContentLikes like = ContentLikes.builder().contentId(ancCommentUuid).likeId(memberService.loadUser(mId)).contentType("COM").build();
+
+            long chk = contentLikesRepository.countByContentLikesCKAndContentType(like.getContentLikesCK(), like.getContentType());
+
+            if ( chk > 0 ) {
+                contentLikesRepository.delete(like);
+                rst = "202";
+            } else {
+                rst = contentLikesRepository.save(like).getContentType();
+                rst = "COM".equals(rst) ? "201" : "500";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("likeComment() throw exceptions.");
+        }
+
+        return rst;
+    }
+
+
     public String hitsUp(AllNoticeContents anc, Members loginUser) {
         String rst = "";
         boolean chk = true;

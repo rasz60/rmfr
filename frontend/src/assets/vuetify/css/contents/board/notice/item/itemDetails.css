@@ -1,0 +1,116 @@
+.boardBody {
+  margin-top: 50px !important;
+  margin: 0 auto;
+}
+
+.body-row {
+  margin-top: 20px !important;
+}
+
+#btn-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .board-item-btn {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+
+.mainRegister {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-style: italic;
+}
+
+.commentBtnRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.commentBtnRow button {
+  margin-left: 12px;
+}
+
+.mainCommentBtn {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.mainCommentBtn button,
+.mainRegister {
+  margin-top: -20px;
+}
+
+#not-comment {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  text-align: center;
+  font-style: italic;
+  color: #4e4e4e;
+}
+
+.comment {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.comment.italic {
+  font-style: italic;
+  color: darkgray;
+}
+
+.commentText {
+  text-align: left;
+  width: 100%;
+}
+
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.subReplyBtnRow {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.regSubReply,
+.delSubReply {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.regSubReply:hover,
+.delSubReply:hover {
+  text-decoration: underline;
+  color: darkblue;
+}
+
+.pad_1 {
+  padding-left: 1.8em !important;
+}
+.pad_2 {
+  padding-left: 2.6em !important;
+}
+.pad_3 {
+  padding-left: 3.4em !important;
+}
+.pad_4 {
+  padding-left: 4.2em !important;
+}
+.pad_5 {
+  padding-left: 5em !important;
+}

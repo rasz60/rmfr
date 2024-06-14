@@ -50,4 +50,9 @@ public class BoardRestApiController {
     public String delComment(@PathVariable("ancCommentUuid") String ancCommentUuid) {
         return allNoticeContentsService.delComment(ancCommentUuid);
     }
+
+    @GetMapping("/rest/board/item/likeComment/{ancCommentUuid}")
+    public String likeComment(@PathVariable("ancCommentUuid") String ancCommentUuid, Principal principal) {
+        return allNoticeContentsService.likeComment(ancCommentUuid, principal);
+    }
 }

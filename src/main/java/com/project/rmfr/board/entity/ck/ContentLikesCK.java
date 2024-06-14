@@ -12,9 +12,8 @@ import java.io.Serializable;
 @Data
 public class ContentLikesCK implements Serializable {
 
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "ancUuid", name="contentId")
-    private AllNoticeContents contentId;
+    @Column(columnDefinition = "VARCHAR(100)", nullable = false)
+    private String contentId;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(referencedColumnName = "mEntrId", name="contentLikerId")

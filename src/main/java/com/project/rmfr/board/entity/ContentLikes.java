@@ -22,8 +22,8 @@ public class ContentLikes {
     public ContentLikes() {}
 
     @Builder
-    public ContentLikes(AllNoticeContents anc, Members likeId) {
-        this.contentLikesCK = new ContentLikesCK(anc, likeId);
-        this.contentType = "ANC";
+    public ContentLikes(String contentId, Members likeId, String contentType) {
+        this.contentLikesCK = new ContentLikesCK(contentId, likeId);
+        this.contentType = contentType;
     }
 }

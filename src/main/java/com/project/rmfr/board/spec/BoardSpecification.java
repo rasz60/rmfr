@@ -32,7 +32,7 @@ public class BoardSpecification {
 
     public static Specification<ContentLikes> withContentId(String ancUuid) {
         return (Specification<ContentLikes>) ((root, query, builder) ->
-                builder.equal(root.get("contentLikesCK").get("contentId").get("ancUuid"), ancUuid)
+                builder.equal(root.get("contentLikesCK").get("contentId"), ancUuid)
         );
     }
 

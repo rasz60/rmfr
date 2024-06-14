@@ -25,6 +25,8 @@ public class ContentCommentsDto {
     private int sortOrder;
     private boolean commentEditable = false;
     private List<ContentCommentsDto> children = new ArrayList<>();
+    private boolean commentLikeFlag = false;
+    private int likesCount;
 
     public ContentCommentsDto() {}
 
@@ -54,9 +56,5 @@ public class ContentCommentsDto {
             this.children.add(ContentCommentsDto.of(c));
         });
         this.sortOrder = comments.getSortOrder();
-    }
-
-    public void setCommentEditable(String mId) {
-        this.commentEditable = mId.equals(this.ancCommenterId.getMId());
     }
 }

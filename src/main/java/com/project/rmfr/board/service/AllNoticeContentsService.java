@@ -20,4 +20,5 @@ public interface AllNoticeContentsService {
     public String chngLikeFlag(String ancUuid, boolean flag, String mId);
     public String regComment(Map<String, Object> param, String mId);
     public String delComment(String ancCommentUuid);
+    public String likeComment(String ancCommentUuid, Principal principal);
 }
