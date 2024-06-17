@@ -1,6 +1,6 @@
 <script setup>
-import boardItemDetailsData from "@v-js/contents/board/item/details/data.js";
-import boardItemDetailsMethods from "@v-js/contents/board/item/details/methods.js";
+import itemDetailsDatas from "@v-js/contents/board/item/details/itemDetailsDatas.js";
+import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMethods.js";
 </script>
 
 <template>
@@ -221,7 +221,7 @@ import boardItemDetailsMethods from "@v-js/contents/board/item/details/methods.j
 <script>
 export default {
   data() {
-    return boardItemDetailsData;
+    return itemDetailsDatas;
   },
   mounted() {
     this.getItemDetails();
@@ -295,7 +295,7 @@ export default {
       return rules;
     },
   },
-  methods: boardItemDetailsMethods,
+  methods: itemDetailsMethods,
 };
 </script>
 

@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import itemCreateRules from "@v-js/contents/board/item/create/itemCreateRules.js";
+import itemCreateMethods from "@v-js/contents/board/item/create/itemCreateMethods.js";
+import itemCreateDatas from "@v-js/contents/board/item/create/itemCreateDatas.js";
+</script>
 
 <template>
   <v-sheet class="boardBody">
@@ -72,125 +76,13 @@
 <script>
 export default {
   data() {
-    return {
-      ancTitle: "",
-      ancContents: "",
-      ancKw: [],
-    };
+    return itemCreateDatas;
   },
-  computed: {
-    titleRules() {
-      const rules = [];
-
-      const nullChk = (v) => {
-        if (v) return true;
-        return "제목은 필수 값입니다.";
-      };
-      rules.push(nullChk);
-
-      const lengthChk = (v) => {
-        console.log(v.length);
-        if (v.length <= 100) return true;
-        return "내용은 100자를 넘길 수 없습니다.";
-      };
-      rules.push(lengthChk);
-
-      return rules;
-    },
-
-    contentsRules() {
-      const rules = [];
-
-      const nullChk = (v) => {
-        if (v) return true;
-        return "내용은 필수 값입니다.";
-      };
-      rules.push(nullChk);
-
-      return rules;
-    },
-
-    keywordRules() {
-      const rules = [];
-
-      const regExp = (v) => {
-        if (v.length > 0) {
-          var chkVal = v[v.length - 1];
-          if (chkVal.indexOf("|") < 0) return true;
-
-          v.splice(v.length - 1, 1);
-          alert("특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.");
-          return "특수문자 '|'를 포함한 키워드를 사용할 수 없습니다.";
-        } else {
-          return true;
-        }
-      };
-      rules.push(regExp);
-
-      return rules;
-    },
-  },
-  methods: {
-    async fnSave() {
-      var chk = await this.validate();
-
-      if (chk) {
-        const content = {
-          ancTitle: this.ancTitle,
-          ancContents: this.ancContents,
-          ancKw: this.ancKw,
-        };
-
-        await this.axios
-          .post("/api/board/notice/item/create", JSON.stringify(content))
-          .then((res) => {
-            var rst = res.data;
-
-            if (rst == "200") {
-              alert("게시글 저장이 완료되었습니다.");
-              this.$router.push("/board/notice");
-            } else {
-              alert("게시글 저장에 실패하였습니다. 관리자에게 문의해주세요.");
-              return false;
-            }
-          });
-      }
-    },
-
-    async validate() {
-      let chk = await this.$refs.form.validate();
-
-      if (!chk.valid) {
-        alert("입력한 값을 다시 확인해주세요.");
-      }
-      return chk.valid;
-    },
-
-    remove(item) {
-      this.chips.splice(this.chips.indexOf(item), 1);
-    },
-  },
+  computed: itemCreateRules,
+  methods: itemCreateMethods,
 };
 </script>
 
 <style>
-.boardBody {
-  margin-top: 50px !important;
-  margin: 0 auto;
-}
-
-.body-row {
-  margin-top: 20px !important;
-}
-
-#btn-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  .board-item-btn {
-    margin-left: 5px;
-    margin-right: 5px;
-  }
-}
+@import "@v-css/contents/board/notice/item/itemCreate.css";
 </style>

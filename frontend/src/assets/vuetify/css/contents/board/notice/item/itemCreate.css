@@ -1,0 +1,19 @@
+.boardBody {
+  margin-top: 50px !important;
+  margin: 0 auto;
+}
+
+.body-row {
+  margin-top: 20px !important;
+}
+
+#btn-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .board-item-btn {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}

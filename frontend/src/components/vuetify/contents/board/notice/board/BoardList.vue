@@ -1,6 +1,6 @@
 <script setup>
-import boardListData from "@v-js/contents/board/data.js";
-import boardListMethods from "@v-js/contents/board/methods.js";
+import boardListDatas from "@v-js/contents/board/boardListDatas.js";
+import boardListMethods from "@v-js/contents/board/boardListMethods.js";
 import { VDateInput } from "vuetify/labs/VDateInput";
 </script>
 
@@ -94,7 +94,7 @@ import { VDateInput } from "vuetify/labs/VDateInput";
 <script>
 export default {
   data() {
-    return boardListData;
+    return boardListDatas;
   },
   mounted() {
     this.getItems(1, this.sType, this.sValue);

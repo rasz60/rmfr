@@ -5,7 +5,4 @@ export default {
     if (currUrl == href) this.$router.go(0);
     else this.$router.push(href);
   },
-  fn_menuDrawer() {
-    return this.$menuDrawer;
-  },
 };

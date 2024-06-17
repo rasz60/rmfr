@@ -1,7 +1,6 @@
 <script setup>
-//import { RouterView } from "vue-router";
-import contentDatas from "@v-js/contents/data.js";
-import contentMethods from "@v-js/contents/methods.js";
+import contentDatas from "@v-js/contents/contentDatas.js";
+import contentMethods from "@v-js/contents/contentMethods.js";
 </script>
 
 <template>

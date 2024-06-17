@@ -43,7 +43,14 @@ export default {
           this.info.mUd = diffDate;
 
           this.login = true;
-          this.$loginInfo.mId = this.info.mId;
+
+          this.$loginInfo.mId = mId;
+          this.$loginInfo.mLevel = mLevel;
+          this.$loginInfo.mEntrId = jsonData.mentrId;
+        } else {
+          this.$loginInfo.mId = null;
+          this.$loginInfo.mLevel = null;
+          this.$loginInfo.mEntrId = null;
         }
       });
     }

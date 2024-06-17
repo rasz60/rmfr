@@ -1,6 +1,6 @@
 <script setup>
-import headerDatas from "@v-js/header/data.js";
-import headerMethods from "@v-js/header/methods.js";
+import headerDatas from "@v-js/header/headerDatas.js";
+import headerMethods from "@v-js/header/headerMethods.js";
 </script>
 
 <template>

@@ -33,10 +33,37 @@ axios.defaults.headers.put["Content-Type"] = "application/json";
 axios.defaults.headers.delete["Content-Type"] = "application/json";
 
 // 전역변수 선언
-import { ref } from "vue";
-const menuDrawer = ref(false);
-const loginInfo = ref({ mId: "", mEntrId: "" });
 app.config.globalProperties.axios = axios;
+
+// 반응형 전역변수 선언
+import { reactive, watchEffect } from "vue";
+
+// 로그인 정보 전역 변수
+const initLoginInfo = JSON.parse(localStorage.getItem("loginInfo")) || {
+  login: false,
+  mId: null,
+  mLevel: null,
+  mEntrId: null,
+};
+const loginInfo = reactive(initLoginInfo);
+
+// loginInfo 변경 시, 값 유지
+watchEffect(() => {
+  localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
+});
+
+// 메뉴 활성화 여부 전역 변수
+const initMenuDrawer = JSON.parse(localStorage.getItem("menuDrawer")) || {
+  value: null,
+};
+const menuDrawer = reactive(initMenuDrawer);
+
+// menuDrawer 변경 시, 값 유지
+watchEffect(() => {
+  localStorage.setItem("menuDrawer", JSON.stringify(menuDrawer));
+});
+
+// 전역변수 선언
 app.config.globalProperties.$menuDrawer = menuDrawer;
 app.config.globalProperties.$loginInfo = loginInfo;
 

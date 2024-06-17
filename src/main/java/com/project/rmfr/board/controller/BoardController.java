@@ -15,9 +15,7 @@ import java.util.Map;
 public class BoardController {
 
     @GetMapping("notice")
-    public String notice() {
-        return "/index";
-    }
+    public String notice() { return "/index"; }
 
     @GetMapping("notice/item/c")
     public String CreateNoticeForm() {
