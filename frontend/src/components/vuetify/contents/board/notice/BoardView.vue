@@ -28,6 +28,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "@v-css/contents/board/boardView.css";
 </style>

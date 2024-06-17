@@ -83,6 +83,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "@v-css/contents/board/notice/item/itemCreate.css";
 </style>

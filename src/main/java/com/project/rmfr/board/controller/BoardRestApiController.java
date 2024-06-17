@@ -2,7 +2,9 @@ package com.project.rmfr.board.controller;
 
 import com.project.rmfr.board.dto.BoardItemDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.board.repository.ContentHitsRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
+import com.project.rmfr.board.service.ContentHitsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ import java.util.Map;
 public class BoardRestApiController {
 
     private final AllNoticeContentsService allNoticeContentsService;
-
+    private final ContentHitsService contentHitsService;
     @GetMapping({"/rest/board/getItems/{page}", "/rest/board/getItems/{page}/{searchType}/{searchValue}"})
     public Page<BoardItemDto> getItems(@PathVariable("page") String page,
                                        @PathVariable(value = "searchType", required = false) String searchType,
@@ -36,7 +38,15 @@ public class BoardRestApiController {
 
     @GetMapping("/rest/board/item/d/{itemId}")
     public BoardItemDto getItemDetails(@PathVariable("itemId") String itemId, Principal principal) {
-        return allNoticeContentsService.getItemDetails(itemId, principal == null ? "guest" : principal.getName());
+        String mId = "";
+        if ( principal != null ) {
+            mId = principal.getName();
+            contentHitsService.hitsUp(itemId, mId);
+        } else {
+            mId = "guest";
+        }
+
+        return allNoticeContentsService.getItemDetails(itemId, mId);
     };
 
     @GetMapping("/rest/board/item/likes/{ancUuid}/{flag}")

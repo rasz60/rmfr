@@ -3,9 +3,11 @@ package com.project.rmfr.board.service.impl;
 import com.project.rmfr.board.dto.BoardItemDto;
 import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.board.entity.ck.ContentHitsCK;
 import com.project.rmfr.board.entity.ck.ContentLikesCK;
 import com.project.rmfr.board.repository.*;
 import com.project.rmfr.board.service.AllNoticeContentsService;
+import com.project.rmfr.board.service.ContentHitsService;
 import com.project.rmfr.board.spec.BoardSpecification;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentHits;
@@ -32,7 +34,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
     private final MemberService memberService;
     private final AllNoticeContentsRepository allNoticeContentsRepository;
-    private final ContentHitsRepository contentHitsRepository;
     private final ContentLikesRepository contentLikesRepository;
     private final ContentLikesCustomRepository contentLikesCustomRepository;
     private final ContentCommentsRepository contentCommentsRepository;
@@ -65,6 +66,22 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         }
 
         return rst;
+    }
+
+    @Override
+    public AllNoticeContents findByAncUuid(String ancUuid) {
+        AllNoticeContents anc = null;
+
+        try {
+            Optional<AllNoticeContents> optAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
+
+            if ( optAnc.isPresent() ) {
+                anc = optAnc.get();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return anc;
     }
 
     @Override
@@ -109,24 +126,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     }
 
     @Override
-    public Page<BoardItemDto> findItems(String page, String searchType, String searchKeywords) {
-        Page<BoardItemDto> pageItems = null;
-        try {
-            int pg = Integer.parseInt(page) -1;
-            int pglmt = 10;
-
-            Page<AllNoticeContents> tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2)
-                                                                                 , PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-
-            pageItems = tmpItems.map(tmpItem -> new BoardItemDto(tmpItem));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return pageItems;
-    }
-
-
-    @Override
     @Transactional
     public BoardItemDto getItemDetails(String itemId, String mId) {
         BoardItemDto dto = new BoardItemDto();
@@ -168,11 +167,11 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                         dto.setDeletable(true);
                         dto.setVisible(true);
                     }
-
+                    /*
                     if ( !mId.equals(dto.getAncRegId())) {
-                        hitsUp(anc, loginUser);
+                        contentHitsService.hitsUp(new ContentHitsCK(anc, loginUser));
                     }
-
+                    */
                     dto.setLikeItem(setLikeItem(anc, loginUser));
                 }
 
@@ -392,30 +391,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("likeComment() throw exceptions.");
-        }
-
-        return rst;
-    }
-
-
-    public String hitsUp(AllNoticeContents anc, Members loginUser) {
-        String rst = "";
-        boolean chk = true;
-        try {
-
-            List<ContentHits> ch = contentHitsRepository.findAll(BoardSpecification.withAncHitsId(loginUser.getMEntrId())
-                                                                                    .and(BoardSpecification.withAncUuid(anc.getAncUuid())));
-
-
-            if ( ch.size() == 0 ) {
-                ContentHits hit = ContentHits.builder()
-                                            .anc(anc)
-                                            .hits(loginUser)
-                                            .build();
-                rst = !"".equals(contentHitsRepository.save(hit).getContentHitsCK().getAncUuid().getAncUuid()) ? "200" : "500";
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
         }
 
         return rst;

@@ -92,13 +92,8 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
         ></v-textarea>
       </v-row>
 
-      <v-card>
-        <v-row
-          id="selectComment"
-          class="body-row"
-          v-show="selectComment != ''"
-          ref="scrollBox"
-        >
+      <v-card id="comment-body">
+        <v-row id="selectComment" v-show="selectComment != ''" ref="scrollBox">
           <v-col cols="2" class="mainRegister">
             <v-chip @click="fnCmmtTargetDel" color="teal">
               {{ newComment.commentTarget }}님에게
@@ -110,16 +105,13 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
               auto-grow
               readonly
               v-model="selectComment"
+              hide-details
             ></v-textarea>
           </v-col>
-          <v-divider></v-divider>
         </v-row>
-        <v-row
-          id="commentEditor"
-          class="body-row"
-          :v-show="!editmode && commentable"
-        >
-          <v-col cols="1">
+        <v-divider v-show="selectComment != ''"></v-divider>
+        <v-row id="commentEditor" :v-show="!editmode && commentable">
+          <v-col cols="1" class="mainCommentIcon">
             <v-icon
               icon="fas fa-reply"
               class="replyIcon"
@@ -150,7 +142,6 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
             ></v-btn>
           </v-col>
         </v-row>
-        <v-divider></v-divider>
         <v-divider></v-divider>
         <v-row
           v-show="ancComments.length > 0"
@@ -189,6 +180,7 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
             <span
               class="delSubReply"
               v-show="comment.ancCommentState == 0 && comment.commentEditable"
+              @click="fnDelSubReply(comment.ancCommentUuid)"
             >
               댓글삭제
             </span>
@@ -299,6 +291,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "@v-css/contents/board/notice/item/itemDetails.css";
 </style>

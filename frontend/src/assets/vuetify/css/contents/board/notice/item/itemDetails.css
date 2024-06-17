@@ -18,6 +18,11 @@
   }
 }
 
+#comment-body {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
 .mainRegister {
   display: flex;
   justify-content: center;
@@ -35,14 +40,19 @@
   margin-left: 12px;
 }
 
-.mainCommentBtn {
+.mainCommentBtn,
+.mainCommentIcon {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
+.mainCommentIcon {
+  justify-content: center;
+}
+
 .mainCommentBtn button,
-.mainRegister {
+.mainCommentIcon i {
   margin-top: -20px;
 }
 
@@ -80,6 +90,11 @@
   align-items: baseline;
   font-size: 14px;
   font-style: italic;
+}
+
+.replyIcon {
+  transform-origin: center;
+  transform: rotate(180deg);
 }
 
 .subReplyBtnRow {

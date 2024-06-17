@@ -13,8 +13,8 @@ public interface AllNoticeContentsService {
 
     public String createItem(Map<String, Object> param);
     public Page<BoardItemDto> getItems(Map<String, String> param);
-    public Page<BoardItemDto> findItems(String page, String searchType, String SearchKeywords);
     public BoardItemDto getItemDetails(String itemId, String mId);
+    public AllNoticeContents findByAncUuid(String ancUuid);
     public String updateItem(Map<String, Object> param);
     public String deleteItem(String ancUuid, String mId);
     public String chngLikeFlag(String ancUuid, boolean flag, String mId);

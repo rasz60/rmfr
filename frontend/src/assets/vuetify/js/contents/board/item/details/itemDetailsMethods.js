@@ -130,14 +130,18 @@ export default {
   },
 
   async fnDelSubReply(cId) {
-    await this.axios.get("/rest/board/item/delComment/" + cId).then((res) => {
-      if (res.data == "200") {
-        alert("댓글이 삭제되었습니다.");
-        this.$router.go(0);
-      } else {
-        alert("댓글 삭제에 실패했습니다.");
-      }
-    });
+    if (confirm("댓글을 삭제할까요?")) {
+      await this.axios.get("/rest/board/item/delComment/" + cId).then((res) => {
+        if (res.data == "200") {
+          alert("댓글이 삭제되었습니다.");
+          this.$router.go(0);
+        } else {
+          alert("댓글 삭제에 실패했습니다.");
+        }
+      });
+    } else {
+      return false;
+    }
   },
 
   fnCommentText(comment) {
