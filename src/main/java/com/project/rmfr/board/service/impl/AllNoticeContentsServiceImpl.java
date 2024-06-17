@@ -69,14 +69,38 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
     @Override
     @Transactional
-    public Page<BoardItemDto> getItems(String page) {
+    public Page<BoardItemDto> getItems(Map<String, String> param) {
         Page<BoardItemDto> pageItems = null;
+        int pg = -1;
+        int pglmt = 10;
+
         try {
-            int pg = Integer.parseInt(page) -1;
-            int pglmt = 10;
+            int page = Integer.parseInt(param.get("page"));
+            pg += page;
+            Page<AllNoticeContents> tmpItems = null;
+            if ( param.containsKey("searchType") ) {
+                String sType = param.get("searchType");
+                String sValue = param.get("searchValue");
 
-            Page<AllNoticeContents> tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+                if ( "ancTitle".equals(sType) ) {
+                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncTitle(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+                }
+                else if ( "ancRegId".equals(sType) ) {
+                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncRegId(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+                }
+                else if ( "ancRegDate".equals(sType) ) {
+                    String[] sValueArr = sValue.split("\\|");
+                    LocalDateTime sDate = strToDate(sValueArr[0], 0);
+                    LocalDateTime eDate = strToDate(sValueArr[1], 1);
 
+                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncRegDate(sDate, eDate)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+                }
+                else if ( "ancKw".equals(sType) ) {
+                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncKw(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+                }
+            } else {
+                tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
+            }
             pageItems = tmpItems.map(tmpItem -> new BoardItemDto(tmpItem));
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,5 +445,31 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
             maxSortOrder = Math.max(c.getSortOrder(), maxSortOrder);
 
         return maxSortOrder;
+    }
+
+    public LocalDateTime strToDate(String dateStr, int type) {
+        int YYYY = 0;
+        int MM = 0;
+        int DD = 0;
+        int HH = 0;
+        int mm = 0;
+        int SS = 0;
+        int length = dateStr.length();
+        if ( length > 8 ) {
+            YYYY = Integer.parseInt(dateStr.substring(0, 4));
+            MM = Integer.parseInt(dateStr.substring(4, 6))-1;
+            DD = Integer.parseInt(dateStr.substring(6, 8));
+            HH = Integer.parseInt(dateStr.substring(8, 10));
+            mm = Integer.parseInt(dateStr.substring(10, 12));
+            SS = Integer.parseInt(dateStr.substring(12, 14));
+        } else {
+            YYYY = Integer.parseInt(dateStr.substring(0, 4));
+            MM = Integer.parseInt(dateStr.substring(4, 6));
+            DD = Integer.parseInt(dateStr.substring(6));
+            HH = type == 0 ? 0 : 23;
+            mm = type == 0 ? 0 : 59;
+            SS = type == 0 ? 0 : 59;
+        }
+        return LocalDateTime.of(YYYY, MM, DD, HH, mm, SS);
     }
 }

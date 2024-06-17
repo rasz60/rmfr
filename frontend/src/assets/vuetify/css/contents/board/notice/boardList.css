@@ -1,67 +1,39 @@
-/*
-.boardBody {
-  margin-bottom: 20px;
-
-  div#boardUtils {
-    div#utilSearch {
-      div {
-        padding: 2px;
-        a.btn {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-  div.btn {
-    width: 100%;
-    border-radius: 10px !important;
-    height: 50px;
-    margin: 5px;
-    display: flex;
-    align-items: center;
-
-    span {
-      font-size: 13px;
-    }
-  }
-  div.btn.disabled {
-    font-weight: 500;
-    span {
-      font-size: 15px;
-    }
-  }
-
-  div.btn.btn-outline-light {
-    border-color: #ececec;
-  }
-
-  div.btn-box {
-    width: 100%;
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-end;
-
-    a {
-      font-size: 20px;
-      padding: 5px;
-      width: 45px;
-      margin: 2px;
-    }
-  }
-}
-
-nav#pagenation {
-  display: flex;
-  justify-content: center;
-
-  li.page-item.active a {
-    color: white !important;
-    background-color: #70aaff !important;
-    border-color: #a8c7f5 !important;
-  }
-}
-*/
 .boardBody {
   margin: 0 auto;
+}
+
+#totalCnt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#boardList {
+  padding: 15px;
+
+  #boardListTop {
+    background-color: silver;
+    color: white;
+    border-radius: 5px 5px 0 0 !important;
+    font-weight: 500;
+  }
+  .boardItem {
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 15px;
+  }
+
+  .boardItem:hover {
+    background-color: #f6f6f6;
+    font-weight: 500;
+
+    .title {
+      text-decoration: underline;
+    }
+  }
+}
+
+#btnRow {
+  margin-top: 12px;
 }

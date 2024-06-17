@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,9 +20,18 @@ public class BoardRestApiController {
 
     private final AllNoticeContentsService allNoticeContentsService;
 
-    @GetMapping("/rest/board/getItems/{page}")
-    public Page<BoardItemDto> getItems(@PathVariable("page") String page) {
-        return allNoticeContentsService.getItems(page);
+    @GetMapping({"/rest/board/getItems/{page}", "/rest/board/getItems/{page}/{searchType}/{searchValue}"})
+    public Page<BoardItemDto> getItems(@PathVariable("page") String page,
+                                       @PathVariable(value = "searchType", required = false) String searchType,
+                                       @PathVariable(value = "searchValue", required = false) String searchValue) {
+        System.out.println(page);
+        Map<String, String> param = new HashMap<>();
+        param.put("page",page);
+        if ( searchType != null && searchValue != null ) {
+            param.put("searchType", searchType);
+            param.put("searchValue", searchValue);
+        }
+        return allNoticeContentsService.getItems(param);
     };
 
     @GetMapping("/rest/board/item/d/{itemId}")

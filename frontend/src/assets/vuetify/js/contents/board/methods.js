@@ -1,9 +1,14 @@
 import { ref } from "vue";
 export default {
-  async getItems(page) {
+  async getItems(page, searchType, searchValue) {
     this.items = [];
 
-    await this.axios.get("/rest/board/getItems/" + page).then((res) => {
+    var param = page;
+    if (searchType && searchValue) {
+      param += "/" + searchType + "/" + searchValue;
+    }
+
+    await this.axios.get("/rest/board/getItems/" + param).then((res) => {
       let contents = res.data.content;
       let pages = res.data;
       this.page = ref(page);
@@ -32,5 +37,48 @@ export default {
   },
   fnShowDetails(ancUuid) {
     this.$router.push("/board/notice/item/d?itemId=" + ancUuid);
+  },
+
+  fnBoardSearch() {
+    var sType = this.sType;
+    var sValue = this.sValue;
+
+    if (sType == "ancRegDate") {
+      if (this.sDateValue == null) {
+        alert("검색할 시작 일자와 종료 일자를 선택해주세요.");
+        return false;
+      } else {
+        sValue = this.fnSearchDateStr();
+      }
+    }
+
+    if (!sType) {
+      alert("검색 유형을 입력해주세요.");
+      return false;
+    }
+
+    if (!sValue) {
+      alert("검색어를 입력해주세요.");
+      return false;
+    }
+
+    this.getItems(1, sType, sValue);
+  },
+
+  fnSearchDateStr() {
+    var sDate = this.fnDateToStr(this.sDateValue[0]);
+    var eDate = this.fnDateToStr(this.sDateValue[this.sDateValue.length - 1]);
+
+    return sDate + "|" + eDate;
+  },
+  fnDateToStr(date) {
+    console.log(date);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+
+    month = month > 9 ? month : "0" + month;
+
+    return year + "" + month + "" + day;
   },
 };

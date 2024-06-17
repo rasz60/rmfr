@@ -12,7 +12,7 @@ import java.util.List;
 public interface AllNoticeContentsService {
 
     public String createItem(Map<String, Object> param);
-    public Page<BoardItemDto> getItems(String page);
+    public Page<BoardItemDto> getItems(Map<String, String> param);
     public Page<BoardItemDto> findItems(String page, String searchType, String SearchKeywords);
     public BoardItemDto getItemDetails(String itemId, String mId);
     public String updateItem(Map<String, Object> param);
