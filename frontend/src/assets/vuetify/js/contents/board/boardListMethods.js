@@ -53,17 +53,16 @@ export default {
 
   fnBoardSearch() {
     var sType = this.sType;
-    var sValue = this.sValue;
 
     if (sType == "ancRegDate") {
       if (this.sDateValue == null) {
         alert("검색할 시작 일자와 종료 일자를 선택해주세요.");
         return false;
       } else {
-        sValue = this.fnSearchDateStr();
+        this.sValue = this.fnSearchDateStr();
       }
     }
-
+    var sValue = this.sValue;
     if (!sType) {
       alert("검색 유형을 입력해주세요.");
       return false;

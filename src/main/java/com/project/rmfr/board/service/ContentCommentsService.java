@@ -1,9 +1,11 @@
 package com.project.rmfr.board.service;
 
+import com.project.rmfr.board.dto.ContentCommentsDto;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.List;
 
 @Service
 public interface ContentCommentsService {

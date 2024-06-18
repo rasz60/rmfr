@@ -43,14 +43,14 @@ public class AllNoticeContents {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancRegDate;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancRegId")
     private Members ancRegId;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime ancUpdateDate;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancUpdaterId")
     private Members ancUpdaterId;
 

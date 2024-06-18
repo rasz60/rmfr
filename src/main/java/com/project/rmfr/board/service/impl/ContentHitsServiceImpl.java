@@ -29,8 +29,9 @@ public class ContentHitsServiceImpl implements ContentHitsService {
             AllNoticeContents anc = allNoticeContentsService.findByAncUuid(itemId);
 
             if ( anc != null ) {
-                String register = anc.getAncRegId().getMId();
-                if ( mId.equals(register) ) {
+                Members register = anc.getAncRegId();
+
+                if ( mId.equals(register.getMId()) ) {
                     Members loginUser = memberService.loadUser(mId);
                     ContentHitsCK ck = new ContentHitsCK(anc, loginUser);
 

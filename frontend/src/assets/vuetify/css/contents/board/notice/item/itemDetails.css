@@ -103,13 +103,15 @@
 }
 
 .regSubReply,
-.delSubReply {
+.delSubReply,
+.showSubReply {
   cursor: pointer;
   font-size: 14px;
 }
 
 .regSubReply:hover,
-.delSubReply:hover {
+.delSubReply:hover,
+.showSubReply:hover {
   text-decoration: underline;
   color: darkblue;
 }

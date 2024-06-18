@@ -144,7 +144,7 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
         </v-row>
         <v-divider></v-divider>
         <v-row
-          v-show="ancComments.length > 0"
+          v-show="ancComments.length > 0 && comment.displayFlag"
           v-for="comment in ancComments"
           :key="comment"
         >
@@ -169,6 +169,14 @@ import itemDetailsMethods from "@v-js/contents/board/item/details/itemDetailsMet
               >&nbsp;
               {{ fnCommentText(comment) }}
             </p>
+            <span
+              class="showSubReply"
+              v-show="comment.children.length > 0"
+              @click="fnShowSubReply(comment)"
+            >
+              답글보기({{ comment.children.length }})
+            </span>
+            &nbsp;&nbsp;
             <span
               class="regSubReply"
               v-show="comment.ancCommentState == 0 && commentable"

@@ -7,6 +7,7 @@ import com.project.rmfr.board.entity.ck.ContentHitsCK;
 import com.project.rmfr.board.entity.ck.ContentLikesCK;
 import com.project.rmfr.board.repository.*;
 import com.project.rmfr.board.service.AllNoticeContentsService;
+import com.project.rmfr.board.service.ContentCommentsService;
 import com.project.rmfr.board.service.ContentHitsService;
 import com.project.rmfr.board.service.ContentLikesService;
 import com.project.rmfr.board.spec.BoardSpecification;
@@ -82,7 +83,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
             tmpItems = allNoticeContentsRepository.findAll(spec, PageRequest.of(pg, pglmt, Sort.by(sortOrder)));
 
-
             pageItems = tmpItems.map(tmpItem -> new BoardItemDto(tmpItem));
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,6 +107,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                 if (! "guest".equals(mId) ) {
                     Members loginUser = memberService.loadUser(mId);
                     dto.setCommentable(true);
+
                     List<ContentCommentsDto> ancComments = dto.getAncComments();
 
                     for ( ContentCommentsDto commentDto : ancComments ) {
@@ -122,6 +123,10 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                         // 댓글의 좋아요 수
                         int cnt2 = contentLikesService.countByContentId(commentDto.getAncCommentUuid());
                         commentDto.setLikesCount(cnt2);
+
+                        if ( commentDto.getAncCommentDepth() == 0 ) {
+                            commentDto.setDisplayFlag(true);
+                        }
                     }
 
                     dto.setAncComments(ancComments);
@@ -262,20 +267,20 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                 sValue = param.get("sValue");
 
                 if ( "ancTitle".equals(sType) ) {
-                    spec.and(BoardSpecification.withAncTitle(sValue));
+                    spec = spec.and(BoardSpecification.withAncTitle(sValue));
                 }
                 else if ( "ancRegId".equals(sType) ) {
-                    spec.and(BoardSpecification.withAncRegId(sValue));
+                    spec = spec.and(BoardSpecification.withAncRegId(sValue));
                 }
                 else if ( "ancRegDate".equals(sType) ) {
                     String[] sValueArr = sValue.split("\\|");
                     LocalDateTime sDate = strToDate(sValueArr[0], 0);
                     LocalDateTime eDate = strToDate(sValueArr[1], 1);
 
-                    spec.and(BoardSpecification.withAncRegDate(sDate, eDate));
+                    spec = spec.and(BoardSpecification.withAncRegDate(sDate, eDate));
                 }
                 else if ( "ancKw".equals(sType) ) {
-                    spec.and(BoardSpecification.withAncKw(sValue));
+                    spec = spec.and(BoardSpecification.withAncKw(sValue));
                 }
             }
         } catch (Exception e) {

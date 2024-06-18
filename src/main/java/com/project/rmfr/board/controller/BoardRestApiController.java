@@ -1,7 +1,9 @@
 package com.project.rmfr.board.controller;
 
 import com.project.rmfr.board.dto.BoardItemDto;
+import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
+import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.repository.ContentHitsRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.service.ContentCommentsService;
@@ -14,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,13 +32,13 @@ public class BoardRestApiController {
     private final ContentCommentsService contentCommentsService;
     @GetMapping({ "/rest/board/getItems/{page}"
                 , "/rest/board/getItems/{page}/{sort}"
-                , "/rest/board/getItems/{page}/{searchType}/{searchValue}"
-                , "/rest/board/getItems/{page}/{sort}/{searchType}/{searchValue}"})
+                , "/rest/board/getItems/{page}/{sType}/{sValue}"
+                , "/rest/board/getItems/{page}/{sort}/{sType}/{sValue}"})
 
     public Page<BoardItemDto> getItems(@PathVariable("page") String page,
                                        @PathVariable(value = "sort", required = false) String sort,
-                                       @PathVariable(value = "searchType", required = false) String searchType,
-                                       @PathVariable(value = "searchValue", required = false) String searchValue) {
+                                       @PathVariable(value = "sType", required = false) String sType,
+                                       @PathVariable(value = "sValue", required = false) String sValue) {
 
         Map<String, String> param = new HashMap<>();
         param.put("page",page);
@@ -42,9 +46,9 @@ public class BoardRestApiController {
             param.put("sortOrder", sort);
         }
 
-        if ( searchType != null && searchValue != null ) {
-            param.put("searchType", searchType);
-            param.put("searchValue", searchValue);
+        if ( sType != null && sValue != null ) {
+            param.put("sType", sType);
+            param.put("sValue", sValue);
         }
         return allNoticeContentsService.getItems(param);
     };
@@ -88,4 +92,5 @@ public class BoardRestApiController {
     public String likeComment(@PathVariable("ancCommentUuid") String ancCommentUuid, Principal principal) {
         return contentCommentsService.likeComment(ancCommentUuid, principal);
     }
+
 }

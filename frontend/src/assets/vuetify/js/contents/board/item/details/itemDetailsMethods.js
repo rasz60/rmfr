@@ -177,4 +177,33 @@ export default {
         }
       });
   },
+
+  fnShowSubReply(comment) {
+    var childOpen = this.ancComments[comment.sortOrder].childOpen;
+    var uuid = comment.ancCommentUuid;
+    this.fnShowChildReply(uuid);
+    var childUuid = new Array();
+    childUuid.push(uuid);
+    // 모든 자식 댓글 닫기
+    for (var i in this.ancComments) {
+      var target = this.ancComments[i];
+
+      if (childUuid.includes(target.ancParentCommentUuid)) {
+        if (target.childOpen) {
+          childUuid.push(target.ancCommentUuid);
+        }
+        this.ancComments[i].childOpen = !target.childOpen;
+      }
+    }
+
+    this.ancComments[comment.sortOrder].childOpen = !childOpen;
+  },
+
+  fnShowChildReply(uuid) {
+    for (var i in this.ancComments) {
+      if (this.ancComments[i].ancParentCommentUuid == uuid) {
+        this.ancComments[i].displayFlag = !this.ancComments[i].displayFlag;
+      }
+    }
+  },
 };

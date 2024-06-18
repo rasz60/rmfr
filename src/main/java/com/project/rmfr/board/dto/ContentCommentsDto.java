@@ -27,7 +27,8 @@ public class ContentCommentsDto {
     private List<ContentCommentsDto> children = new ArrayList<>();
     private boolean commentLikeFlag = false;
     private int likesCount;
-
+    private boolean displayFlag = false;
+    private boolean childOpen = false;
     public ContentCommentsDto() {}
 
     public static ContentCommentsDto of(ContentComments comments) {
@@ -44,6 +45,8 @@ public class ContentCommentsDto {
 
     public ContentCommentsDto(ContentComments comments) {
         this.ancCommentUuid = comments.getAncCommentUuid();
+        if ( comments.getAncParentComment() != null )
+            this.ancParentCommentUuid = comments.getAncParentComment().getAncCommentUuid();
         this.ancComment = comments.getAncComment();
         this.ancUuid = comments.getAncUuid().getAncUuid();
         this.ancCommentRegDate = comments.getAncCommentRegDate();

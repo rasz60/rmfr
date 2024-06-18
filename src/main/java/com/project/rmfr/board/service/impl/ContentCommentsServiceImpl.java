@@ -1,5 +1,6 @@
 package com.project.rmfr.board.service.impl;
 
+import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentLikes;
@@ -8,13 +9,16 @@ import com.project.rmfr.board.repository.ContentCommentsRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.service.ContentCommentsService;
 import com.project.rmfr.board.service.ContentLikesService;
+import com.project.rmfr.board.spec.BoardSpecification;
 import com.project.rmfr.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.AbstractDocument;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -123,7 +127,6 @@ public class ContentCommentsServiceImpl implements ContentCommentsService {
 
         return rst;
     }
-
     public String likeComment(String ancCommentUuid, Principal principal) {
         String rst = "";
 
