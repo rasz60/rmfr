@@ -8,6 +8,7 @@ import com.project.rmfr.board.entity.ck.ContentLikesCK;
 import com.project.rmfr.board.repository.*;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.service.ContentHitsService;
+import com.project.rmfr.board.service.ContentLikesService;
 import com.project.rmfr.board.spec.BoardSpecification;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentHits;
@@ -34,10 +35,8 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
     private final MemberService memberService;
     private final AllNoticeContentsRepository allNoticeContentsRepository;
-    private final ContentLikesRepository contentLikesRepository;
-    private final ContentLikesCustomRepository contentLikesCustomRepository;
-    private final ContentCommentsRepository contentCommentsRepository;
-    private final ContentCommentsCustomRepository contentCommentsCustomRepository;
+
+    private final ContentLikesService contentLikesService;
     @Override
     public String createItem(Map<String, Object> param) {
         String rst = "";
@@ -67,23 +66,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
         return rst;
     }
-
-    @Override
-    public AllNoticeContents findByAncUuid(String ancUuid) {
-        AllNoticeContents anc = null;
-
-        try {
-            Optional<AllNoticeContents> optAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
-
-            if ( optAnc.isPresent() ) {
-                anc = optAnc.get();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return anc;
-    }
-
     @Override
     @Transactional
     public Page<BoardItemDto> getItems(Map<String, String> param) {
@@ -95,36 +77,18 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
             int page = Integer.parseInt(param.get("page"));
             pg += page;
             Page<AllNoticeContents> tmpItems = null;
-            if ( param.containsKey("searchType") ) {
-                String sType = param.get("searchType");
-                String sValue = param.get("searchValue");
+            Specification<AllNoticeContents> spec = setSpecification(param);
+            List<Sort.Order> sortOrder = setSortOrder(param);
 
-                if ( "ancTitle".equals(sType) ) {
-                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncTitle(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-                }
-                else if ( "ancRegId".equals(sType) ) {
-                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncRegId(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-                }
-                else if ( "ancRegDate".equals(sType) ) {
-                    String[] sValueArr = sValue.split("\\|");
-                    LocalDateTime sDate = strToDate(sValueArr[0], 0);
-                    LocalDateTime eDate = strToDate(sValueArr[1], 1);
+            tmpItems = allNoticeContentsRepository.findAll(spec, PageRequest.of(pg, pglmt, Sort.by(sortOrder)));
 
-                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncRegDate(sDate, eDate)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-                }
-                else if ( "ancKw".equals(sType) ) {
-                    tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2).and(BoardSpecification.withAncKw(sValue)), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-                }
-            } else {
-                tmpItems = allNoticeContentsRepository.findAll(BoardSpecification.withAncState(2), PageRequest.of(pg, pglmt, Sort.by(Sort.Direction.DESC, "ancRegDate")));
-            }
+
             pageItems = tmpItems.map(tmpItem -> new BoardItemDto(tmpItem));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return pageItems;
     }
-
     @Override
     @Transactional
     public BoardItemDto getItemDetails(String itemId, String mId) {
@@ -152,11 +116,11 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
                         // 로그인 유저의 좋아요 클릭 여부
                         ContentLikesCK ck = new ContentLikesCK(commentDto.getAncCommentUuid(), loginUser);
-                        Long cnt = contentLikesRepository.countByContentLikesCKAndContentType(ck, "COM");
+                        int cnt = contentLikesService.countByContentLikesCKAndContentType(commentDto.getAncCommentUuid(), loginUser, "COM");
                         commentDto.setCommentLikeFlag(cnt > 0);
 
                         // 댓글의 좋아요 수
-                        int cnt2 = contentLikesCustomRepository.countByContentId(commentDto.getAncCommentUuid());
+                        int cnt2 = contentLikesService.countByContentId(commentDto.getAncCommentUuid());
                         commentDto.setLikesCount(cnt2);
                     }
 
@@ -167,12 +131,9 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                         dto.setDeletable(true);
                         dto.setVisible(true);
                     }
-                    /*
-                    if ( !mId.equals(dto.getAncRegId())) {
-                        contentHitsService.hitsUp(new ContentHitsCK(anc, loginUser));
-                    }
-                    */
-                    dto.setLikeItem(setLikeItem(anc, loginUser));
+
+                    int likeCnt = contentLikesService.countByContentLikesCKAndContentType(itemId, loginUser, "ANC");
+                    dto.setLikeItem(likeCnt > 0);
                 }
 
             }
@@ -183,7 +144,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
         return dto;
     };
-
     @Override
     public String updateItem(Map<String, Object> param) {
         String rst = "";
@@ -225,7 +185,6 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
         return rst;
     }
-
     @Override
     public String deleteItem(String ancUuid, String userId) {
         String rst = "";
@@ -251,177 +210,21 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
         return rst;
     }
-
     @Override
-    public String chngLikeFlag(String ancUuid, boolean flag, String mId) {
-        String rst = "";
+    public AllNoticeContents findByAncUuid(String ancUuid) {
+        AllNoticeContents anc = null;
+
         try {
-            ContentLikes like = ContentLikes.builder()
-                    .contentId(ancUuid)
-                    .likeId(memberService.loadUser(mId))
-                    .contentType("ANC")
-                    .build();
-            if (flag) {
-                rst = "ANC".equals(contentLikesRepository.save(like).getContentType()) ? "200" : "500";
-            } else {
-                contentLikesRepository.delete(like);
-                rst = "200";
+            Optional<AllNoticeContents> optAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
+
+            if ( optAnc.isPresent() ) {
+                anc = optAnc.get();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            rst = "500";
         }
-
-        return rst;
+        return anc;
     }
-
-    @Override
-    @Transactional
-    public String regComment(Map<String, Object> param, String mId) {
-        String rst = "";
-
-        try {
-            String ancUuid = (String) param.get("ancUuid");
-            Optional<AllNoticeContents> optionAnc = allNoticeContentsRepository.findByAncUuid(ancUuid);
-
-            if (optionAnc.isPresent()) {
-                AllNoticeContents anc = optionAnc.get();
-                String ancParentCommentUuid = (String) param.get("ancParentCommentUuid");
-                String ancComment = (String) param.get("ancComment");
-                int ancDepth = (int) param.get("ancCommentDepth");
-
-                //댓글일 때 (ancDepth = "")
-                if ("".equals(ancParentCommentUuid)) {
-                    // 전체 댓글의 마지막 순서로 댓글 입력
-                    ContentComments comment = new ContentComments(
-                            ancComment
-                            , contentCommentsRepository.countByAncUuid(anc).intValue()
-                            , anc
-                            , memberService.loadUser(mId)
-                    );
-                    rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
-                }
-                //대댓글일 때 (ancDepth > 1)
-                else {
-                    // 부모 댓글 객체 조회
-                    Optional<ContentComments> pComment = contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid);
-
-                    // 부모 댓글이 존재할 때
-                    if (pComment.isPresent()) {
-                        // 부모 댓글
-                        ContentComments parentComment = pComment.get();
-
-                        // 부모 댓글의 모든 자식 댓글 조회
-                        List<ContentComments> childList = contentCommentsCustomRepository.findContentCommentsByAllNoticeContents(pComment.get());
-
-                        // 자식 댓글 중 sortOrder가 가장 높은 값 조회
-                        int maxSortOrder = getMaxSortOrder(childList, parentComment.getSortOrder());
-                        int newSortOrder = maxSortOrder + 1; // 자식 댓글 중 가장 마지막 순서의 다음으로 설정
-
-                        // 새로 작성된 댓글이 들어갈 차례 이 후의 기존 댓글 전체 조회
-                        List<ContentComments> lastComments = contentCommentsRepository.findBySortOrderGreaterThanEqual(newSortOrder);
-
-                        // 기존 댓글의 순서를 모두 + 1
-                        for (ContentComments cmm : lastComments) {
-                            cmm.setSortOrder(cmm.getSortOrder() + 1);
-                            contentCommentsRepository.save(cmm);
-                        }
-
-                        // newSortOrder를 가진 comment 신규 insert
-                        ContentComments comment = new ContentComments(
-                                parentComment
-                                , ancComment
-                                , ancDepth
-                                , newSortOrder
-                                , anc
-                                , memberService.loadUser(mId)
-                        );
-                        rst = contentCommentsRepository.save(comment).getAncUuid().getAncUuid();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("regComment throw exceptions.");
-            e.printStackTrace();
-        } finally {
-            // 댓글 작성이 실패한 경우
-            if ( "".equals(rst) ) {
-                rst = "500";
-            }
-        }
-
-        return rst;
-    }
-
-    @Override
-    public String delComment(String ancCommentUuid) {
-        String rst = "";
-        int commentStatus = 0;
-        if (! "".equals(ancCommentUuid) ) {
-            Optional<ContentComments> commentOption = contentCommentsRepository.findByAncCommentUuid(ancCommentUuid);
-
-            if ( commentOption.isPresent() ) {
-                ContentComments comment = commentOption.get();
-                comment.setAncCommentState(1);
-                commentStatus = contentCommentsRepository.save(comment).getAncCommentState();
-            }
-        }
-        rst = commentStatus == 1 ? "200" : "500";
-
-        return rst;
-    }
-
-    public String likeComment(String ancCommentUuid, Principal principal) {
-        String rst = "";
-
-        try {
-            String mId = "";
-            if ( principal != null ) mId = principal.getName();
-            ContentLikes like = ContentLikes.builder().contentId(ancCommentUuid).likeId(memberService.loadUser(mId)).contentType("COM").build();
-
-            long chk = contentLikesRepository.countByContentLikesCKAndContentType(like.getContentLikesCK(), like.getContentType());
-
-            if ( chk > 0 ) {
-                contentLikesRepository.delete(like);
-                rst = "202";
-            } else {
-                rst = contentLikesRepository.save(like).getContentType();
-                rst = "COM".equals(rst) ? "201" : "500";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("likeComment() throw exceptions.");
-        }
-
-        return rst;
-    }
-
-    public boolean setLikeItem(AllNoticeContents anc, Members loginUser) {
-        boolean chk = false;
-
-        try {
-            List<ContentLikes> ch = contentLikesRepository.findAll(BoardSpecification.withContentLikerId(loginUser.getMEntrId())
-                    .and(BoardSpecification.withContentId(anc.getAncUuid())));
-
-            chk = ch.size() > 0;
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        return chk;
-    }
-
-    public int getMaxSortOrder(List<ContentComments> commentsList, int pSortOrder) {
-        // 부모 댓글의 sortOrder에서부터 시작
-        int maxSortOrder = pSortOrder;
-
-        // commentsList에 있는 댓글 중 sortOrder가 가장 큰 값을 찾음
-        for( ContentComments c : commentsList )
-            maxSortOrder = Math.max(c.getSortOrder(), maxSortOrder);
-
-        return maxSortOrder;
-    }
-
     public LocalDateTime strToDate(String dateStr, int type) {
         int YYYY = 0;
         int MM = 0;
@@ -446,5 +249,67 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
             SS = type == 0 ? 0 : 59;
         }
         return LocalDateTime.of(YYYY, MM, DD, HH, mm, SS);
+    }
+
+    public Specification<AllNoticeContents> setSpecification(Map<String, String> param) {
+        Specification<AllNoticeContents> spec = BoardSpecification.withAncState(2);
+        String sType = "";
+        String sValue = "";
+        try {
+
+            if ( param.containsKey("sType") ) {
+                sType = param.get("sType");
+                sValue = param.get("sValue");
+
+                if ( "ancTitle".equals(sType) ) {
+                    spec.and(BoardSpecification.withAncTitle(sValue));
+                }
+                else if ( "ancRegId".equals(sType) ) {
+                    spec.and(BoardSpecification.withAncRegId(sValue));
+                }
+                else if ( "ancRegDate".equals(sType) ) {
+                    String[] sValueArr = sValue.split("\\|");
+                    LocalDateTime sDate = strToDate(sValueArr[0], 0);
+                    LocalDateTime eDate = strToDate(sValueArr[1], 1);
+
+                    spec.and(BoardSpecification.withAncRegDate(sDate, eDate));
+                }
+                else if ( "ancKw".equals(sType) ) {
+                    spec.and(BoardSpecification.withAncKw(sValue));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return spec;
+    }
+
+    public List<Sort.Order> setSortOrder(Map<String, String> param) {
+        List<Sort.Order> orderList = new ArrayList<Sort.Order>();
+        String sortOrder = "";
+        try {
+            if ( param.containsKey("sortOrder") ) {
+                sortOrder = param.get("sortOrder");
+                String[] ordersArr = sortOrder.split(",");
+
+                for ( String order : ordersArr ) {
+                    String[] orderArr = order.split(" ");
+                    String colName = orderArr[0];
+                    String direction = orderArr[1];
+
+                    if ("ASC".equals(direction))
+                        orderList.add(new Sort.Order(Sort.Direction.ASC, colName));
+                    else
+                        orderList.add(new Sort.Order(Sort.Direction.DESC, colName));
+                }
+            } else {
+                orderList.add(new Sort.Order(Sort.Direction.DESC, "ancRegDate"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return orderList;
     }
 }

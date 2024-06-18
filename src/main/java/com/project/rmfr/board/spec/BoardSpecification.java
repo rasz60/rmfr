@@ -4,6 +4,7 @@ import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentHits;
 import com.project.rmfr.board.entity.ContentLikes;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -58,4 +59,5 @@ public class BoardSpecification {
                 builder.like(root.get("ancKw"), "%"+ancKw+"%")
         );
     }
+
 }

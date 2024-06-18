@@ -50,11 +50,17 @@ import { VDateInput } from "vuetify/labs/VDateInput";
         <v-list-item id="boardListTop">
           <v-row>
             <v-col cols="1">순번</v-col>
-            <v-col cols="5" @click="fnSortOrder(1)">제목</v-col>
-            <v-col cols="2" @click="fnSortOrder(2)">작성자</v-col>
-            <v-col cols="2" @click="fnSortOrder(3)">작성일</v-col>
-            <v-col cols="1" @click="fnSortOrder(4)">조회수</v-col>
-            <v-col cols="1" @click="fnSortOrder(5)">좋아요</v-col>
+            <v-col
+              v-for="sortItem in sort"
+              :key="sortItem"
+              :cols="sortItem.wid"
+              @click="fnSortOrder(sortItem.idx)"
+            >
+              {{ sortItem.name }}&nbsp;<v-icon
+                :icon="sortItem.icon"
+                size="13px"
+              ></v-icon>
+            </v-col>
           </v-row>
         </v-list-item>
         <v-list-item
@@ -85,6 +91,7 @@ import { VDateInput } from "vuetify/labs/VDateInput";
         <v-btn
           icon="far fa-pen-to-square"
           @click="$router.push('/board/notice/item/c')"
+          v-show="$loginInfo.mLevel == 2"
         ></v-btn>
       </v-col>
     </v-row>
@@ -97,12 +104,12 @@ export default {
     return boardListDatas;
   },
   mounted() {
-    this.getItems(1, this.sType, this.sValue);
+    this.getItems(1);
   },
   methods: boardListMethods,
   watch: {
     page(v) {
-      this.getItems(v, this.sType, this.sValue);
+      this.getItems(v);
     },
   },
 };

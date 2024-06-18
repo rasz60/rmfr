@@ -6,7 +6,9 @@ import com.project.rmfr.board.entity.ck.ContentHitsCK;
 import com.project.rmfr.member.entity.Members;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ContentHitsRepository extends JpaRepository<ContentHits, Long>, JpaSpecificationExecutor<ContentHits> {
     Long countByContentHitsCK(ContentHitsCK ck);
 }

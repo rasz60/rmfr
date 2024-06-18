@@ -44,10 +44,12 @@ export default {
 
           this.login = true;
 
+          this.$loginInfo.login = true;
           this.$loginInfo.mId = mId;
           this.$loginInfo.mLevel = mLevel;
           this.$loginInfo.mEntrId = jsonData.mentrId;
         } else {
+          this.$loginInfo.login = false;
           this.$loginInfo.mId = null;
           this.$loginInfo.mLevel = null;
           this.$loginInfo.mEntrId = null;

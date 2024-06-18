@@ -33,7 +33,7 @@ public class BoardApiController {
 
     @GetMapping("notice/item/delete/{ancUuid}")
     @ResponseBody
-    public String updateNoticeItem(@PathVariable("ancUuid") String ancUuid, Principal principal) {
+    public String deleteNoticeItem(@PathVariable("ancUuid") String ancUuid, Principal principal) {
         return "".equals(allNoticeContentsService.deleteItem(ancUuid, principal.getName())) ? "500" : "200";
     }
 }

@@ -9,10 +9,6 @@ import ContentSection from "@v-components/contents/ContentSection.vue";
       <HeaderSection />
 
       <ContentSection />
-
-      <footer>
-        <div>footer</div>
-      </footer>
     </v-container>
   </v-app>
 </template>

@@ -1,12 +1,8 @@
 import { ref } from "vue";
 export default {
-  async getItems(page, searchType, searchValue) {
+  async getItems(page) {
     this.items = [];
-
-    var param = page;
-    if (searchType && searchValue) {
-      param += "/" + searchType + "/" + searchValue;
-    }
+    var param = this.fnSetParams(page);
 
     await this.axios.get("/rest/board/getItems/" + param).then((res) => {
       let contents = res.data.content;
@@ -14,15 +10,10 @@ export default {
       this.page = ref(page);
       this.pageLength = pages.totalPages;
 
-      contents.forEach((v, i) => {
+      contents.forEach((v) => {
         var totalEle = pages.totalElements;
-        var perItems = pages.size;
-        var currPage = pages.number;
-
-        var startSeq = totalEle - currPage * perItems;
         this.totalCnt = totalEle;
         let content = {
-          seq: startSeq - i,
           ancUuid: v.ancUuid,
           ancTitle: v.ancTitle,
           ancRegId: v.ancRegId,
@@ -33,10 +24,31 @@ export default {
         };
         this.items.push(content);
       });
+      this.fnSortList(pages);
     });
   },
   fnShowDetails(ancUuid) {
     this.$router.push("/board/notice/item/d?itemId=" + ancUuid);
+  },
+
+  fnSetParams(page) {
+    var param = page;
+
+    for (var s in this.sort) {
+      var colName = this.sort[s].colName;
+      var sort = this.sort[s].order;
+
+      if (sort != null && colName != "hits" && colName != "likes") {
+        param += "/" + colName + " " + sort;
+        break;
+      }
+    }
+
+    if (this.sType != "" && this.sValue != "") {
+      param += "/" + this.sType + "/" + this.sValue;
+    }
+
+    return param;
   },
 
   fnBoardSearch() {
@@ -80,5 +92,66 @@ export default {
     month = month > 9 ? month : "0" + month;
 
     return year + "" + month + "" + day;
+  },
+  fnSortOrder(idx) {
+    var currOrder = this.sort[idx].order;
+
+    for (var i in this.sort) {
+      if (i == idx) {
+        if (currOrder == null) {
+          this.sort[i].order = "ASC";
+          this.sort[i].icon = "fas fa-sort-up";
+        } else if (currOrder == "ASC") {
+          this.sort[i].order = "DESC";
+          this.sort[i].icon = "fas fa-sort-down";
+        } else if (currOrder == "DESC") {
+          this.sort[i].order = null;
+          this.sort[i].icon = "";
+        }
+      } else {
+        this.sort[i].order = null;
+        this.sort[i].icon = "";
+      }
+    }
+    this.getItems(this.page);
+  },
+  fnSortList(pages) {
+    var hits = this.sort[3].order;
+    var likes = this.sort[4].order;
+
+    if (hits != null) {
+      if (hits == "ASC") {
+        this.items.sort(function (a, b) {
+          return a.ancHits - b.ancHits;
+        });
+      } else {
+        this.items.sort(function (a, b) {
+          return b.ancHits - a.ancHits;
+        });
+      }
+    }
+    if (likes != null) {
+      if (likes == "ASC") {
+        this.items.sort(function (a, b) {
+          return a.ancLikes - b.ancLikes;
+        });
+      } else {
+        this.items.sort(function (a, b) {
+          return b.ancLikes - a.ancLikes;
+        });
+      }
+    }
+
+    this.fnItemsSeq(pages);
+  },
+  fnItemsSeq(pages) {
+    var totalEle = pages.totalElements;
+    var perItems = pages.size;
+    var currPage = pages.number;
+    var startSeq = totalEle - currPage * perItems;
+
+    for (var i in this.items) {
+      this.items[i].seq = startSeq - i;
+    }
   },
 };

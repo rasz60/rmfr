@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface ContentLikesRepository extends JpaRepository<ContentLikes, Long>, JpaSpecificationExecutor<ContentLikes> {
 
     Long countByContentLikesCKAndContentType(ContentLikesCK contentLikesCK, String contentType);
+
 }
