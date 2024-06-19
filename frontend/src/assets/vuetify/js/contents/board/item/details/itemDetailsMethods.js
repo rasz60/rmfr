@@ -20,6 +20,7 @@ export default {
         this.deletable = jsonData.deletable;
         this.likeItem = jsonData.likeItem;
         this.ancComments = jsonData.ancComments;
+        this.fnCommentSeq();
         this.commentable = jsonData.commentable;
       });
   },
@@ -178,32 +179,65 @@ export default {
       });
   },
 
-  fnShowSubReply(comment) {
-    var childOpen = this.ancComments[comment.sortOrder].childOpen;
-    var uuid = comment.ancCommentUuid;
-    this.fnShowChildReply(uuid);
-    var childUuid = new Array();
-    childUuid.push(uuid);
-    // 모든 자식 댓글 닫기
-    for (var i in this.ancComments) {
-      var target = this.ancComments[i];
+  async fnShowSubReply(seq) {
+    var t = this.ancComments[seq];
+    var childList = new Array();
+    childList.push(t.ancCommentUuid);
+    if (!t.childOpen) {
+      await this.axios
+        .get("/rest/board/item/getComments/" + t.ancCommentUuid)
+        .then((res) => {
+          var jsonData = res.data;
+          this.fnSetDisplayCommentList(jsonData, seq);
+        });
+    } else {
+      var nextSeq = parseInt(seq) + 1;
+      var minIdx = nextSeq;
+      var maxIdx = -1;
+      for (var i = nextSeq; i < this.ancComments.length; i++) {
+        var cPId = this.ancComments[i].ancParentCommentUuid;
 
-      if (childUuid.includes(target.ancParentCommentUuid)) {
-        if (target.childOpen) {
-          childUuid.push(target.ancCommentUuid);
+        if (childList.includes(cPId)) {
+          var cId = this.ancComments[i].ancCommentUuid;
+          var cChildOpen = this.ancComments[i].childOpen;
+
+          if (cChildOpen) {
+            childList.push(cId);
+          }
+
+          minIdx = minIdx < i ? minIdx : i;
+          maxIdx = maxIdx > i ? maxIdx : i;
         }
-        this.ancComments[i].childOpen = !target.childOpen;
       }
+      this.ancComments.splice(minIdx, maxIdx - minIdx + 1);
     }
+    this.ancComments[seq].childOpen = !this.ancComments[seq].childOpen;
 
-    this.ancComments[comment.sortOrder].childOpen = !childOpen;
+    this.fnCommentSeq();
   },
-
-  fnShowChildReply(uuid) {
-    for (var i in this.ancComments) {
-      if (this.ancComments[i].ancParentCommentUuid == uuid) {
-        this.ancComments[i].displayFlag = !this.ancComments[i].displayFlag;
-      }
+  fnSetDisplayCommentList(data, seq) {
+    var nextSeq = parseInt(seq) + 1;
+    for (var i = nextSeq; i < this.ancComments.length; i++) {
+      this.ancComments[i].seq += data.length;
     }
+
+    for (var j in data) {
+      data[j].seq = nextSeq + parseInt(j);
+      this.ancComments.push(data[j]);
+    }
+
+    this.fnCommentSort();
+  },
+  fnCommentSeq() {
+    for (var i in this.ancComments) {
+      this.ancComments[i].seq = parseInt(i);
+    }
+
+    this.fnCommentSort();
+  },
+  fnCommentSort() {
+    this.ancComments.sort(function (a, b) {
+      return a.seq - b.seq;
+    });
   },
 };

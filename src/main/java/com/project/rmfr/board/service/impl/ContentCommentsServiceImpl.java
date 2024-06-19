@@ -4,12 +4,14 @@ import com.project.rmfr.board.dto.ContentCommentsDto;
 import com.project.rmfr.board.entity.AllNoticeContents;
 import com.project.rmfr.board.entity.ContentComments;
 import com.project.rmfr.board.entity.ContentLikes;
+import com.project.rmfr.board.entity.ck.ContentLikesCK;
 import com.project.rmfr.board.repository.ContentCommentsCustomRepository;
 import com.project.rmfr.board.repository.ContentCommentsRepository;
 import com.project.rmfr.board.service.AllNoticeContentsService;
 import com.project.rmfr.board.service.ContentCommentsService;
 import com.project.rmfr.board.service.ContentLikesService;
 import com.project.rmfr.board.spec.BoardSpecification;
+import com.project.rmfr.member.entity.Members;
 import com.project.rmfr.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.AbstractDocument;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +51,6 @@ public class ContentCommentsServiceImpl implements ContentCommentsService {
                     // 전체 댓글의 마지막 순서로 댓글 입력
                     ContentComments comment = new ContentComments(
                             ancComment
-                            , contentCommentsRepository.countByAncUuid(anc).intValue()
                             , anc
                             , memberService.loadUser(mId)
                     );
@@ -68,28 +66,11 @@ public class ContentCommentsServiceImpl implements ContentCommentsService {
                         // 부모 댓글
                         ContentComments parentComment = pComment.get();
 
-                        // 부모 댓글의 모든 자식 댓글 조회
-                        List<ContentComments> childList = contentCommentsCustomRepository.findContentCommentsByAllNoticeContents(pComment.get());
-
-                        // 자식 댓글 중 sortOrder가 가장 높은 값 조회
-                        int maxSortOrder = getMaxSortOrder(childList, parentComment.getSortOrder());
-                        int newSortOrder = maxSortOrder + 1; // 자식 댓글 중 가장 마지막 순서의 다음으로 설정
-
-                        // 새로 작성된 댓글이 들어갈 차례 이 후의 기존 댓글 전체 조회
-                        List<ContentComments> lastComments = contentCommentsRepository.findBySortOrderGreaterThanEqual(newSortOrder);
-
-                        // 기존 댓글의 순서를 모두 + 1
-                        for (ContentComments cmm : lastComments) {
-                            cmm.setSortOrder(cmm.getSortOrder() + 1);
-                            contentCommentsRepository.save(cmm);
-                        }
-
                         // newSortOrder를 가진 comment 신규 insert
                         ContentComments comment = new ContentComments(
                                 parentComment
                                 , ancComment
                                 , ancDepth
-                                , newSortOrder
                                 , anc
                                 , memberService.loadUser(mId)
                         );
@@ -127,6 +108,7 @@ public class ContentCommentsServiceImpl implements ContentCommentsService {
 
         return rst;
     }
+    @Override
     public String likeComment(String ancCommentUuid, Principal principal) {
         String rst = "";
 
@@ -151,15 +133,42 @@ public class ContentCommentsServiceImpl implements ContentCommentsService {
 
         return rst;
     }
+    @Override
+    public List<ContentCommentsDto> getComments(String ancParentCommentUuid, String mId) {
+        List<ContentCommentsDto> dtos = new ArrayList<>();
+        try {
+            Optional<ContentComments> pComment= contentCommentsRepository.findByAncCommentUuid(ancParentCommentUuid);
 
-    public int getMaxSortOrder(List<ContentComments> commentsList, int pSortOrder) {
-        // 부모 댓글의 sortOrder에서부터 시작
-        int maxSortOrder = pSortOrder;
+            if ( pComment.isPresent() ) {
+                List<ContentComments> comments = contentCommentsRepository.findByAncParentComment(pComment.get());
 
-        // commentsList에 있는 댓글 중 sortOrder가 가장 큰 값을 찾음
-        for( ContentComments c : commentsList )
-            maxSortOrder = Math.max(c.getSortOrder(), maxSortOrder);
+                if ( !comments.isEmpty() ) {
+                    dtos = ContentCommentsDto.of(comments);
 
-        return maxSortOrder;
+                    for ( ContentCommentsDto dto : dtos ) {
+                        if (!"guest".equals(mId)) {
+                            Members loginUser = memberService.loadUser(mId);
+                            // 댓글 삭제 가능 여부
+                            boolean editable = mId.equals(dto.getAncCommenterId().getMId());
+                            dto.setCommentEditable(editable);
+
+                            // 로그인 유저의 좋아요 클릭 여부
+                            ContentLikesCK ck = new ContentLikesCK(dto.getAncCommentUuid(), loginUser);
+                            int cnt = contentLikesService.countByContentLikesCKAndContentType(dto.getAncCommentUuid(), loginUser, "COM");
+                            dto.setCommentLikeFlag(cnt > 0);
+                        }
+
+                        // 댓글의 좋아요 수
+                        int cnt2 = contentLikesService.countByContentId(dto.getAncCommentUuid());
+                        dto.setLikesCount(cnt2);
+                    }
+                    Collections.sort(dtos);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dtos;
     }
 }

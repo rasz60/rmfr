@@ -93,6 +93,7 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
     @Transactional
     public BoardItemDto getItemDetails(String itemId, String mId) {
         BoardItemDto dto = new BoardItemDto();
+        Members loginUser = null;
         try {
             Optional<AllNoticeContents> ancOptional = allNoticeContentsRepository.findByAncUuid(itemId);
 
@@ -105,31 +106,8 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                 }
 
                 if (! "guest".equals(mId) ) {
-                    Members loginUser = memberService.loadUser(mId);
+                    loginUser = memberService.loadUser(mId);
                     dto.setCommentable(true);
-
-                    List<ContentCommentsDto> ancComments = dto.getAncComments();
-
-                    for ( ContentCommentsDto commentDto : ancComments ) {
-                        // 댓글 삭제 가능 여부
-                        boolean editable = mId.equals(commentDto.getAncCommenterId().getMId());
-                        commentDto.setCommentEditable(editable);
-
-                        // 로그인 유저의 좋아요 클릭 여부
-                        ContentLikesCK ck = new ContentLikesCK(commentDto.getAncCommentUuid(), loginUser);
-                        int cnt = contentLikesService.countByContentLikesCKAndContentType(commentDto.getAncCommentUuid(), loginUser, "COM");
-                        commentDto.setCommentLikeFlag(cnt > 0);
-
-                        // 댓글의 좋아요 수
-                        int cnt2 = contentLikesService.countByContentId(commentDto.getAncCommentUuid());
-                        commentDto.setLikesCount(cnt2);
-
-                        if ( commentDto.getAncCommentDepth() == 0 ) {
-                            commentDto.setDisplayFlag(true);
-                        }
-                    }
-
-                    dto.setAncComments(ancComments);
 
                     if ( loginUser.getMId().equals(dto.getAncRegId()) || loginUser.getMLevel() > 1 ) {
                         dto.setEditable(true);
@@ -140,6 +118,27 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
                     int likeCnt = contentLikesService.countByContentLikesCKAndContentType(itemId, loginUser, "ANC");
                     dto.setLikeItem(likeCnt > 0);
                 }
+
+                List<ContentCommentsDto> ancComments = dto.getAncComments();
+
+                for ( ContentCommentsDto commentDto : ancComments ) {
+                    if (! "guest".equals(mId) ) {
+                        // 댓글 삭제 가능 여부
+                        boolean editable = mId.equals(commentDto.getAncCommenterId().getMId());
+                        commentDto.setCommentEditable(editable);
+
+                        // 로그인 유저의 좋아요 클릭 여부
+                        ContentLikesCK ck = new ContentLikesCK(commentDto.getAncCommentUuid(), loginUser);
+                        int cnt = contentLikesService.countByContentLikesCKAndContentType(commentDto.getAncCommentUuid(), loginUser, "COM");
+                        commentDto.setCommentLikeFlag(cnt > 0);
+                    }
+
+                    // 댓글의 좋아요 수
+                    int cnt2 = contentLikesService.countByContentId(commentDto.getAncCommentUuid());
+                    commentDto.setLikesCount(cnt2);
+                }
+                Collections.sort(ancComments);
+                dto.setAncComments(ancComments);
 
             }
 

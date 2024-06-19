@@ -93,4 +93,8 @@ public class BoardRestApiController {
         return contentCommentsService.likeComment(ancCommentUuid, principal);
     }
 
+    @GetMapping("/rest/board/item/getComments/{ancParentCommentUuid}")
+    public List<ContentCommentsDto> getComment(@PathVariable("ancParentCommentUuid") String ancParentCommentUuid, Principal principal) {
+        return contentCommentsService.getComments(ancParentCommentUuid, principal != null ? principal.getName() : "guest");
+    }
 }

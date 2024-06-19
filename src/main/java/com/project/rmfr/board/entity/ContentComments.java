@@ -32,7 +32,7 @@ public class ContentComments {
     private String ancCommentUuid;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(referencedColumnName="ancCommentUuid", name ="ancParentComment")
     private ContentComments ancParentComment;
 /*
@@ -53,7 +53,7 @@ public class ContentComments {
     private LocalDateTime ancCommentRegDate;
 
     @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancCommenterId")
     private Members ancCommenterId;
 
@@ -61,7 +61,7 @@ public class ContentComments {
     private LocalDateTime ancCommentUpdateDate;
 
     @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(referencedColumnName="mEntrId" ,name = "ancCommentUpdaterId")
     private Members ancCommentUpdaterId;
 
@@ -71,28 +71,24 @@ public class ContentComments {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int ancCommentState;
 
-    @Column(columnDefinition = "INT DEFAULT 1")
-    private int sortOrder;
-
     @JsonProperty("nodes")
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "ancParentComment")
-    @OrderBy("sortOrder asc")
+    @OrderBy("ANC_COMMENT_REG_DATE ASC")
     private List<ContentComments> children = new ArrayList<>();
 
     public ContentComments() {}
 
-    public ContentComments(String comment, int sortOrder, AllNoticeContents anc, Members member) {
+    public ContentComments(String comment, AllNoticeContents anc, Members member) {
         this.ancComment = comment;
         this.ancUuid = anc;
         this.ancCommentRegDate = LocalDateTime.now();
         this.ancCommentUpdateDate = LocalDateTime.now();
         this.ancCommenterId = member;
         this.ancCommentUpdaterId = member;
-        this.sortOrder = sortOrder;
     }
 
-    public ContentComments(ContentComments ancParentComment, String comment, int depth, int sortOrder, AllNoticeContents anc, Members member) {
+    public ContentComments(ContentComments ancParentComment, String comment, int depth, AllNoticeContents anc, Members member) {
         this.ancParentComment = ancParentComment;
         this.ancComment = comment;
         this.ancUuid = anc;
@@ -101,7 +97,6 @@ public class ContentComments {
         this.ancCommenterId = member;
         this.ancCommentUpdaterId = member;
         this.ancCommentDepth = depth;
-        this.sortOrder = sortOrder;
     }
 
     public List<ContentComments> getChildren() {

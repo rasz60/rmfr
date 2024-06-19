@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,7 +68,8 @@ public class AllNoticeContents {
     List<ContentLikes> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "ancUuid", fetch = FetchType.EAGER)
-    @OrderBy("SORT_ORDER ASC")
+    @Where(clause = "ANC_COMMENT_DEPTH = 0")
+    @OrderBy("ANC_COMMENT_REG_DATE ASC")
     List<ContentComments> comments = new ArrayList<>();
     public AllNoticeContents() {}
 

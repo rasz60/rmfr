@@ -68,6 +68,7 @@ import { VDateInput } from "vuetify/labs/VDateInput";
           :key="item"
           class="boardItem"
           @click="fnShowDetails(item.ancUuid)"
+          v-show="items.length > 0"
         >
           <v-row>
             <v-col cols="1">{{ item.seq }}</v-col>
@@ -78,6 +79,15 @@ import { VDateInput } from "vuetify/labs/VDateInput";
             <v-col cols="2">{{ item.ancRegDate }}</v-col>
             <v-col cols="1">{{ item.ancHits }}</v-col>
             <v-col cols="1">{{ item.ancLikes }}</v-col>
+          </v-row>
+        </v-list-item>
+        <v-list-item v-show="items.length <= 0">
+          <v-row>
+            <v-col cols="12">
+              <v-icon icon="fas fa-times" color="red"></v-icon>
+              게시물이없습니다.
+              <v-icon icon="fas fa-times" color="red"></v-icon>
+            </v-col>
           </v-row>
         </v-list-item>
       </v-list>

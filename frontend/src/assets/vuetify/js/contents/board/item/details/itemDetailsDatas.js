@@ -8,7 +8,7 @@ export default {
   ancTitle: "",
   ancContents: "",
   ancKw: [],
-  ancComments: [],
+  ancComments: new Array(),
   commentRulesFlag: false,
   selectComment: "",
   newComment: {

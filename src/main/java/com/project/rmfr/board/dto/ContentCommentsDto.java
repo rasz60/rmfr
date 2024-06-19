@@ -7,10 +7,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
-public class ContentCommentsDto {
+public class ContentCommentsDto  implements Comparable {
 
     private String ancCommentUuid;
     private String ancParentCommentUuid;
@@ -22,12 +23,10 @@ public class ContentCommentsDto {
     private MembersDto ancCommentUpdaterId;
     private int ancCommentDepth;
     private int ancCommentState;
-    private int sortOrder;
     private boolean commentEditable = false;
     private List<ContentCommentsDto> children = new ArrayList<>();
     private boolean commentLikeFlag = false;
     private int likesCount;
-    private boolean displayFlag = false;
     private boolean childOpen = false;
     public ContentCommentsDto() {}
 
@@ -58,6 +57,20 @@ public class ContentCommentsDto {
         comments.getChildren().forEach(c -> {
             this.children.add(ContentCommentsDto.of(c));
         });
-        this.sortOrder = comments.getSortOrder();
+    }
+    @Override
+    public int compareTo(Object obj) {
+        ContentCommentsDto dto = (ContentCommentsDto) obj;
+
+        int depth1 = this.getAncCommentDepth();
+        int depth2 = dto.getAncCommentDepth();
+
+        if ( depth1 == depth2 ) {
+            int likes1 = this.getLikesCount();
+            int likes2 = dto.getLikesCount();
+            return likes2 - likes1;
+        } else {
+            return depth1 - depth2;
+        }
     }
 }

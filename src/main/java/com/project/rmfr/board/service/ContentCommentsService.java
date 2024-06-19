@@ -13,4 +13,5 @@ public interface ContentCommentsService {
     public String regComment(Map<String, Object> param, String mId);
     public String delComment(String ancCommentUuid);
     public String likeComment(String ancCommentUuid, Principal principal);
+    public List<ContentCommentsDto> getComments(String ancParentCommentUuid, String mId);
 }

@@ -9,10 +9,9 @@ export default {
       let pages = res.data;
       this.page = ref(page);
       this.pageLength = pages.totalPages;
-
+      var totalEle = pages.totalElements;
+      this.totalCnt = totalEle;
       contents.forEach((v) => {
-        var totalEle = pages.totalElements;
-        this.totalCnt = totalEle;
         let content = {
           ancUuid: v.ancUuid,
           ancTitle: v.ancTitle,
