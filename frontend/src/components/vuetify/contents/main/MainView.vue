@@ -1,22 +1,34 @@
-<script setup></script>
+<script setup>
+import { VCalendar } from "vuetify/labs/VCalendar";
+</script>
 
 <template>
-  <div class="mainRow">main-content-#1</div>
-  <div class="mainRow">main-content-#2</div>
-  <div class="mainRow">main-content-#3</div>
+  <v-card class="calendar-row">
+    <v-row>
+      <v-col cols="7">
+        <v-calendar ref="calendar" :start="start" :type="type"></v-calendar>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      start: "",
+      type: "month",
+    };
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-div.mainRow {
-  text-align: left;
-  margin: 5px;
-  width: 100%;
-  height: 400px;
-  background-color: #ececec;
+.calendar-row {
+  padding: 10px;
+}
+.v-calendar-month__weeknumber {
+  color: white;
 }
 </style>
