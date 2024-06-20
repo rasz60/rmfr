@@ -39,30 +39,33 @@ public class AllNoticeContentsServiceImpl implements AllNoticeContentsService {
 
     private final ContentLikesService contentLikesService;
     @Override
-    public String createItem(Map<String, Object> param) {
+    public String createItem(Map<String, Object> param, String mId) {
         String rst = "";
 
         try {
-            ArrayList<String> ancKw = (ArrayList<String>) param.get("ancKw");
-            String keywordStr = "";
+            if (! "guest".equals(mId) ) {
+                ArrayList<String> ancKw = (ArrayList<String>) param.get("ancKw");
+                String keywordStr = "";
 
-            for ( String kw : ancKw ) {
-                keywordStr += kw + "|";
+                for ( String kw : ancKw ) {
+                    keywordStr += kw + "|";
+                }
+
+                AllNoticeContents anc = AllNoticeContents.builder()
+                        .ancTitle((String) param.get("ancTitle"))
+                        .ancKw(keywordStr)
+                        .ancContents((String) param.get("ancContents"))
+                        .member(memberService.loadUser(mId))
+                        .build();
+                rst = allNoticeContentsRepository.save(anc).getAncUuid();
             }
-
-            String userId = (String) param.get("userId");
-
-            AllNoticeContents anc = AllNoticeContents.builder()
-                                                        .ancTitle((String)param.get("ancTitle"))
-                                                        .ancKw(keywordStr)
-                                                        .ancContents((String) param.get("ancContents"))
-                                                        .member(memberService.loadUser(userId))
-                                                        .build();
-            rst = allNoticeContentsRepository.save(anc).getAncUuid();
+            rst = "".equals(rst) ? "500" : "200";
 
         } catch (Exception e) {
             log.error("createItem() throws exceptions.");
             e.printStackTrace();
+        } finally {
+            rst = "".equals(rst) ? "500" : "200";
         }
 
         return rst;

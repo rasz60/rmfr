@@ -18,9 +18,17 @@ public class BoardApiController {
     @PostMapping("notice/item/create")
     @ResponseBody
     public String createNoticeItem(@RequestBody Map<String, Object> param, Principal principal) {
-        param.put("userId", (principal == null ? "rassayz60" : principal.getName()));
-
-        return "".equals(allNoticeContentsService.createItem(param)) ? "500" : "200";
+        String rst = "";
+        try {
+            if ( principal != null ) {
+                rst = allNoticeContentsService.createItem(param, principal.getName());
+            } else {
+                rst = "500";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rst;
     }
 
     @PostMapping("notice/item/update")
@@ -34,6 +42,18 @@ public class BoardApiController {
     @GetMapping("notice/item/delete/{ancUuid}")
     @ResponseBody
     public String deleteNoticeItem(@PathVariable("ancUuid") String ancUuid, Principal principal) {
-        return "".equals(allNoticeContentsService.deleteItem(ancUuid, principal.getName())) ? "500" : "200";
+        String rst = "";
+        try {
+            if ( principal != null ) {
+                String mId = principal.getName();
+                rst = allNoticeContentsService.deleteItem(ancUuid, principal.getName());
+            } else {
+                rst = "500";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rst;
     }
 }

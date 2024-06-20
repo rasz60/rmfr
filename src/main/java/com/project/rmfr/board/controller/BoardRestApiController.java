@@ -68,17 +68,24 @@ public class BoardRestApiController {
 
     @GetMapping("/rest/board/item/likes/{ancUuid}/{flag}")
     public String chngLikeFlag(@PathVariable("ancUuid") String ancUuid, @PathVariable("flag") boolean flag, Principal principal) {
-        return contentLikesService.chngLikeFlag(ancUuid, flag, principal.getName());
+        String rst = "";
+        try {
+            if ( principal != null ) rst = contentLikesService.chngLikeFlag(ancUuid, flag, principal.getName());
+            else rst = "500";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rst;
     }
 
     @PostMapping("/rest/board/item/regComment")
     public String regComment(@RequestBody Map<String, Object> param, Principal principal) {
         String rst = "";
         try {
-            rst = contentCommentsService.regComment(param, principal.getName());
+            if ( principal != null ) rst = contentCommentsService.regComment(param, principal.getName());
+            else rst = "500";
         } catch (Exception e) {
             e.printStackTrace();
-            rst = "500";
         }
         return rst;
     }
