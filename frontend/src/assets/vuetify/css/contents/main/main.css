@@ -1,0 +1,59 @@
+.card-header {
+  padding: 20px !important;
+  display: flex;
+  align-items: center;
+
+  button {
+    padding: 0 !important;
+    font-size: 10px;
+  }
+}
+
+.today {
+  background-color: aliceblue;
+}
+
+.calendar-row {
+  margin: 10px;
+  padding: 30px !important;
+
+  .v-chip {
+    width: 95%;
+  }
+}
+
+.v-chip {
+  margin-right: 5px;
+}
+
+.event-btn-cols {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.header-txt {
+  font-size: 15px;
+
+  hr {
+    margin: 8px;
+  }
+}
+
+.dateStr {
+  font-size: 18px;
+}
+
+.color-red {
+  color: red;
+}
+
+.color-blue {
+  color: blue;
+}
+
+.event-item {
+  padding: 2px !important;
+}
