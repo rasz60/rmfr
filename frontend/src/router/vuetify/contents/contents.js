@@ -6,6 +6,8 @@ import SettingView from "@v-components/contents/setting/SettingView.vue";
 import NoticeBoardView from "@v-components/contents/board/notice/BoardView.vue";
 import boardViewChild from "./board/board.js";
 
+import AdminView from "@v-components/contents/admin/AdminView.vue";
+
 const contentRouter = createRouter({
   history: createWebHistory(),
   routes: [
@@ -25,6 +27,10 @@ const contentRouter = createRouter({
       path: "/board",
       component: NoticeBoardView,
       children: boardViewChild,
+    },
+    {
+      path: "/admin/setting",
+      component: AdminView,
     },
   ],
 });

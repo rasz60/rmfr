@@ -99,4 +99,8 @@ export default {
   fnValue(v) {
     console.log(v);
   },
+
+  fnSetAllowedDates(v, event) {
+    console.log(v, event);
+  },
 };

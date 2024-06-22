@@ -1,5 +1,7 @@
 <script setup>
 import { VDateInput } from "vuetify/labs/VDateInput";
+import { VCalendar } from "vuetify/labs/VCalendar";
+import { useDate } from "vuetify";
 import mainDatas from "@v-js/contents/main/mainDatas.js";
 import mainMethods from "@v-js/contents/main/mainMethods.js";
 </script>
@@ -117,11 +119,12 @@ import mainMethods from "@v-js/contents/main/mainMethods.js";
                           </v-list-item>
                           <v-list-item>
                             <v-list-item title="Schedules" link>
-                              <v-date-picker
+                              <v-calendar
+                                ref="calendar"
                                 class="dialogCalendar"
-                                v-model="event.realDate"
-                                @update:modelValue="fnValue"
-                              ></v-date-picker>
+                                view-mode="month"
+                                :model-value="value"
+                              ></v-calendar>
                             </v-list-item>
                           </v-list-item>
                         </v-col>
@@ -151,6 +154,14 @@ export default {
   },
   created() {
     this.fnGoToday();
+  },
+  mounted() {
+    const adapter = useDate();
+    const test = {
+      start: adapter.startOfDay(adapter.startOfMonth(new Date())),
+      end: adapter.endOfDay(adapter.endOfMonth(new Date())),
+    };
+    console.log(test);
   },
   watch: {
     searchDate() {
